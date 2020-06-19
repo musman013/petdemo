@@ -1,0 +1,11 @@
+@import 'src/styles/base.scss';
+
+  table {
+    width: 100%;
+  }
+  
+	.table-container{
+		overflow: auto;
+		width: 100%;
+		max-height: calc(100% - 280px);
+	}

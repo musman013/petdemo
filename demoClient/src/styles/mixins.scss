@@ -1,0 +1,7 @@
+@import './../app/common/components/main-nav/main-nav-mixin.component.scss';
+@import './../app/common/components/bottom-tab-nav/bottom-tab-nav-mixin.component.scss';
+@import './dynamic-styles.scss';
+
+@include main-nav-mixin($fc-theme,$fontConfig);
+@include bottom-tab($fc-theme);
+@include main-style($fc-theme, $fontConfig);

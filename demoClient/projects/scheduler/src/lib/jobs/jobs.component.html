@@ -1,0 +1,135 @@
+<!-- <mat-toolbar class="action-tool-bar" color="primary">
+
+  <i class="material-icons">
+    arrow_back
+  </i>
+  <span class="middle">{{'JOBS.TITLE' | translate}}</span>
+  <i class="material-icons" (click)="add()">
+    add
+  </i>
+</mat-toolbar> -->
+
+<div class="list-container" (onScroll)="onTableScroll()" appVirtualScroll>
+  <div class="top-breadcrumb">
+    <h1 class="template-title">{{'JOBS.TITLE' | translate}}</h1>
+    <div class="fc-row">
+      <div class="fc-col-sm-6">
+        <ul class="breadcrumb">
+          <li><a [routerLink]="['/dashboard']"><i class="material-icons">
+                home
+              </i> &nbsp;Dashboard</a></li>
+          <li><a>Job List</a></li>
+        </ul>
+      </div>
+      <div class="fc-col-sm-6 fc-text-right">
+        <button mat-raised-button color="primary" (click)="add()"><i class="material-icons">
+            add_circle_outline
+          </i> &nbsp;Add Job</button>
+      </div>
+    </div>
+  </div>
+  <mat-card>
+    <app-list-filters [columnsList]="columns" (onSearch)="applyFilter($event)"></app-list-filters>
+    <!-- <div class="row filter-list">
+      <div class="fc-col-md-4 fc-col-lg-2 fc-col-xl-2">
+        <mat-form-field class="full-width">
+
+          <mat-label>Filter By</mat-label>
+          <mat-select (selectionChange)="selctFilter($event.value)">
+            <mat-option *ngFor="let items of filterList" [value]="items.column">
+              {{items.label  | translate}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="fc-col-md-8 fc-col-lg-10">
+        <mat-form-field *ngIf="filterSelect">
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Enter Value">
+        </mat-form-field>
+
+        <div *ngIf="filterSelect" style="display: inline-block;">
+          &nbsp;&nbsp;&nbsp;<button mat-raised-button color="primary">Search</button>
+        </div>
+
+      </div>
+
+    </div> -->
+
+    <div class="table-container">
+      <mat-table matSort [dataSource]="dataSource" 
+        class="mat-elevation-z8">
+
+        <ng-container matColumnDef="jobName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{'JOBS.FIELDS.NAME' | translate}} </mat-header-cell>>
+          <mat-cell *matCellDef="let job">{{job.jobName | titlecase }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="jobGroup">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{'JOBS.FIELDS.GROUP' | translate}} </mat-header-cell>
+          <mat-cell *matCellDef="let job"> {{job.jobGroup | titlecase}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="jobClass">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{'JOBS.FIELDS.CLASS' | translate}} </mat-header-cell>
+          <mat-cell *matCellDef="let job"> {{job.jobClass}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef> {{'SCHEDULER-GENERAL.ACTIONS.ACTIONS' | translate}}</mat-header-cell>
+          <mat-cell *matCellDef="let job;let i = index;">
+            <!-- <button mat-button color="accent" (click)="triggerJob(job,i)">Trigger</button> -->
+            <button mat-icon-button aria-label="Example icon-button with a heart icon text-dangger" matTooltip="Edit"
+              routerLink="/jobs/{{job.jobName}}/{{job.jobGroup}}">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" *ngIf="job.jobStatus != 'PAUSED'" title="{{'SCHEDULER-GENERAL.ACTIONS.PAUSE' | translate}}"
+              (click)="pauseJob(job, i)">
+              <mat-icon color="primary">pause_circle_filled</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" *ngIf="job.jobStatus == 'PAUSED'" title="{{'SCHEDULER-GENERAL.ACTIONS.RESUME' | translate}}"
+              (click)="resumeJob(job, i)">
+              <mat-icon color="primary">play_circle_filled</mat-icon>
+            </button>
+            <!-- <button mat-icon-button color="accent" title="{{'SCHEDULER-GENERAL.ACTIONS.DELETE' | translate}}" (click)="delete1(job, i)"><mat-icon color="warn">delete</mat-icon></button> -->
+            <button mat-icon-button color="accent" title="{{'SCHEDULER-GENERAL.ACTIONS.DELETE' | translate}}"
+              (click)="deleteJob(job, i)">
+              <mat-icon color="warn">delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </div>
+    <section  class="small-spinner-container"  *ngIf="isLoadingResults">
+      <mat-spinner></mat-spinner>
+    </section>
+  </mat-card>
+
+</div>
+
+<ng-template #deleteBox>
+  <div class="template-dialog">
+    <div class="dialog-header">
+      <h2 class="dialog-header-title" style="margin:0;">Delete Entry
+        <button mat-icon-button color="basic" mat-dialog-close>
+          <mat-icon>close</mat-icon>
+        </button>&nbsp;
+      </h2>
+    </div>
+    <div class="dialog-content">
+      <br>
+      <h4 class="error-msg ">
+        <mat-icon style="margin:0;">error</mat-icon>&nbsp; Do you want to delete?
+      </h4>
+      <br>
+    </div>
+    <div class="mat-dialog-actions fc-text-right">
+      <button mat-raised-button color="warn" (click)="delete(deleteItem)" mat-dialog-close>Delete</button>
+      <button mat-raised-button color="warn" (click)="deleteJob(job, i)" mat-dialog-close>Delete</button>
+    </div>
+  </div>
+
+</ng-template>

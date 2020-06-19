@@ -1,0 +1,46 @@
+@import "../../../styles/base.scss";
+
+.container {
+    height: '400px';
+    width: '600px';
+}
+
+.job-form {
+    display: flex;
+    flex-direction: column;
+    max-width:700px;
+    width:100%;
+
+}
+
+.fill-av{
+  min-height: -webkit-fill-available;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.medium-device-width {
+    width: 100%;
+}
+
+// .large-device-width {
+//     width: 50%;
+// }
+.checkbox-sp{
+    line-height:75px;
+}
+table {
+    width: 100%;   
+}
+td>.mat-input-element {
+    height: 36PX;
+    padding: 12px;
+    background: #f5f5f5;
+    width: calc(100% - 12px);
+}
+
+th.mat-header-cell {
+    font-size: 14px !important;
+}

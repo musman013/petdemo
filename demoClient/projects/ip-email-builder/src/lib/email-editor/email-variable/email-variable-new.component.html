@@ -1,0 +1,34 @@
+<div class="create-item">
+	<mat-card>
+		<mat-card-header>
+			<mat-card-title>{{title}}</mat-card-title>
+			<a name="cancel" href="javascript:void(0)" (click)="onCancel()" class="cancle-btn"><i
+					class="material-icons">add_circle</i></a>
+		</mat-card-header>
+		<mat-card-content>
+			<form [formGroup]="itemForm" #itemNgForm="ngForm" (ngSubmit)="onSubmit()" class="item-form">
+
+				<mat-form-field>
+					<input formControlName="propertyName" matInput
+						placeholder="{{'EMAIL-EDITOR.EMAIL-VARIABLE.FIELDS.PROPERTY-NAME' | translate}}">
+					<mat-error *ngIf="!itemForm.get('propertyName').valid && itemForm.get('propertyName').touched">
+						{{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+				</mat-form-field>
+				<mat-form-field>
+					<input formControlName="propertyType" matInput
+						placeholder="{{'EMAIL-EDITOR.EMAIL-VARIABLE.FIELDS.PROPERTY-TYPE' | translate}}">
+					<mat-error *ngIf="!itemForm.get('propertyType').valid && itemForm.get('propertyType').touched">
+						{{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+				</mat-form-field>
+				<mat-form-field>
+					<input formControlName="defaultValue" matInput
+						placeholder="{{'EMAIL-EDITOR.EMAIL-VARIABLE.FIELDS.DEFAULT-VALUE' | translate}}">
+				</mat-form-field>
+
+			</form>
+		</mat-card-content>
+		<mat-card-actions class="fc-text-right">
+			<button mat-raised-button (click)="itemNgForm.ngSubmit.emit()" [disabled]="!itemForm.valid  || loading || !IsUpdatePermission">{{'EMAIL-GENERAL.ACTIONS.SAVE' | translate}}</button>
+		</mat-card-actions>
+	</mat-card>
+</div>

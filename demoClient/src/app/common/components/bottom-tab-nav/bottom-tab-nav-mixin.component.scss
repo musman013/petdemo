@@ -1,0 +1,14 @@
+@import '~@angular/material/theming';
+@mixin bottom-tab($theme) {
+  $fc-primary-color: map-get($theme,primary);
+  $fc-primary-color-light: map-get($theme,primary);
+  $fc-accent-color: map-get($theme,accent);
+  .mat-tab-nav-bar {
+    // background-color: $fc-primary-color;
+    background-color: mat-color($fc-primary-color);
+   }
+   .fc-accent{
+     // background-color: $fc-accent-color;
+     background-color: mat-color($fc-accent-color);
+   }
+}

@@ -1,0 +1,24 @@
+@import "../../../styles/base.scss";
+
+
+
+.select-job-container {
+    min-height: 260px;
+    table {
+    width: 100%;
+    box-shadow: none;
+    .mat-header-cell{
+        font-size: 15px !important;
+    }
+    td{
+        cursor: pointer;
+    }
+}
+
+}
+
+.action-tool-bar {
+    height: $fc-row-height5;
+    justify-content: space-between;
+}
+

@@ -1,0 +1,19 @@
+@import "../../styles/base.scss";
+
+.container {
+    margin: $fc-margin3;
+    height: calc(100% - 152px);
+}
+
+.full-width {
+    width: 100%;
+}
+
+[hidden] {
+    display: none;
+}
+
+.mat-table {
+    overflow: auto;
+    max-height: calc(100% - 135px);
+}

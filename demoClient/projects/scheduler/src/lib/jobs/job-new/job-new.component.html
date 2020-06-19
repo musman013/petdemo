@@ -1,0 +1,132 @@
+<div class="create-entry" style="width:650px;">
+  <!-- <mat-toolbar class="action-tool-bar" color="primary">
+    <button mat-flat-button (click)="onCancel()">
+      {{'SCHEDULER-GENERAL.ACTIONS.CANCEL' | translate}} </button>
+    <span class="middle">{{'JOBS.TITLE' | translate}}</span>
+
+    <button mat-flat-button (click)="jobNgForm.ngSubmit.emit()" [disabled]="!jobForm.valid || loading">
+      {{'SCHEDULER-GENERAL.ACTIONS.SAVE' | translate}} </button>
+
+  </mat-toolbar> -->
+  <mat-card>
+    <!-- <mat-card-header>
+      <mat-card-title>New Job</mat-card-title>
+      <a href="javascript:void(0)" (click)="onCancel()" class="cancle-btn"><i class="material-icons">add_circle</i></a>
+    </mat-card-header> -->
+    <mat-card-header>
+			<mat-card-title>{{title}}</mat-card-title>
+			<a href="javascript:void(0)" (click)="onCancel()" class="cancle-btn"><i class="material-icons">add_circle</i></a>
+		</mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="jobForm" #jobNgForm="ngForm" (ngSubmit)="onSubmit()" class="job-form">
+        <div class="fc-row">
+          <div class="fc-col-md-6">
+            <mat-form-field
+              [ngClass]="{'medium-device-width': isMediumDeviceOrLess, 'large-device-width' : !isMediumDeviceOrLess}"
+              class="full-width">
+              <input formControlName="jobName" matInput placeholder="{{'JOBS.FIELDS.NAME' | translate}}" required>
+              <mat-error *ngIf="!jobForm.get('jobName').valid && jobForm.get('jobName').touched">
+                {{'SCHEDULER-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="fc-col-md-6">
+            <mat-form-field
+              [ngClass]="{'medium-device-width': isMediumDeviceOrLess, 'large-device-width' : !isMediumDeviceOrLess}"
+              class="full-width">
+              <input placeholder="{{'JOBS.FIELDS.GROUP' | translate}}" formControlName="jobGroup" matInput
+                [matAutocomplete]="auto" required>
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let group of filteredOptions | async" [value]="group">
+                  {{group}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="!jobForm.get('jobGroup').valid && jobForm.get('jobGroup').touched">
+                {{'SCHEDULER-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="fc-col-md-6">
+            <mat-form-field
+              [ngClass]="{'medium-device-width': isMediumDeviceOrLess, 'large-device-width' : !isMediumDeviceOrLess}"
+              class="full-width">
+              <mat-select placeholder="{{'JOBS.FIELDS.CLASS-PLACEHOLDER' | translate}}" formControlName="jobClass"
+                required>
+                <mat-option *ngFor="let jc of jobClasses" [value]="jc">
+                  {{jc}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="!jobForm.get('jobClass').valid && jobForm.get('jobClass').touched">
+                {{'SCHEDULER-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="fc-col-md-6 checkbox-sp">
+            <span
+              [ngClass]="{'medium-device-width': isMediumDeviceOrLess, 'large-device-width' : !isMediumDeviceOrLess}">
+              <mat-checkbox formControlName="isDurable">
+                {{'JOBS.FIELDS.IS-DURABLE' | translate}}
+              </mat-checkbox>
+            </span>
+          </div>
+          <div class="fc-col-md-6">
+            <mat-form-field
+              [ngClass]="{'medium-device-width': isMediumDeviceOrLess, 'large-device-width' : !isMediumDeviceOrLess}"
+              class="full-width">
+              <textarea formControlName="description" matInput
+                placeholder="{{'JOBS.FIELDS.DESCRIPTION' | translate}}"></textarea>
+              <mat-error *ngIf="!jobForm.get('description').valid && jobForm.get('description').touched">
+                {{'SCHEDULER-GENERAL.ERRORS.LENGTH-EXCEDDING' | translate : {length : 80} }}</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="fc-col-md-12">
+            <div class="full-width">
+              <label style="margin-bottom: 20px">{{'JOBS.FIELDS.JOB-MAP-DATA' | translate}}
+                <mat-icon (click)="addJobData()" style="position: relative;bottom: -8px;left: 12px; cursor: pointer;">add_circle
+                </mat-icon>
+              </label>
+              <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                <!--- these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+                <!-- Key Column -->
+                <ng-container matColumnDef="key">
+                  <th mat-header-cell *matHeaderCellDef> {{'JOB-DATA.KEY' | translate}} </th>
+                  <td mat-cell *matCellDef="let element">                    
+                      <input matInput [(ngModel)]="element.dataKey" [ngModelOptions]="{standalone: true}"
+                        placeholder="Enter key name">
+                                     
+                  </td>
+                </ng-container>
+
+                <!-- Value Column -->
+                <ng-container matColumnDef="value">
+                  <th mat-header-cell *matHeaderCellDef> {{'JOB-DATA.VALUE' | translate}} </th>
+                  <td mat-cell *matCellDef="let element">
+                   
+                      <input matInput [(ngModel)]="element.dataValue" [ngModelOptions]="{standalone: true}"
+                        placeholder="Enter value">
+                   
+                  </td>
+                </ng-container>
+
+                <!-- Actions -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef> {{'SCHEDULER-GENERAL.ACTIONS.ACTIONS' | translate}} </th>
+                  <td mat-cell *matCellDef="let element; let i = index;" class="fc-text-center">
+                    <mat-icon (click)="removeJobData(i)" style="cursor: pointer;">remove_circle</mat-icon>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-card-content>
+    <mat-card-actions class="fc-text-right">
+      <button mat-raised-button (click)="jobNgForm.ngSubmit.emit()" [disabled]="!jobForm.valid || loading">
+        {{'SCHEDULER-GENERAL.ACTIONS.SAVE' | translate}} </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

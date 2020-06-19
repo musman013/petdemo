@@ -1,0 +1,21 @@
+@import "../../../styles/base.scss";
+
+.job-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.container {
+    margin:$fc-margin3;
+    
+}
+td>.mat-input-element {
+    HEIGHT: 36PX;
+    PADDING: 12px;
+    background: #f5f5f5;
+    width: calc(100% - 12px);
+}

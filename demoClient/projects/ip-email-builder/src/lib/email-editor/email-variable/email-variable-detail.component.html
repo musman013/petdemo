@@ -1,0 +1,58 @@
+<section  class="spinner-container"  *ngIf="isLoadingResults">
+    <mat-spinner></mat-spinner>
+</section>
+<div *ngIf="item" class="list-container">
+	<div class="top-breadcrumb">
+		<h1 class="template-title">{{title}}</h1>
+		<div class="fc-row">
+			<div class="fc-col-sm-12">
+				<ul class="breadcrumb">
+					<li><a [routerLink]="['/dashboard']"><i class="material-icons">
+								home
+							</i> &nbsp;Dashboard</a></li>
+					<li><a routerLink="/email/emailvariables">{{title}}</a></li>
+					<li><a>{{idParam}}</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<mat-card class="card">
+		<mat-card-content>
+			<form [formGroup]="itemForm" #itemNgForm="ngForm" (ngSubmit)="onSubmit()" class="item-form">
+
+				<mat-form-field>
+					<input formControlName="propertyName" matInput
+						placeholder="{{'EMAIL-EDITOR.EMAIL-VARIABLE.FIELDS.PROPERTY-NAME' | translate}}">
+					<mat-error *ngIf="!itemForm.get('propertyName').valid && itemForm.get('propertyName').touched">
+						{{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+				</mat-form-field>
+				<mat-form-field>
+					<input formControlName="propertyType" matInput
+						placeholder="{{'EMAIL-EDITOR.EMAIL-VARIABLE.FIELDS.PROPERTY-TYPE' | translate}}">
+					<mat-error *ngIf="!itemForm.get('propertyType').valid && itemForm.get('propertyType').touched">
+						{{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+				</mat-form-field>
+				<mat-form-field>
+					<input formControlName="defaultValue" matInput
+						placeholder="{{'EMAIL-EDITOR.EMAIL-VARIABLE.FIELDS.DEFAULT-VALUE' | translate}}">
+				</mat-form-field>
+			</form>
+			<br>
+			<br>
+			<div class="association-div full-width">
+				<div class="fc-row">
+					<div class="fc-col-sm-12 fc-text-right">
+						<button name="back" mat-raised-button color="basic" [routerLink]="['/email/emailvariables']">
+							{{'EMAIL-GENERAL.ACTIONS.CANCEL' | translate}} </button>
+						<button name="save" mat-raised-button color="primary"
+							[disabled]="!itemForm.valid || loading || !IsUpdatePermission" (click)="itemNgForm.ngSubmit.emit()">
+							{{'EMAIL-GENERAL.ACTIONS.SAVE' | translate}}
+						</button>
+					</div>
+				</div>
+			</div>
+			<br>
+			<br>
+		</mat-card-content>
+	</mat-card>
+</div>
