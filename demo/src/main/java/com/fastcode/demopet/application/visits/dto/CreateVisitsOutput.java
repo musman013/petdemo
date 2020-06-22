@@ -10,6 +10,8 @@ public class CreateVisitsOutput {
     private String description;
     private Long id;
     private Date visitDate;
+    private Status status;
+    private String visitNotes;
 	private Long petId;
 	private String petsDescriptiveField;
 

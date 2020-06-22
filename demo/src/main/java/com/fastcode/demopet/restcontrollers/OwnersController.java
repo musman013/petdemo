@@ -21,10 +21,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.commons.domain.EmptyJsonResponse;
 import com.fastcode.demopet.application.authorization.user.IUserAppService;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
+import com.fastcode.demopet.application.authorization.user.dto.UserProfile;
 import com.fastcode.demopet.application.owners.OwnersAppService;
 import com.fastcode.demopet.application.owners.dto.*;
 import com.fastcode.demopet.application.pets.PetsAppService;
@@ -54,12 +59,12 @@ public class OwnersController {
     private PasswordEncoder pEncoder;
 	
 	@Autowired
-	private IUserAppService _userAppService;
+	private UserAppService _userAppService;
 	
 	
     
     public OwnersController(OwnersAppService ownersAppService, PetsAppService petsAppService,
-	 LoggingHelper helper, IUserAppService userAppService, PasswordEncoder passwordEncoder) {
+	 LoggingHelper helper, UserAppService userAppService, PasswordEncoder passwordEncoder) {
 		super();
 		this._ownersAppService = ownersAppService;
     	this._petsAppService = petsAppService;
@@ -68,6 +73,48 @@ public class OwnersController {
 		this.pEncoder = passwordEncoder;
 	}
 
+//  @PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
+	@RequestMapping(value = "/getProfile",method = RequestMethod.GET)
+	public ResponseEntity<OwnerProfile> getProfile() {
+		UserEntity user = _userAppService.getUser();
+		FindOwnersByIdOutput currentowner = _ownersAppService.findById(user.getId());
+		if(currentowner == null)
+		{
+			return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity(_ownersAppService.getProfile(currentowner), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/updateProfile", method = RequestMethod.PUT)
+	public ResponseEntity<OwnerProfile> updateProfile(@RequestBody @Valid OwnerProfile ownerProfile) {
+		UserEntity user = _userAppService.getUser();
+
+		FindOwnersByIdOutput currentowner = _ownersAppService.findById(user.getId());
+		if(currentowner == null)
+		{
+			return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.NOT_FOUND);
+		}
+		
+		FindUserByNameOutput userOutput = _userAppService.findByEmailAddress(ownerProfile.getEmailAddress());
+		if(userOutput != null && userOutput.getId() != user.getId())
+		{
+			logHelper.getLogger().error("There already exists a user with a email=%s", user.getEmailAddress());
+			throw new EntityExistsException(
+					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
+		}
+		
+		userOutput = _userAppService.findByEmailAddress(ownerProfile.getUserName());
+		if(userOutput != null && userOutput.getId() !=user.getId())
+		{
+			logHelper.getLogger().error("There already exists a user with userName =%s", user.getUserName());
+			throw new EntityExistsException(
+					String.format("There already exists a user with userName =%s", user.getUserName()));
+		}
+		
+		FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(user.getId());
+		return new ResponseEntity(_ownersAppService.updateOwnerProfile(currentUser,ownerProfile), HttpStatus.OK);
+	}
+	
     @PreAuthorize("hasAnyAuthority('OWNERSENTITY_CREATE')")
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<CreateOwnersOutput> create(@RequestBody @Valid CreateOwnersInput owners) {

@@ -104,7 +104,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/updateProfile", method = RequestMethod.PUT)
-	public ResponseEntity<UserProfile> UpdateProfile(@RequestBody @Valid UserProfile userProfile) {
+	public ResponseEntity<UserProfile> updateProfile(@RequestBody @Valid UserProfile userProfile) {
 		UserEntity user = _userAppService.getUser();
 
 		FindUserByNameOutput userOutput = _userAppService.findByEmailAddress(userProfile.getEmailAddress());

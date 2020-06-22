@@ -23,22 +23,10 @@ public class OwnersEntity extends AbstractEntity {
   	@Column(name = "city", nullable = true, length =80)
   	private String city;
 
-  	@Basic
-  	@Column(name = "firstName", nullable = true, length =30)
-  	private String firstName;
-
   	@Id
   	@GeneratedValue(strategy = GenerationType.IDENTITY)
   	@Column(name = "id", nullable = false)
 	private Long id;
-	
-  	@Basic
-  	@Column(name = "lastName", nullable = true, length =30)
-  	private String lastName;
-
-  	@Basic
-  	@Column(name = "telephone", nullable = true, length =20)
-  	private String telephone;
 
   	@OneToMany(mappedBy = "owners", cascade = CascadeType.ALL, orphanRemoval = true) 
   	private Set<PetsEntity> petsSet = new HashSet<PetsEntity>(); 

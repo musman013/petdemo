@@ -23,6 +23,7 @@ public interface IUserMapper {
     UserEntity createUserInputToUserEntity(CreateUserInput userDto);
    
     CreateUserOutput userEntityToCreateUserOutput(UserEntity entity);
+    
     @Mappings({
     	@Mapping(source = "userProfile.userName", target = "userName"),
     	@Mapping(source = "userProfile.emailAddress", target = "emailAddress"),

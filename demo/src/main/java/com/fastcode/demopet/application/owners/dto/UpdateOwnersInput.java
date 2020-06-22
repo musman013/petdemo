@@ -15,7 +15,7 @@ public class UpdateOwnersInput extends UpdateUserInput{
   	private String address;
   	@Length(max = 80, message = "city must be less than 80 characters")
   	private String city;
-  	@NotNull(message = "id Should not be null")
+ // 	@NotNull(message = "id Should not be null")
 //  	private Integer id;
   	private Long version;
   

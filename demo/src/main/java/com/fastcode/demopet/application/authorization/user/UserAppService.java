@@ -7,6 +7,11 @@ import com.fastcode.demopet.security.SecurityUtils;
 import com.fastcode.demopet.application.authorization.user.dto.*;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserroleEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.domain.owners.IOwnersManager;
+import com.fastcode.demopet.domain.vets.IVetsManager;
+import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.QUserEntity;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,12 @@ public class UserAppService implements IUserAppService {
 	
 	@Autowired
 	private IUserManager _userManager;
+	
+	@Autowired
+	private IOwnersManager _ownerManager;
+	
+	@Autowired
+	private IVetsManager _vetManager;
 
 	@Autowired
 	private IUserMapper mapper;
@@ -55,13 +66,39 @@ public class UserAppService implements IUserAppService {
 	public void delete(Long userId) {
 
 		UserEntity existing = _userManager.findById(userId) ;
+		OwnersEntity owner = _ownerManager.findById(userId);
+		if(owner !=  null )
+		{
+			_ownerManager.delete(owner);
+		}
+		
+		VetsEntity vet = _vetManager.findById(userId);
+		if(vet !=null)
+		{
+			_vetManager.delete(vet);
+		}
+		
 		_userManager.delete(existing);
 	
 	}
 	@Transactional(readOnly = true)
 	public UserEntity getUser() {
-	//	return userRepository.findByUserName(SecurityUtils.getCurrentUserLogin().orElse(null)).orElse(null);
+	
 		return _userManager.findByUserName(SecurityUtils.getCurrentUserLogin().orElse(null));
+	}
+	
+	public Boolean checkIsAdmin(UserEntity user)
+	{
+		Set<UserroleEntity> ure = user.getUserroleSet();
+		Iterator<UserroleEntity> iterator = ure.iterator();
+		while(iterator.hasNext())
+		{
+			UserroleEntity ur = (UserroleEntity) iterator.next();
+			if(ur.getRole().getName().equals("ROLE_Admin"))
+				return true;
+		}
+
+		return false;
 	}
 	
 	public UserProfile getProfile(FindUserByIdOutput user)

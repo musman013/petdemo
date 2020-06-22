@@ -120,6 +120,18 @@ public class UserroleAppService implements IUserroleAppService {
 		
 		user.removeUserrole(existing);
 		role.removeUserrole(existing);
+		
+		_userroleManager.delete(existing);
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void deleteByUserId(Long userId) {
+		
+		List<UserroleEntity> existing = _userroleManager.findByUserId(userId) ;
+		for(UserroleEntity userrole : existing)
+		{
+			_userroleManager.delete(userrole);
+		}
 	}
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
