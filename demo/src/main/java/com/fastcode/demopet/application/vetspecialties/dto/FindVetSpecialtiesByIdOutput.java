@@ -11,7 +11,6 @@ public class FindVetSpecialtiesByIdOutput {
   	private Long vetId;
   	private String specialtiesDescriptiveField;
   	private String vetsDescriptiveField;
-
 	private Long version;
  
 }

@@ -61,6 +61,16 @@ public class AppStartupRunner implements ApplicationRunner {
         role.setName("ROLE_Admin");
         role.setDisplayName("Role1");
         role = roleManager.create(role);
+        
+        RoleEntity role1 = new RoleEntity();
+        role1.setName("ROLE_Owner");
+        role1.setDisplayName("Role2");
+        role1 = roleManager.create(role1);
+        
+        RoleEntity role2 = new RoleEntity();
+        role2.setName("ROLE_Vet");
+        role2.setDisplayName("Role3");
+        role2 = roleManager.create(role2);
         addDefaultUser(role);
         
 		List<String> entityList = new ArrayList<String>();

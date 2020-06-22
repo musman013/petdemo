@@ -2,12 +2,17 @@ package com.fastcode.demopet.security;
 
 import com.fastcode.demopet.domain.irepository.IJwtRepository;
 import com.fastcode.demopet.domain.model.JwtEntity;
+import com.fastcode.demopet.domain.model.OwnersEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.domain.owners.IOwnersManager;
+import com.fastcode.demopet.domain.vets.IVetsManager;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,12 +37,16 @@ import java.util.stream.Collectors;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private IUserManager _userManager;
+    private IOwnersManager _ownerManager;
+    private IVetsManager _vetManager;
     private IJwtRepository jwtRepo;
     private AuthenticationManager authenticationManager;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager,ApplicationContext ctx) {
         this.authenticationManager = authenticationManager;
     	this._userManager = ctx.getBean(IUserManager.class);
+    	this._ownerManager = ctx.getBean(IOwnersManager.class);
+    	this._vetManager = ctx.getBean(IVetsManager.class);
 		this.jwtRepo = ctx.getBean(IJwtRepository.class);
     }
     
@@ -76,11 +85,26 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 claims.setSubject(userName);
             }
         }
+        
         claims.put("scopes", (auth.getAuthorities().stream().map(s -> s.toString()).collect(Collectors.toList())));
         UserEntity user = _userManager.findByUserName(userName);
-        user.setLastLoginTime(new Date());
+        OwnersEntity owner = _ownerManager.findById(user.getId());
+        VetsEntity vet = _vetManager.findById(user.getId());
+        
+        String role=null;
 
+        if(owner !=null)
+        {
+        	role="owner";
+        }
+        if(vet !=null)
+        {
+        	role ="vet";
+        }
+        
+        user.setLastLoginTime(new Date());
         claims.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME));
+        claims.put("role" , role);
         String token = Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET.getBytes())
@@ -90,6 +114,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         JwtEntity jt = new JwtEntity(); 
         jt.setToken("Bearer "+ token); 
         jt.setUserName(userName); 
+        jt.setRole(role);
         
         jwtRepo.save(jt); 
         

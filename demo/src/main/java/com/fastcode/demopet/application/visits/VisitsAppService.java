@@ -43,6 +43,7 @@ public class VisitsAppService implements IVisitsAppService {
 	public CreateVisitsOutput create(CreateVisitsInput input) {
 
 		VisitsEntity visits = mapper.createVisitsInputToVisitsEntity(input);
+		visits.setStatus(Status.CREATED);
 	  	if(input.getPetId()!=null) {
 			PetsEntity foundPets = _petsManager.findById(input.getPetId());
 			if(foundPets!=null) {
@@ -102,6 +103,20 @@ public class VisitsAppService implements IVisitsAppService {
  	   
  	    FindVisitsByIdOutput output=mapper.visitsEntityToFindVisitsByIdOutput(foundVisits); 
 		return output;
+	}
+	
+	public FindVisitsByIdOutput changeStatus(Long visitsId, UpdateVisitStatus input)
+	{
+		VisitsEntity foundVisits = _visitsManager.findById(visitsId);
+		
+		foundVisits.setStatus(input.getStatus());
+		if(input.getVisitNotes() !=null)
+		{
+			foundVisits.setVisitNotes(input.getVisitNotes());
+		}
+
+		return mapper.visitsEntityToFindVisitsByIdOutput(_visitsManager.update(foundVisits));
+		
 	}
     //Pets
 	// ReST API Call - GET /visits/1/pets

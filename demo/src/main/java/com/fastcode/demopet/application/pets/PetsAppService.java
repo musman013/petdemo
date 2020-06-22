@@ -248,7 +248,7 @@ public class PetsAppService implements IPetsAppService {
         }
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
         if(joinCol != null && joinCol.getKey().equals("ownerId")) {
-		    builder.and(pets.owners.id.eq(Long.parseLong(joinCol.getValue())));
+		    builder.and(pets.owners.user.id.eq(Long.parseLong(joinCol.getValue())));
 		}
         }
 		return builder;

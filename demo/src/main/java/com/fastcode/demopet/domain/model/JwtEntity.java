@@ -28,6 +28,11 @@ public class JwtEntity implements Serializable {
     @NotNull 
     @Length(max = 32, message = "Username must be less than 32 characters")
     private String userName; 
+    
+    @Basic 
+    @Column(name = "Role", nullable = true, length = 32) 
+    @Length(max = 32, message = "Role must be less than 32 characters")
+    private String role;
    
     @Basic 
     @Column(name = "Token", nullable = false, length=10485760) 

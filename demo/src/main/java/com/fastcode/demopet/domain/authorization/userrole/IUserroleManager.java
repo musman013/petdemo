@@ -3,6 +3,9 @@ package com.fastcode.demopet.domain.authorization.userrole;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+
 import javax.validation.constraints.Positive;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.UserroleId;
@@ -19,6 +22,8 @@ public interface IUserroleManager {
     UserroleEntity update(UserroleEntity userrole);
 
     UserroleEntity findById(UserroleId userroleId);
+    
+    List<UserroleEntity> findByUserId(Long userId);
 	
     Page<UserroleEntity> findAll(Predicate predicate, Pageable pageable);
    

@@ -17,8 +17,8 @@ public interface IPetsMapper {
    @Mappings({ 
    @Mapping(source = "types.id", target = "typeId"),                   
    @Mapping(source = "types.name", target = "typesDescriptiveField"),                    
-   @Mapping(source = "owners.id", target = "ownerId"),                   
-   @Mapping(source = "owners.firstName", target = "ownersDescriptiveField"),                    
+   @Mapping(source = "owners.user.id", target = "ownerId"),                   
+   @Mapping(source = "owners.user.firstName", target = "ownersDescriptiveField"),                    
    }) 
    CreatePetsOutput petsEntityToCreatePetsOutput(PetsEntity entity);
 
@@ -28,16 +28,16 @@ public interface IPetsMapper {
     @Mappings({ 
     @Mapping(source = "types.id", target = "typeId"),                   
     @Mapping(source = "types.name", target = "typesDescriptiveField"),                    
-    @Mapping(source = "owners.id", target = "ownerId"),                   
-    @Mapping(source = "owners.firstName", target = "ownersDescriptiveField"),                    
+    @Mapping(source = "owners.user.id", target = "ownerId"),                   
+    @Mapping(source = "owners.user.firstName", target = "ownersDescriptiveField"),                    
    }) 
    UpdatePetsOutput petsEntityToUpdatePetsOutput(PetsEntity entity);
 
    @Mappings({ 
    @Mapping(source = "types.id", target = "typeId"),                   
    @Mapping(source = "types.name", target = "typesDescriptiveField"),                    
-   @Mapping(source = "owners.id", target = "ownerId"),                   
-   @Mapping(source = "owners.firstName", target = "ownersDescriptiveField"),                    
+   @Mapping(source = "owners.user.id", target = "ownerId"),                   
+   @Mapping(source = "owners.user.firstName", target = "ownersDescriptiveField"),                    
    }) 
    FindPetsByIdOutput petsEntityToFindPetsByIdOutput(PetsEntity entity);
 
@@ -50,7 +50,7 @@ public interface IPetsMapper {
    GetTypesOutput typesEntityToGetTypesOutput(TypesEntity types, PetsEntity pets);
 
    @Mappings({
-   @Mapping(source = "owners.id", target = "id"),                  
+   @Mapping(source = "owners.user.id", target = "id"),                  
    @Mapping(source = "pets.id", target = "petsId"),
    })
    GetOwnersOutput ownersEntityToGetOwnersOutput(OwnersEntity owners, PetsEntity pets);

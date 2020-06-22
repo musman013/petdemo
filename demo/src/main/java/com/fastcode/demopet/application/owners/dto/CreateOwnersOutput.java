@@ -1,9 +1,6 @@
 package com.fastcode.demopet.application.owners.dto;
 
-import java.util.Date;
-
 import com.fastcode.demopet.application.authorization.user.dto.CreateUserOutput;
-
 import lombok.Getter;
 import lombok.Setter;
 

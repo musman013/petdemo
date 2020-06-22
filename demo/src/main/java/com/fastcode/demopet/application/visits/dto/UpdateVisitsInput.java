@@ -2,7 +2,6 @@ package com.fastcode.demopet.application.visits.dto;
 
 import java.util.Date;
 import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +12,8 @@ public class UpdateVisitsInput {
   	@NotNull(message = "id Should not be null")
   	private Long id;
   	private Date visitDate;
+  	private Status status;
+    private String visitNotes;
   	private Long petId;
   	private Long version;
   

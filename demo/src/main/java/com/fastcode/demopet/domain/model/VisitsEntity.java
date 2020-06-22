@@ -1,7 +1,9 @@
 package com.fastcode.demopet.domain.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
+
+import com.fastcode.demopet.application.visits.dto.Status;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Date;
@@ -18,6 +20,14 @@ public class VisitsEntity extends AbstractEntity {
   	@Basic
   	@Column(name = "description", nullable = true, length =255)
   	private String description;
+  	
+  	@Basic
+  	@Column(name = "visitNotes", nullable = true, length =1024)
+  	private String visitNotes;
+  	
+  	@Basic
+  	@Column(name = "status", nullable = false, length =20)
+  	private Status status;
 
   	@Id
   	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +51,7 @@ public class VisitsEntity extends AbstractEntity {
   	private PetsEntity pets;
   	
  	@Basic
-  	@Column(name = "visitDate", nullable = true)
+  	@Column(name = "visitDate", nullable = false)
   	private Date visitDate;
   	
 

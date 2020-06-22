@@ -2,11 +2,20 @@ package com.fastcode.demopet.application.owners;
 
 import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
+import com.fastcode.demopet.application.authorization.user.dto.UpdateUserInput;
+import com.fastcode.demopet.application.authorization.user.dto.UpdateUserOutput;
+import com.fastcode.demopet.application.authorization.user.dto.UserProfile;
+import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
+import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
 import com.fastcode.demopet.application.owners.dto.*;
 import com.fastcode.demopet.domain.owners.IOwnersManager;
 import com.fastcode.demopet.domain.model.QOwnersEntity;
+import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.authorization.role.IRoleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.commons.search.*;
@@ -31,63 +40,79 @@ import org.apache.commons.lang3.StringUtils;
 @Validated
 public class OwnersAppService implements IOwnersAppService {
 
-    static final int case1=1;
+	static final int case1=1;
 	static final int case2=2;
 	static final int case3=3;
-	
+
 	@Autowired
 	private IOwnersManager _ownersManager;
 
 	@Autowired
 	private IUserManager _userManager;
+	
+	@Autowired
+	private IRoleManager _roleManager;
+	
+	@Autowired 
+	private UserroleAppService _userroleAppService;
 
 	@Autowired
 	private IUserMapper _userMapper;
-	
+
 	@Autowired
 	private IOwnersMapper mapper;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+	@Transactional(propagation = Propagation.REQUIRED)
 	public CreateOwnersOutput create(CreateOwnersInput input) {
 
 		UserEntity user = _userManager.create(_userMapper.createUserInputToUserEntity(input));
-		
+
 		OwnersEntity owners = mapper.createOwnersInputToOwnersEntity(input);
 		owners.setUser(user);
-		
+
 		OwnersEntity createdOwners = _ownersManager.create(owners);
-		return mapper.ownersEntityToCreateOwnersOutput(createdOwners);
+		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners,user);
 	}
 	
+	public void assignOwnerRole(Long userId)
+	{
+		RoleEntity role = _roleManager.findByRoleName("ROLE_Owner");
+		CreateUserroleInput input = new CreateUserroleInput();
+		input.setRoleId(role.getId());
+		input.setUserId(userId);
+		_userroleAppService.create(input);
+	}
+
 	@Transactional(propagation = Propagation.REQUIRED)
 	public UpdateOwnersOutput update(Long  ownersId, UpdateOwnersInput input) {
 
+		UserEntity user = _userManager.update(_userMapper.updateUserInputToUserEntity(input));
 		OwnersEntity owners = mapper.updateOwnersInputToOwnersEntity(input);
-		
 		OwnersEntity updatedOwners = _ownersManager.update(owners);
-		
-		return mapper.ownersEntityToUpdateOwnersOutput(updatedOwners);
+
+		return mapper.ownersEntityAndUserEntityToUpdateOwnersOutput(updatedOwners,user);
 	}
-	
+
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void delete(Long ownersId) {
 
-		OwnersEntity existing = _ownersManager.findById(ownersId) ; 
-		
+		OwnersEntity existing = _ownersManager.findById(ownersId); 
 		_ownersManager.delete(existing);
+		_userroleAppService.deleteByUserId(existing.getUser().getId());
+		_userManager.delete(existing.getUser());
 	}
-	
+
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public FindOwnersByIdOutput findById(Long ownersId) {
 
 		OwnersEntity foundOwners = _ownersManager.findById(ownersId);
 		if (foundOwners == null)  
 			return null ; 
- 	   
- 	    FindOwnersByIdOutput output=mapper.ownersEntityToFindOwnersByIdOutput(foundOwners); 
+
+		FindOwnersByIdOutput output=mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(foundOwners,foundOwners.getUser()); 
 		return output;
 	}
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<FindOwnersByIdOutput> find(SearchCriteria search, Pageable pageable) throws Exception  {
 
 		Page<OwnersEntity> foundOwners = _ownersManager.findAll(search(search), pageable);
@@ -96,11 +121,27 @@ public class OwnersAppService implements IOwnersAppService {
 		List<FindOwnersByIdOutput> output = new ArrayList<>();
 
 		while (ownersIterator.hasNext()) {
-			output.add(mapper.ownersEntityToFindOwnersByIdOutput(ownersIterator.next()));
+			OwnersEntity owner = ownersIterator.next();
+			output.add(mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(owner, owner.getUser()));
 		}
 		return output;
 	}
-	
+
+	public OwnerProfile getProfile(FindOwnersByIdOutput owner)
+	{
+		return mapper.findOwnersByIdOutputToOwnerProfile(owner);
+	}
+
+	public OwnerProfile updateOwnerProfile(FindUserWithAllFieldsByIdOutput user, OwnerProfile ownerProfile)
+	{
+		UpdateOwnersInput ownerInput = mapper.findUserWithAllFieldsByIdOutputAndOwnerProfileToUpdateOwnerInput(user, ownerProfile);
+		ownerInput.setVersion(user.getVersion());
+		UpdateOwnersOutput output = update(user.getId(),ownerInput);
+
+		return mapper.updateOwnerOutputToOwnerProfile(output);
+	}
+
+
 	public BooleanBuilder search(SearchCriteria search) throws Exception {
 
 		QOwnersEntity owners= QOwnersEntity.ownersEntity;
@@ -116,29 +157,27 @@ public class OwnersAppService implements IOwnersAppService {
 		}
 		return null;
 	}
-	
+
 	public void checkProperties(List<String> list) throws Exception  {
 		for (int i = 0; i < list.size(); i++) {
 			if(!(
-				list.get(i).replace("%20","").trim().equals("address") ||
-				list.get(i).replace("%20","").trim().equals("city") ||
-				list.get(i).replace("%20","").trim().equals("firstName") ||
-				list.get(i).replace("%20","").trim().equals("id") ||
-				list.get(i).replace("%20","").trim().equals("lastName") ||
-				list.get(i).replace("%20","").trim().equals("pets") ||
-				list.get(i).replace("%20","").trim().equals("telephone")
-			)) 
+					list.get(i).replace("%20","").trim().equals("address") ||
+					list.get(i).replace("%20","").trim().equals("city") ||
+					list.get(i).replace("%20","").trim().equals("userId") ||
+					list.get(i).replace("%20","").trim().equals("id") ||
+					list.get(i).replace("%20","").trim().equals("pets")
+					)) 
 			{
-			 throw new Exception("Wrong URL Format: Property " + list.get(i) + " not found!" );
+				throw new Exception("Wrong URL Format: Property " + list.get(i) + " not found!" );
 			}
 		}
 	}
-	
+
 	public BooleanBuilder searchKeyValuePair(QOwnersEntity owners, Map<String,SearchFields> map,Map<String,String> joinColumns) {
 		BooleanBuilder builder = new BooleanBuilder();
-        
+
 		for (Map.Entry<String, SearchFields> details : map.entrySet()) {
-            if(details.getKey().replace("%20","").trim().equals("address")) {
+			if(details.getKey().replace("%20","").trim().equals("address")) {
 				if(details.getValue().getOperator().equals("contains"))
 					builder.and(owners.address.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
 				else if(details.getValue().getOperator().equals("equals"))
@@ -146,7 +185,7 @@ public class OwnersAppService implements IOwnersAppService {
 				else if(details.getValue().getOperator().equals("notEqual"))
 					builder.and(owners.address.ne(details.getValue().getSearchValue()));
 			}
-            if(details.getKey().replace("%20","").trim().equals("city")) {
+			if(details.getKey().replace("%20","").trim().equals("city")) {
 				if(details.getValue().getOperator().equals("contains"))
 					builder.and(owners.city.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
 				else if(details.getValue().getOperator().equals("equals"))
@@ -154,43 +193,49 @@ public class OwnersAppService implements IOwnersAppService {
 				else if(details.getValue().getOperator().equals("notEqual"))
 					builder.and(owners.city.ne(details.getValue().getSearchValue()));
 			}
-            if(details.getKey().replace("%20","").trim().equals("firstName")) {
-				if(details.getValue().getOperator().equals("contains"))
-					builder.and(owners.firstName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-				else if(details.getValue().getOperator().equals("equals"))
-					builder.and(owners.firstName.eq(details.getValue().getSearchValue()));
-				else if(details.getValue().getOperator().equals("notEqual"))
-					builder.and(owners.firstName.ne(details.getValue().getSearchValue()));
-			}
-            if(details.getKey().replace("%20","").trim().equals("lastName")) {
-				if(details.getValue().getOperator().equals("contains"))
-					builder.and(owners.lastName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-				else if(details.getValue().getOperator().equals("equals"))
-					builder.and(owners.lastName.eq(details.getValue().getSearchValue()));
-				else if(details.getValue().getOperator().equals("notEqual"))
-					builder.and(owners.lastName.ne(details.getValue().getSearchValue()));
-			}
-            if(details.getKey().replace("%20","").trim().equals("telephone")) {
-				if(details.getValue().getOperator().equals("contains"))
-					builder.and(owners.telephone.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-				else if(details.getValue().getOperator().equals("equals"))
-					builder.and(owners.telephone.eq(details.getValue().getSearchValue()));
-				else if(details.getValue().getOperator().equals("notEqual"))
-					builder.and(owners.telephone.ne(details.getValue().getSearchValue()));
+			//            if(details.getKey().replace("%20","").trim().equals("firstName")) {
+			//				if(details.getValue().getOperator().equals("contains"))
+			//					builder.and(owners.firstName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
+			//				else if(details.getValue().getOperator().equals("equals"))
+			//					builder.and(owners.firstName.eq(details.getValue().getSearchValue()));
+			//				else if(details.getValue().getOperator().equals("notEqual"))
+			//					builder.and(owners.firstName.ne(details.getValue().getSearchValue()));
+			//			}
+			//            if(details.getKey().replace("%20","").trim().equals("lastName")) {
+			//				if(details.getValue().getOperator().equals("contains"))
+			//					builder.and(owners.lastName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
+			//				else if(details.getValue().getOperator().equals("equals"))
+			//					builder.and(owners.lastName.eq(details.getValue().getSearchValue()));
+			//				else if(details.getValue().getOperator().equals("notEqual"))
+			//					builder.and(owners.lastName.ne(details.getValue().getSearchValue()));
+			//			}
+			//            if(details.getKey().replace("%20","").trim().equals("telephone")) {
+			//				if(details.getValue().getOperator().equals("contains"))
+			//					builder.and(owners.telephone.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
+			//				else if(details.getValue().getOperator().equals("equals"))
+			//					builder.and(owners.telephone.eq(details.getValue().getSearchValue()));
+			//				else if(details.getValue().getOperator().equals("notEqual"))
+			//					builder.and(owners.telephone.ne(details.getValue().getSearchValue()));
+			//			}
+
+			for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
+				if(joinCol != null && joinCol.getKey().equals("userId")) {
+					builder.and(owners.user.id.eq(Long.parseLong(joinCol.getValue())));
+				}
 			}
 		}
 		return builder;
 	}
-	
-	
+
+
 	public Map<String,String> parsePetsJoinColumn(String keysString) {
-		
+
 		Map<String,String> joinColumnMap = new HashMap<String,String>();
 		joinColumnMap.put("ownerId", keysString);
 		return joinColumnMap;
 	}
-    
-	
+
+
 }
 
 
