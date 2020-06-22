@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute,Router} from "@angular/router";
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { ActivatedRoute, Router } from "@angular/router";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 
@@ -12,13 +12,13 @@ import { BaseDetailsComponent, Globals, PickerDialogService, ErrorService } from
 import { GlobalPermissionService } from '../core/global-permission.service';
 
 @Component({
-  selector: 'app-owners-details',
-  templateUrl: './owners-details.component.html',
-  styleUrls: ['./owners-details.component.scss']
+	selector: 'app-owners-details',
+	templateUrl: './owners-details.component.html',
+	styleUrls: ['./owners-details.component.scss']
 })
 export class OwnersDetailsComponent extends BaseDetailsComponent<IOwners> implements OnInit {
-	title:string='Owners';
-	parentUrl:string='owners';
+	title: string = 'Owners';
+	parentUrl: string = 'owners';
 	//roles: IRole[];  
 	constructor(
 		public formBuilder: FormBuilder,
@@ -32,37 +32,46 @@ export class OwnersDetailsComponent extends BaseDetailsComponent<IOwners> implem
 		public globalPermissionService: GlobalPermissionService,
 	) {
 		super(formBuilder, router, route, dialog, global, pickerDialogService, dataService, errorService);
-  }
+	}
 
 	ngOnInit() {
 		this.entityName = 'Owners';
 		this.setAssociations();
 		super.ngOnInit();
 		this.setForm();
-    this.getItem();
-    this.setPickerSearchListener();
-  }
-  
-  setForm(){
-    this.itemForm = this.formBuilder.group({
-      address: [''],
-      city: [''],
-      id: [{value: '', disabled: true}, Validators.required],
-      
-    });
-      
-  }
-  
-  onItemFetched(item: IOwners) {
-    this.item = item;
+		this.getItem();
+		this.setPickerSearchListener();
+	}
+
+	setForm() {
+		this.itemForm = this.formBuilder.group({
+			address: [''],
+			city: [''],
+			id: [{ value: '', disabled: true }, Validators.required],
+
+			emailAddress: ['', Validators.required],
+			firstName: ['', Validators.required],
+			isActive: [false],
+			lastName: ['', Validators.required],
+			password: ['', Validators.required],
+			confirmPassword: ['', Validators.required],
+			phoneNumber: [''],
+			userName: ['', Validators.required],
+
+		});
+
+	}
+
+	onItemFetched(item: IOwners) {
+		this.item = item;
 		this.itemForm.patchValue(item);
-  }
-  
-	setAssociations(){
-  	
+	}
+
+	setAssociations() {
+
 		this.associations = [
 		];
-		
+
 		this.childAssociations = this.associations.filter(association => {
 			return (association.isParent);
 		});

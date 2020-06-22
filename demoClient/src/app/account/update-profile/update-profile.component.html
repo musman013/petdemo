@@ -35,15 +35,15 @@
             </mat-form-field>
 
             <mat-form-field>
-              <input formControlName="githubUsername" matInput placeholder="Github username">
-            </mat-form-field>
-
-            <mat-form-field>
-              <input formControlName="gitlabUsername" matInput placeholder="Gitlab username">
-            </mat-form-field>
-
-            <mat-form-field>
               <input formControlName="phoneNumber" matInput placeholder="Phone">
+            </mat-form-field>
+
+            <mat-form-field *ngIf="role == ITokenRole.owner">
+              <input formControlName="address" matInput placeholder="Address">
+            </mat-form-field>
+
+            <mat-form-field *ngIf="role == ITokenRole.owner">
+              <input formControlName="city" matInput placeholder="City">
             </mat-form-field>
 
             <mat-form-field *ngFor="let association of parentAssociations">

@@ -8,7 +8,7 @@ import { of as observableOf, Observable } from 'rxjs';
 import { ErrorService, PickerDialogService, ISearchField, operatorType, Globals } from 'projects/fast-code-core/src/public_api';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
-import { UserService, IUser } from '../user/index';
+import { UserService, IUser } from 'src/app/admin/user-management/user/index';
 
 enum listProcessingType {
   Replace = "Replace",

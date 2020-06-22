@@ -48,6 +48,7 @@ import { SpecialtiesListComponent, SpecialtiesDetailsComponent, SpecialtiesNewCo
 import { VetsListComponent, VetsDetailsComponent, VetsNewComponent } from './vets/index';
 import { OwnersListComponent, OwnersDetailsComponent, OwnersNewComponent } from './owners/index';
 import { VetSpecialtiesListComponent, VetSpecialtiesDetailsComponent, VetSpecialtiesNewComponent } from './vet-specialties/index';
+import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
@@ -84,6 +85,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 		VetSpecialtiesListComponent,
 		VetSpecialtiesDetailsComponent,
 		VetSpecialtiesNewComponent,
+		CompleteVisitComponent,
   ],
   imports: [
     BrowserModule,

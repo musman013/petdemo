@@ -1,0 +1,24 @@
+<div class="create-item">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{title}}</mat-card-title>
+            <a name="cancel" href="javascript:void(0)" (click)="onCancel()" class="cancle-btn"><i
+                    class="material-icons">add_circle</i></a>
+        </mat-card-header>
+        <mat-card-content>
+            <form [formGroup]="itemForm" #itemNgForm="ngForm" (ngSubmit)="onSubmit()" class="item-form">
+
+                <mat-form-field>
+                    <input formControlName="visitNotes" matInput placeholder="Enter visit notes">
+                </mat-form-field>
+                <mat-form-field>
+                    <input formControlName="invoiceAmount" type="number" matInput placeholder="Enter invoice amount">
+                </mat-form-field>
+            </form>
+        </mat-card-content>
+        <mat-card-actions class="fc-text-right">
+            <button name="save" mat-raised-button color="primary" (click)="itemNgForm.ngSubmit.emit()"
+                [disabled]="!itemForm.valid">{{'GENERAL.ACTIONS.SAVE' | translate}}</button>
+        </mat-card-actions>
+    </mat-card>
+</div>
