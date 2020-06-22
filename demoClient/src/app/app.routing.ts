@@ -19,6 +19,7 @@ import { SpecialtiesListComponent, SpecialtiesDetailsComponent, SpecialtiesNewCo
 import { VetsListComponent, VetsDetailsComponent, VetsNewComponent } from './vets/index';
 import { OwnersListComponent, OwnersDetailsComponent, OwnersNewComponent } from './owners/index';
 import { VetSpecialtiesListComponent, VetSpecialtiesDetailsComponent, VetSpecialtiesNewComponent } from './vet-specialties/index';
+import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
 
 const routes: Routes = [
 	
@@ -41,6 +42,7 @@ const routes: Routes = [
 	{ path: 'visits', component: VisitsListComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ]},
 	{ path: 'visits/new', component: VisitsNewComponent, canActivate: [ AuthGuard ] },
 	{ path: 'visits/:id', component: VisitsDetailsComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ] },
+	{ path: 'visits/complete-visit', component: CompleteVisitComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ] },
 	{ path: 'types', component: TypesListComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ]},
 	{ path: 'types/new', component: TypesNewComponent, canActivate: [ AuthGuard ] },
 	{ path: 'types/:id', component: TypesDetailsComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ] },

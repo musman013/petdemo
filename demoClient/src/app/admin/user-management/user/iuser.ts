@@ -1,4 +1,4 @@
-export interface IUser {  
+export interface IUser {
 
       accessFailedCount?: number;
       authenticationSource?: string;
@@ -19,4 +19,4 @@ export interface IUser {
       profilePictureId?: number;
       twoFactorEnabled?: boolean;
       userName: string;
-			  }
+}

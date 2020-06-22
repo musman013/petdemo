@@ -2,8 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { OwnersService } from './owners.service';
 import { IOwners } from './iowners';
 
-import { ActivatedRoute,Router} from "@angular/router";
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { ActivatedRoute, Router } from "@angular/router";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { Globals, BaseNewComponent, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -11,13 +11,13 @@ import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dial
 import { GlobalPermissionService } from '../core/global-permission.service';
 
 @Component({
-  selector: 'app-owners-new',
-  templateUrl: './owners-new.component.html',
-  styleUrls: ['./owners-new.component.scss']
+	selector: 'app-owners-new',
+	templateUrl: './owners-new.component.html',
+	styleUrls: ['./owners-new.component.scss']
 })
 export class OwnersNewComponent extends BaseNewComponent<IOwners> implements OnInit {
-  
-    title:string = "New Owners";
+
+	title: string = "New Owners";
 	constructor(
 		public formBuilder: FormBuilder,
 		public router: Router,
@@ -33,31 +33,40 @@ export class OwnersNewComponent extends BaseNewComponent<IOwners> implements OnI
 	) {
 		super(formBuilder, router, route, dialog, dialogRef, data, global, pickerDialogService, dataService, errorService);
 	}
- 
+
 	ngOnInit() {
 		this.entityName = 'Owners';
 		this.setAssociations();
 		super.ngOnInit();
-    this.setForm();
+		this.setForm();
 		this.checkPassedData();
 		this.setPickerSearchListener();
-  }
- 		
-	setForm(){
- 		this.itemForm = this.formBuilder.group({
-      address: [''],
-      city: [''],
-    });
 	}
-	 
-	setAssociations(){
-  	
+
+	setForm() {
+		this.itemForm = this.formBuilder.group({
+			address: [''],
+			city: [''],
+
+			emailAddress: ['', Validators.required],
+			firstName: ['', Validators.required],
+			isActive: [false],
+			lastName: ['', Validators.required],
+			password: ['', Validators.required],
+			confirmPassword: ['', Validators.required],
+			phoneNumber: [''],
+			userName: ['', Validators.required],
+		});
+	}
+
+	setAssociations() {
+
 		this.associations = [
 		];
 		this.parentAssociations = this.associations.filter(association => {
 			return (!association.isParent);
 		});
 
-	}  
-    
+	}
+
 }

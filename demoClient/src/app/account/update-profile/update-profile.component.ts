@@ -1,11 +1,14 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 
-import { ErrorService, Globals } from 'projects/fast-code-core/src/public_api';
+import { ErrorService, Globals, ITokenRole } from 'projects/fast-code-core/src/public_api';
 
 import { UserService, IUser } from 'src/app/admin/user-management/user/index';
 import { first } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { OwnersService } from 'src/app/owners';
+import { VetsService } from 'src/app/vets';
+import { AuthenticationService } from 'src/app/core/authentication.service';
 
 @Component({
 	selector: 'app-update-profile',
@@ -19,6 +22,7 @@ export class UpdateProfileComponent implements OnInit {
 	user: any;
 	submitted: boolean = false;
 	loading: boolean = false;
+	role: ITokenRole; //not same as role entity
 
 	/** 
    * Guard against browser refresh, close, etc.
@@ -38,9 +42,13 @@ export class UpdateProfileComponent implements OnInit {
 		public formBuilder: FormBuilder,
 		public userService: UserService,
 		public errorService: ErrorService,
+		public ownersService: OwnersService,
+		public vetsService: VetsService,
+		public authenticationService: AuthenticationService,
 	) { }
 
 	ngOnInit() {
+		this.role = this.authenticationService.decodeToken().role;
 		this.setForm();
 		this.getItem();
 	}
@@ -52,9 +60,13 @@ export class UpdateProfileComponent implements OnInit {
 			lastName: ['', Validators.required],
 			phoneNumber: [''],
 			userName: ['', Validators.required],
-			githubUsername: [''],
-			gitlabUsername: [''],
+			address: [''],
+			city: [''],
 		});
+		if( this.role == ITokenRole.owner){
+			this.userForm.addControl("address", new FormControl(''));
+			this.userForm.addControl("city", new FormControl(''));
+		}
 	}
 
 	onItemFetched(item: IUser) {
@@ -63,7 +75,17 @@ export class UpdateProfileComponent implements OnInit {
 	}
 
 	getItem() {
-		this.userService.getProfile().subscribe(x => this.onItemFetched(x), (error) => {
+		let getProfileObs: Observable<any>; 
+		if(this.role == ITokenRole.owner){
+			getProfileObs = this.ownersService.getProfile();
+		}
+		else if(this.role == ITokenRole.vet){
+			getProfileObs = this.vetsService.getProfile();
+		}
+		else{
+			getProfileObs = this.userService.getProfile();
+		}
+		getProfileObs.subscribe(x => this.onItemFetched(x), (error) => {
 			this.errorService.showError('An error occured while fetching details');
 		});
 	}
@@ -79,7 +101,17 @@ export class UpdateProfileComponent implements OnInit {
 
 		this.submitted = true;
 		this.loading = true;
-		this.userService.updateProfile(this.userForm.getRawValue())
+		let updateProfileFunction: any; 
+		if(this.role == ITokenRole.owner){
+			updateProfileFunction = this.ownersService.updateProfile;
+		}
+		else if(this.role == ITokenRole.vet){
+			updateProfileFunction = this.vetsService.updateProfile;
+		}
+		else{
+			updateProfileFunction = this.userService.updateProfile;
+		}
+		updateProfileFunction(this.userForm.getRawValue())
 			.pipe(first())
 			.subscribe(
 				data => {

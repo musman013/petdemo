@@ -60,6 +60,17 @@
   			<ng-container matColumnDef="actions">
   				<mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
   				<mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
+			<button name="complete" mat-button aria-label="complete visit action with a heart icon"
+			 (click)="completeVisit(item)">
+              <mat-label>Complete</mat-label>
+            </button>
+            <button name="cancel" mat-button aria-label="cancel visit action"
+               (click)="changeStatus('cancel')">
+              <mat-label>Cancel</mat-label>
+            </button>
+            <button name="confirm" mat-button aria-label="confirm visit action" (click)="changeStatus('confirm')">
+              <mat-label>Confirm</mat-label>
+            </button>
             <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"
               matTooltip="('GENERAL.ACTIONS.OPEN-DETAILS' | translate)" (click)="openDetails(item)">
               <mat-icon>open_in_new</mat-icon>

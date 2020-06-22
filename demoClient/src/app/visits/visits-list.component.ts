@@ -5,11 +5,12 @@ import { IVisits } from './ivisits';
 import { VisitsService } from './visits.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VisitsNewComponent } from './visits-new.component';
-import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';
+import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService, ConfirmDialogComponent } from 'projects/fast-code-core/src/public_api';
 
 import { PetsService } from '../pets/pets.service';
 import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
+import { CompleteVisitComponent } from './complete-visit/complete-visit.component';
 
 @Component({
   selector: 'app-visits-list',
@@ -19,6 +20,7 @@ import { GlobalPermissionService } from '../core/global-permission.service';
 export class VisitsListComponent extends BaseListComponent<IVisits> implements OnInit {
 
 	title:string = "Visits";
+	completeVisitRef: MatDialogRef<CompleteVisitComponent>;
 	constructor(
 		public router: Router,
 		public route: ActivatedRoute,
@@ -134,6 +136,30 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
   	}
 	addNew() {
 		super.addNew(VisitsNewComponent);
+	}
+
+	completeVisit(){
+		this.completeVisitRef = this.dialog.open(CompleteVisitComponent, {
+			panelClass: "fc-modal-dialog"
+		});
+		this.completeVisitRef.afterClosed().subscribe(res => {
+			if(res){
+				console.log(res);
+			}
+		})
+	}
+
+	changeStatus(status){
+		this.dialog.open(ConfirmDialogComponent, {
+			data: {
+				confirmationType: "confirm"
+			}
+		}).afterClosed().subscribe(res => {
+			if(res){
+				console.log(res);
+				// this.dataService.changeStatus(status);
+			}
+		});
 	}
   
 }
