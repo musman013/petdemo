@@ -20,50 +20,43 @@ import { FastCodeCoreModule } from 'projects/fast-code-core/src/public_api';
 import { environment } from 'src/environments/environment';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient);
+	return new TranslateHttpLoader(httpClient);
 }
 
 const entities = [
-		RolepermissionListComponent,
-		RolepermissionDetailsComponent,
-		RolepermissionNewComponent,
-		RoleListComponent,
-		RoleDetailsComponent,
-		RoleNewComponent,
-		UserpermissionListComponent,
-		UserpermissionDetailsComponent,
-		UserpermissionNewComponent,
-		PermissionListComponent,
-		PermissionDetailsComponent,
-		PermissionNewComponent,
-		UserroleListComponent,
-		UserroleDetailsComponent,
-		UserroleNewComponent,
-		UserListComponent,
-		UserDetailsComponent,
-		UserNewComponent,
-		EntityHistoryComponent,
-		ApiHistoryComponent,
-    ApiHistoryDetailsComponent,
-  ]
+	RolepermissionListComponent,
+	RolepermissionDetailsComponent,
+	RolepermissionNewComponent,
+	RoleListComponent,
+	RoleDetailsComponent,
+	RoleNewComponent,
+	UserpermissionListComponent,
+	UserpermissionDetailsComponent,
+	UserpermissionNewComponent,
+	PermissionListComponent,
+	PermissionDetailsComponent,
+	PermissionNewComponent,
+	UserroleListComponent,
+	UserroleDetailsComponent,
+	UserroleNewComponent,
+	UserListComponent,
+	UserDetailsComponent,
+	UserNewComponent,
+	EntityHistoryComponent,
+	ApiHistoryComponent,
+	ApiHistoryDetailsComponent,
+]
 @NgModule({
 	declarations: entities,
 	exports: entities,
-  imports: [
-  	routingModule,
-    SharedModule,
-    FastCodeCoreModule.forRoot({
-      apiUrl: environment.apiUrl
-    }),
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    }),
+	imports: [
+		routingModule,
+		SharedModule,
+		FastCodeCoreModule.forRoot({
+			apiUrl: environment.apiUrl
+		}),
 
-  ]
+	]
 })
 export class AdminModule {
 }

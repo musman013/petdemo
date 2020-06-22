@@ -37,13 +37,13 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     FastCodeCoreModule.forRoot({
       apiUrl: environment.apiUrl
     }),
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    })
+    // TranslateModule.forChild({
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: HttpLoaderFactory,
+    //     deps: [HttpClient]
+    //   }
+    // })
   ]
 })
 export class AccountModule { }
