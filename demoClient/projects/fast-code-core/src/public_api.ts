@@ -29,3 +29,4 @@ export * from './lib/common/core/ilibrary-root-confg';
 export * from './lib/common/core/can-deactivate.guard';
 export * from './lib/common/core/error.service';
 export * from './lib/fast-code-core-translate-ui.service';
+export * from './lib/common/utils/validators.service';

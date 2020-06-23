@@ -1,4 +1,4 @@
-<div class="list-container">
+<div class="list-container" id="list-container">
 
   <div class="top-breadcrumb">
     <h1 class="template-title">{{title}}</h1>
@@ -6,8 +6,8 @@
       <div class="col-sm-12">
         <ul class="breadcrumb">
           <li><a [routerLink]="['/dashboard']"><i class="material-icons">
-                home
-              </i> &nbsp;Dashboard</a></li>
+            home
+          </i> &nbsp;Dashboard</a></li>
           <li><a [routerLink]="['/email/emailtemplates']">Email Templates</a></li>
           <li><a>Create Email</a></li>
         </ul>
@@ -16,59 +16,105 @@
     </div>
   </div>
 
-  <mat-card *ngIf="!editorView">
+  <mat-card *ngIf="!editorView ">
     <mat-card-content>
       <form [formGroup]="formGroup" #attributeForm="ngForm" (ngSubmit)="saveEmail()" class="attribute-form">
         <mat-form-field>
-          <input formControlName="templateName" matInput
-            placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TEMPLATE-NAME' | translate}}">
+          <input formControlName="templateName" matInput placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TEMPLATE-NAME' | translate}}">
           <mat-error *ngIf="!formGroup.get('templateName').valid && formGroup.get('templateName').touched">
             {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input formControlName="category" matInput
-            placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.CATEGORY' | translate}}">
+          <input type="text" #category placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.CATEGORY' | translate}}" aria-label="Number"
+            matInput formControlName="category" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of categories | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
           <mat-error *ngIf="!formGroup.get('category').valid && formGroup.get('category').touched">
-            {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}
-          </mat-error>
-        </mat-form-field>
-        <mat-form-field>
-          <input formControlName="to" matInput placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TO' | translate}}">
-          <mat-error *ngIf="!formGroup.get('to').valid && formGroup.get('to').touched">
             {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input formControlName="subject" matInput
-            placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.SUBJECT' | translate}}">
-          <mat-error *ngIf="!formGroup.get('subject').valid && formGroup.get('subject').touched">
-            {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}
-          </mat-error>
+          <table width="100%">
+            <tr width="100%">
+              <td width="95%">
+                <input formControlName="to" matInput id="to3" placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TO' | translate}}" (keyup)="onKeyUp($event, 'to3-variable')">
+                <mat-error *ngIf="!formGroup.get('to').valid && formGroup.get('to').touched">
+                  {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+
+                <div id="to3-variable" class="dropdown-content">
+                  <div *ngFor="let variable of _ngb.MergeTags" (click)="insertVariable($event, 'to3', 'to3-variable')"> {{variable}}</div>
+                </div>
+              </td>
+              <td>
+                <button color="accent" (click)="showHideVariables('to3-variable');">Merge Fields</button>
+              </td>
+            </tr>
+          </table>
         </mat-form-field>
-        <!-- <mat-form-field>
-          <input formControlName="attachmentpath" matInput
-            placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.ATTACHMENT-PATH' | translate}}">
-        </mat-form-field> -->
+        <mat-form-field>
+          <table width="100%">
+            <tr width="100%">
+              <td width="95%">
+                <input formControlName="subject" matInput id="subject3" placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.SUBJECT' | translate}}"
+                  (keyup)="onKeyUp($event, 'subject3-variable')">
+                <mat-error *ngIf="!formGroup.get('subject').valid && formGroup.get('subject').touched">
+                  {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}
+                </mat-error>
+
+                <div id="subject3-variable" class="dropdown-content">
+                  <div *ngFor="let variable of _ngb.MergeTags" (click)="insertVariable($event, 'subject3', 'subject3-variable')"> {{variable}}</div>
+                </div>
+              </td>
+              <td>
+                <button color="accent" (click)="showHideVariables('subject3-variable');">Merge Fields</button>
+              </td>
+            </tr>
+          </table>
+        </mat-form-field>
+        <div>
+          <lib-email-attachment [files]="files" (onAttachmentAdd)="onAttachmentAdd($event)"></lib-email-attachment>
+        </div>
+
+        <mat-form-field>
+          <textarea formControlName="description" matInput placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.DESCRIPTION' | translate}}"></textarea>
+          <mat-error *ngIf="!formGroup.get('description').valid && formGroup.get('description').touched">
+            {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+        </mat-form-field>
+
         <mat-checkbox formControlName="active">{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.ACTIVE' | translate}}
         </mat-checkbox>
       </form>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="accent"
-        (click)="saveEmail()">{{'EMAIL-EDITOR.SAVE-EMAIL-BUTTON-TEXT' | translate}}</button>
+      <button mat-raised-button color="accent" (click)="saveNextClick()">{{'EMAIL-EDITOR.SAVE-EMAIL-BUTTON-TEXT' | translate}}</button>
 
     </mat-card-actions>
   </mat-card>
-
+  <div>
+    <mat-progress-bar *ngIf="inProgress" mode="buffer"></mat-progress-bar>
+  </div>
   <mat-card>
-    <ip-email-builder (onEmailTemplateSave)='onEmailTemplateSave($event)' style="height: calc(100% - 64px)"
-      *ngIf="editorView">
+    <ip-email-builder style="height: calc(100% - 64px)" *ngIf="editorView">
+
       <div class="top-actions">
-        <button mat-raised-button (click)="sendTestMail()" [disabled]="isLoading | async"
-          color="accent">{{'EMAIL-EDITOR.SEND-TEST-EMAIL-BUTTON-TEXT' | translate}}</button>
+        <!-- <div id="subject4-variable" class="dropdown-content">
+          <div *ngFor="let variable of _ngb.MergeTags" (click)="insertVariable($event, 'subject3', 'subject4-variable')"> {{variable}}</div>
+        </div> -->
+
+        <button mat-button (click)="openEmailTemplate()" style="margin-right: 5px;" color="primary" >{{'EMAIL-EDITOR.TEMPLATE-ATTRIBUTE-TITLE' | translate}}</button>
+
+         <button mat-button (click)="resetTemplate();" style="margin-right: 5px;" [disabled]="isLoading | async" color="primary">{{'EMAIL-EDITOR.RESET-BUTTON-TEXT' | translate}}</button>
+
+         <button mat-button (click)="sendTestMail()" style="margin-right: 5px;" [disabled]="isLoading | async" color="primary">{{'EMAIL-EDITOR.SEND-TEST-EMAIL-BUTTON-TEXT' | translate}}</button>
       </div>
+
+
       <div class="top-content">
         <mat-card>
-          <mat-expansion-panel>
+
+          <!-- <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 {{'EMAIL-EDITOR.TEMPLATE-ATTRIBUTE-TITLE' | translate}}
@@ -76,41 +122,73 @@
             </mat-expansion-panel-header>
             <form class="template-form" [formGroup]="formGroup" #ngForm="ngForm" (ngSubmit)="saveEmail()">
               <mat-form-field>
-                <input formControlName="templateName" matInput
-                  placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TEMPLATE-NAME' | translate}}">
+                <input formControlName="templateName" matInput placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TEMPLATE-NAME' | translate}}">
                 <mat-error *ngIf="!formGroup.get('templateName').valid && formGroup.get('templateName').touched">
                   {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
               </mat-form-field>
               <mat-form-field>
-                <input formControlName="category" matInput
-                  placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.CATEGORY' | translate}}">
+                <input type="text" #category placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.CATEGORY' | translate}}" aria-label="Number"
+                  matInput formControlName="category" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of categories | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
                 <mat-error *ngIf="!formGroup.get('category').valid && formGroup.get('category').touched">
                   {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
               </mat-form-field>
               <mat-form-field>
-                <input formControlName="to" matInput
-                  placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TO' | translate}}">
-                <mat-error *ngIf="!formGroup.get('to').valid && formGroup.get('to').touched">
-                  {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}
-                </mat-error>
+                <table width="100%">
+                  <tr width="100%">
+                    <td width="95%">
+                      <input formControlName="to" matInput id="to3" placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.TO' | translate}}" (keydown)="onKeyUp($event, 'to3-variable')">
+                      <mat-error *ngIf="!formGroup.get('to').valid && formGroup.get('to').touched">
+                        {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+
+                      <div id="to3-variable" class="dropdown-content">
+                        <div *ngFor="let variable of _ngb.MergeTags" (click)="insertVariable($event, 'to3', 'to3-variable')"> {{variable}}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <button color="accent" (click)="showHideVariables('to3-variable');">Merge Fields</button>
+                    </td>
+                  </tr>
+                </table>
               </mat-form-field>
               <mat-form-field>
-                <input formControlName="subject" matInput
-                  placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.SUBJECT' | translate}}">
-                <mat-error *ngIf="!formGroup.get('subject').valid && formGroup.get('subject').touched">
-                  {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}
-                </mat-error>
+                <table width="100%">
+                  <tr width="100%">
+                    <td width="95%">
+                      <input formControlName="subject" matInput id="subject3" placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.SUBJECT' | translate}}"
+                        (keyup)="onKeyUp($event, 'subject3-variable')">
+                      <mat-error *ngIf="!formGroup.get('subject').valid && formGroup.get('subject').touched">
+                        {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}
+                      </mat-error>
+
+                      <div id="subject3-variable" class="dropdown-content">
+                        <div *ngFor="let variable of _ngb.MergeTags" (click)="insertVariable($event, 'subject3', 'subject3-variable')"> {{variable}}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <button color="accent" (click)="showHideVariables('subject3-variable');">Merge Fields</button>
+                    </td>
+                  </tr>
+                </table>
               </mat-form-field>
-              <!-- <mat-form-field>
-                <input formControlName="attachmentpath" matInput
-                  placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.ATTACHMENT-PATH' | translate}}">
-              </mat-form-field> -->
+              <div>
+                <lib-email-attachment [files]="files" (onAttachmentAdd)="onAttachmentAdd($event)"></lib-email-attachment>
+              </div>
+              <mat-form-field>
+                <textarea formControlName="description" matInput placeholder="{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.DESCRIPTION' | translate}}"></textarea>
+                <mat-error *ngIf="!formGroup.get('description').valid && formGroup.get('description').touched">
+                  {{'EMAIL-GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
+              </mat-form-field>
               <mat-checkbox formControlName="active">{{'EMAIL-EDITOR.EMAIL-TEMPLATE.FIELDS.ACTIVE' | translate}}
               </mat-checkbox>
 
 
             </form>
-          </mat-expansion-panel>
+          </mat-expansion-panel> -->
 
         </mat-card>
       </div>
@@ -118,7 +196,7 @@
       <div class="after-structure-blocks"></div>
     </ip-email-builder>
     <mat-card-actions class="fc-text-right">
-      <button mat-raised-button (click)="saveEmail()" color="primary" [hidden]="!editorView"> Save </button>
+      <button mat-raised-button (click)="saveEmail()" color="primary" [hidden]="!editorView"> Save</button>
     </mat-card-actions>
   </mat-card>
 </div>

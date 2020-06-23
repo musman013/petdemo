@@ -4,24 +4,32 @@ import {
   ViewEncapsulation,
   OnInit,
   Output,
-  EventEmitter
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  ViewChildren,
+  QueryList
 } from '@angular/core';
 import { IStructure } from '../../interfaces';
-import {  DropResult } from 'ngx-smooth-dnd';
+import { DropResult } from 'ngx-smooth-dnd';
 import { Structure } from '../../classes/Structure';
 import { createBorder, createPadding, createWidthHeight } from '../../utils';
 import { cloneDeep } from 'lodash';
 import { MatDialog } from '@angular/material';
 import { ConfirmDialogComponent } from '../dialog.component';
 import { TranslateService } from '@ngx-translate/core';
+import { IpEmailBuilderService } from "projects/ip-email-builder/src/lib/ip-email-builder.service";
+import { EmailVariableService } from "projects/ip-email-builder/src/lib/email-editor/email-variable/email-variable.service";
+import { TextElementComponent } from "projects/ip-email-builder/src/lib/elements/text-element/text-element.component";
 
 @Component({
   selector: 'ip-structure',
   templateUrl: './structure.component.html',
   styleUrls: ['./structure.component.scss'],
-  encapsulation: ViewEncapsulation.None
 })
 export class StructureComponent implements OnInit {
+  showField: boolean = false;
+  errorMessage: any;
   @Input('structure')
   structure: IStructure = new Structure();
 
@@ -30,7 +38,13 @@ export class StructureComponent implements OnInit {
 
   editingBlock;
 
-  constructor(private confirmDialog: MatDialog, private translate: TranslateService) {}
+  constructor(private confirmDialog: MatDialog,
+    private translate: TranslateService,
+    private _ngb: IpEmailBuilderService,
+    private emailVariableService: EmailVariableService, ) {
+    _ngb.MergeTags = new Set(['tag22']);
+  }
+
 
   onBlockDrop(column, { removedIndex, addedIndex, payload }: DropResult) {
     if (removedIndex !== null) {
@@ -83,9 +97,25 @@ export class StructureComponent implements OnInit {
 
   ngOnInit() {
     const { elements, columns } = this.structure;
-
     if (!elements.length) {
       this.structure.elements = Array.from({ length: columns }, () => []);
     }
+
+    // this.emailVariableService.getAll(null, 0, 20).subscribe(
+    //   items => {
+    //     let tags = items.map(item => item.propertyName);
+    //     this._ngb.MergeTags = new Set(tags);
+    //   },
+    //   error => this.errorMessage = <any>error
+    // );
+    this.emailVariableService.getAllWithoutPagination().subscribe(
+      items => {
+        let tags = items.map(item => item.propertyName);
+        this._ngb.MergeTags = new Set(tags);
+      },
+      error => this.errorMessage = <any>error
+    );
   }
+
+
 }

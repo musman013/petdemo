@@ -19,15 +19,6 @@
   // line-height: inherit !important;
 }
 
-.ql-placeholder .ql-picker-label::before {
-  content: 'Variables';
-  min-width: 100px;
-}
-.ql-placeholder.ql-expanded .ql-picker-item::before {
-  content: attr(data-value);
-  width: min-content;
-}
-
 .ql-tooltip {
   z-index: 10;
   line-height: normal;
@@ -223,4 +214,31 @@ $main-padding: 1rem;
       }
     }
   }
+}
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  right: -169px;
+  top: -17px;
+}
+
+.btn-design {
+  color: #fafafadb;
+  padding: 5px 5px;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: bold;
+  width: 130px;
+  background-color: #006064;
+  outline: 1px solid #000000;
+
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
 }

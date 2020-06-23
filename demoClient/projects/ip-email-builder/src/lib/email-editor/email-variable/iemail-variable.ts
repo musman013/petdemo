@@ -3,4 +3,5 @@ export interface IEmailVariable {
   propertyName: string;
   propertyType: string;
   defaultValue?: string;
+  mergeType: string;
 }

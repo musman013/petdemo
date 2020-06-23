@@ -11,8 +11,20 @@ import { EmailVariableNewComponent } from './email-variable-new.component';
 //import { IListColumn, listColumnType } from '../common/ilistColumn';
 //import { PickerDialogService } from '../common/components/picker/picker-dialog.service';
 //import { BaseListComponent,Globals,IListColumn, listColumnType,PickerDialogService } from 'fastCodeCore';// from 'fastCodeCore';
-import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';// 'fastCodeCore';
-import { GlobalPermissionService } from 'src/app/core/global-permission.service';
+import {
+  BaseListComponent,
+  Globals,
+  IListColumn,
+  listColumnType,
+  PickerDialogService,
+  ErrorService,
+  operatorType, ISearchField, ConfirmDialogComponent
+} from 'projects/fast-code-core/src/public_api';// 'fastCodeCore';
+import { GenericApiService } from '../generic-api.service';
+import { IEmailVariableType } from './iemail-variable-type';
+import { EmailVariablTypeService } from './email-variable.type.service';
+import {EmailTemplateService} from '../email-template.service';
+
 @Component({
 	selector: 'app-email-variable-list',
 	templateUrl: './email-variable-list.component.html',
@@ -56,6 +68,7 @@ export class EmailVariableListComponent extends BaseListComponent<IEmailVariable
 	selectedColumns = this.columns;
 	displayedColumns: string[] = this.columns.map((obj) => { return obj.column });
 
+
 	entityName: string = 'EmailVariable';
 	constructor(
 		public router: Router,
@@ -65,9 +78,10 @@ export class EmailVariableListComponent extends BaseListComponent<IEmailVariable
 		public changeDetectorRefs: ChangeDetectorRef,
 		public pickerDialogService: PickerDialogService,
 		public emailvariableService: EmailVariableService,
-		public globalPermissionService: GlobalPermissionService,
+		public variableTypedataService: EmailVariablTypeService,
 		public errorService: ErrorService,
-		private translate: TranslateService
+		private translate: TranslateService,
+    public emailService: EmailTemplateService,
 	) {
 		super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, emailvariableService, errorService)
 	}
@@ -86,5 +100,40 @@ export class EmailVariableListComponent extends BaseListComponent<IEmailVariable
 	addNew() {
 		super.addNew(EmailVariableNewComponent);
 	}
+
+  delete(item: IEmailVariable): void {
+    const search: ISearchField = {
+      fieldName: 'contentJson',
+      searchValue: '{{' + item.propertyName + '}}',
+      operator: operatorType.Contains
+    };
+    const searches = [search];
+    //console.log(item);
+    this.emailService.getAll(searches).subscribe(templates => {
+      const emailTemplates = templates;
+      // console.log('email templates:', emailTemplates);
+      if(emailTemplates.length > 0) {
+        let templates = null;
+        emailTemplates.forEach(template => {
+          if(templates)
+            templates = templates + ', ' + template.templateName;
+          else
+            templates = template.templateName;
+        });
+        this.deleteDialogRef = this.dialog.open(ConfirmDialogComponent, {
+          disableClose: true,
+          data: {
+            title : 'Information',
+            action: 'OK',
+            message: 'Merge field {{' + item.propertyName + '}} is used in email '+(emailTemplates.length > 1?'templates':'template')+' ' +  templates + '. Please remove this Merge field from ' +  templates + ' to delete it.'
+          }
+        });
+      } else {
+        super.delete(item);
+      }
+    });
+
+
+  }
 
 }
