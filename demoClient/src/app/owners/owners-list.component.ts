@@ -48,6 +48,34 @@ export class OwnersListComponent extends BaseListComponent<IOwners> implements O
   
   	setColumns(){
   		this.columns = [
+			{
+				column: 'firstName',
+				label: 'firstName',
+				sort: true,
+				filter: true,
+				type: listColumnType.String
+			},
+			{
+				column: 'lastName',
+				label: 'lastName',
+				sort: true,
+				filter: true,
+				type: listColumnType.String
+			},
+			{
+				column: 'userName',
+				label: 'userName',
+				sort: true,
+				filter: true,
+				type: listColumnType.String
+			},
+			{
+				column: 'emailAddress',
+				label: 'emailAddress',
+				sort: true,
+				filter: true,
+				type: listColumnType.String
+			},
     		{
 				column: 'address',
 				label: 'address',
@@ -62,12 +90,12 @@ export class OwnersListComponent extends BaseListComponent<IOwners> implements O
 				filter: true,
 				type: listColumnType.String
 			},
-    		{
-				column: 'id',
-				label: 'id',
-				sort: false,
-				filter: false,
-				type: listColumnType.Number
+			{
+				column: 'isActive',
+				label: 'isActive',
+				sort: true,
+				filter: true,
+				type: listColumnType.Boolean
 			},
 		  	{
 				column: 'actions',
