@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { VisitsService } from './visits.service';
-import { IVisits } from './ivisits';
+import { InvoicesService } from './invoices.service';
+import { IInvoices } from './iinvoices';
 
 import { ActivatedRoute, Router } from "@angular/router";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -13,23 +13,23 @@ import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
 
 @Component({
-	selector: 'app-visits-new',
-	templateUrl: './visits-new.component.html',
-	styleUrls: ['./visits-new.component.scss']
+	selector: 'app-invoices-new',
+	templateUrl: './invoices-new.component.html',
+	styleUrls: ['./invoices-new.component.scss']
 })
-export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnInit {
+export class InvoicesNewComponent extends BaseNewComponent<IInvoices> implements OnInit {
 
-	title: string = "New Visits";
+	title: string = "New Invoices";
 	constructor(
 		public formBuilder: FormBuilder,
 		public router: Router,
 		public route: ActivatedRoute,
 		public dialog: MatDialog,
-		public dialogRef: MatDialogRef<VisitsNewComponent>,
+		public dialogRef: MatDialogRef<InvoicesNewComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		public global: Globals,
 		public pickerDialogService: PickerDialogService,
-		public dataService: VisitsService,
+		public dataService: InvoicesService,
 		public errorService: ErrorService,
 		public petsService: PetsService,
 		public vetsService: VetsService,
@@ -39,7 +39,7 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 	}
 
 	ngOnInit() {
-		this.entityName = 'Visits';
+		this.entityName = 'Invoices';
 		this.setAssociations();
 		super.ngOnInit();
 		this.setForm();

@@ -40,21 +40,6 @@
         </mat-form-field>
 
         <mat-form-field>
-          <input type="password" matInput placeholder="New password" formControlName="password" required>
-          <mat-error *ngIf="itemForm.hasError('required', 'password')">
-            {{'GENERAL.ERRORS.REQUIRED' | translate}}
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field>
-          <input matInput type="password" placeholder="Confirm password" formControlName="confirmPassword"
-            pattern="{{ itemForm.get('password').value }}">
-          <mat-error *ngIf="!itemForm.get('confirmPassword').valid && itemForm.get('confirmPassword').touched">
-            {{'GENERAL.ERRORS.PASSWORD-MISMATCH' | translate}}
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field>
           <input formControlName="emailAddress" matInput placeholder="Email">
           <mat-error *ngIf="!itemForm.get('emailAddress').valid && itemForm.get('emailAddress').touched">
             {{'GENERAL.ERRORS.REQUIRED' | translate}}</mat-error>
@@ -63,23 +48,7 @@
         <mat-form-field>
           <input formControlName="phoneNumber" matInput placeholder="Phone">
         </mat-form-field>
-
-        <div class="checkbox-container">
-          <mat-checkbox formControlName="isActive">Active</mat-checkbox>
-        </div>
         
-        <mat-form-field *ngFor="let association of parentAssociations">
-          <input type="text" matInput formControlName="{{association.descriptiveField}}"
-            placeholder="{{association.table}}" aria-label="Number" [matAutocomplete]="auto"
-            (click)="selectAssociation(association)" required>
-          <mat-autocomplete (optionSelected)="onAssociationOptionSelected($event, association)" autoActiveFirstOption
-            #auto="matAutocomplete" (optionsScroll)="onPickerScroll(association)">
-            <mat-option *ngFor="let option of association.data" [value]="option">
-              {{option[association.referencedDescriptiveField]}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-
       </form>
       <br>
       <br>

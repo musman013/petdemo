@@ -19,6 +19,7 @@ import { SpecialtiesListComponent, SpecialtiesDetailsComponent, SpecialtiesNewCo
 import { VetsListComponent, VetsDetailsComponent, VetsNewComponent } from './vets/index';
 import { OwnersListComponent, OwnersDetailsComponent, OwnersNewComponent } from './owners/index';
 import { VetSpecialtiesListComponent, VetSpecialtiesDetailsComponent, VetSpecialtiesNewComponent } from './vet-specialties/index';
+import { InvoicesListComponent, InvoicesDetailsComponent, InvoicesNewComponent } from './invoices/index';
 import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
 
 const routes: Routes = [
@@ -58,6 +59,9 @@ const routes: Routes = [
 	{ path: 'vetspecialties', component: VetSpecialtiesListComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ]},
 	{ path: 'vetspecialties/new', component: VetSpecialtiesNewComponent, canActivate: [ AuthGuard ] },
 	{ path: 'vetspecialties/:id', component: VetSpecialtiesDetailsComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ] },
+	{ path: 'invoices', component: InvoicesListComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ]},
+	{ path: 'invoices/new', component: InvoicesNewComponent, canActivate: [ AuthGuard ] },
+	{ path: 'invoices/:id', component: InvoicesDetailsComponent, canDeactivate: [CanDeactivateGuard], canActivate: [ AuthGuard ] },
 	{ path: 'scheduler', children: SchedulerRoutes},
 	{path: 'email', children: EmailRoutes,canActivate: [ AuthGuard ] },
 	{ path: '**', component:ErrorPageComponent},

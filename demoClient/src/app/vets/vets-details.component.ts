@@ -46,16 +46,11 @@ export class VetsDetailsComponent extends BaseDetailsComponent<IVets> implements
 	setForm() {
 		this.itemForm = this.formBuilder.group({
 			id: [{ value: '', disabled: true }, Validators.required],
-
 			emailAddress: ['', Validators.required],
 			firstName: ['', Validators.required],
-			isActive: [false],
 			lastName: ['', Validators.required],
-			password: ['', Validators.required],
-			confirmPassword: ['', Validators.required],
 			phoneNumber: [''],
 			userName: ['', Validators.required],
-
 		});
 
 	}

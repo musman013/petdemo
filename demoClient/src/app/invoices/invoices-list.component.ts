@@ -1,27 +1,26 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { IVisits } from './ivisits';
-import { VisitsService } from './visits.service';
+import { IInvoices } from './iinvoices';
+import { InvoicesService } from './invoices.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { VisitsNewComponent } from './visits-new.component';
+import { InvoicesNewComponent } from './invoices-new.component';
 import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService, ConfirmDialogComponent, ITokenRole } from 'projects/fast-code-core/src/public_api';
 
 import { PetsService } from '../pets/pets.service';
 import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
-import { CompleteVisitComponent } from './complete-visit/complete-visit.component';
 import { AuthenticationService } from '../core/authentication.service';
+import { VisitsService } from '../visits';
 
 @Component({
-  selector: 'app-visits-list',
-  templateUrl: './visits-list.component.html',
-  styleUrls: ['./visits-list.component.scss']
+	selector: 'app-invoices-list',
+	templateUrl: './invoices-list.component.html',
+	styleUrls: ['./invoices-list.component.scss']
 })
-export class VisitsListComponent extends BaseListComponent<IVisits> implements OnInit {
+export class InvoicesListComponent extends BaseListComponent<IInvoices> implements OnInit {
 
-	title:string = "Visits";
-	completeVisitRef: MatDialogRef<CompleteVisitComponent>;
+	title: string = "Invoices";
 
 	role: ITokenRole;
 	isOwner: boolean = false;
@@ -33,99 +32,74 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		public dialog: MatDialog,
 		public changeDetectorRefs: ChangeDetectorRef,
 		public pickerDialogService: PickerDialogService,
-		public dataService: VisitsService,
+		public dataService: InvoicesService,
 		public errorService: ErrorService,
-		public petsService: PetsService,
-		public vetsService: VetsService,
+		public visitsService: VisitsService,
 		public globalPermissionService: GlobalPermissionService,
 		public authenticationService: AuthenticationService,
-	) { 
+	) {
 		super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, dataService, errorService)
-  }
+	}
 
 	ngOnInit() {
-		this.entityName = 'Visits';
+		this.entityName = 'Invoices';
 		this.setAssociation();
 		this.setColumns();
-		this.primaryKeys = [ "id",  ]
+		this.primaryKeys = ["id",]
 		this.role = this.authenticationService.decodeToken().role;
 		this.isOwner = this.role == ITokenRole.owner;
 		this.isVet = this.role == ITokenRole.vet;
 		super.ngOnInit();
 	}
-  
-  
-	setAssociation(){
-  	
+
+
+	setAssociation() {
+
 		this.associations = [
 			{
 				column: [
-                      {
-					  	key: 'petId',
-					  	value: undefined,
-					  	referencedkey: 'id'
-					  },
-					  
+					{
+						key: 'visitId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+
 				],
 				isParent: false,
-				descriptiveField: 'petsDescriptiveField',
-				referencedDescriptiveField: 'name',
-				service: this.petsService,
-				associatedObj: undefined,
-				table: 'pets',
-				type: 'ManyToOne'
-			},
-			{
-				column: [
-                      {
-					  	key: 'vetId',
-					  	value: undefined,
-					  	referencedkey: 'id'
-					  },
-					  
-				],
-				isParent: false,
-				descriptiveField: 'vetsDescriptiveField',
+				descriptiveField: 'visitsDescriptiveField',
 				referencedDescriptiveField: 'id',
-				service: this.vetsService,
+				service: this.visitsService,
 				associatedObj: undefined,
-				table: 'vets',
-				type: 'ManyToOne'
+				table: 'visits',
+				type: 'OneToOne'
 			},
 		];
 	}
-  
-  	setColumns(){
-  		this.columns = [
-    		{
-				column: 'description',
-				label: 'description',
+
+	setColumns() {
+		this.columns = [
+			{
+				column: 'amount',
+				label: 'amount',
 				sort: true,
 				filter: true,
 				type: listColumnType.String
 			},
-    		{
-				column: 'visitDate',
-				label: 'visitDate',
+			{
+				column: 'status',
+				label: 'status',
 				sort: true,
 				filter: true,
 				type: listColumnType.Date
 			},
 			{
-	  			column: 'Pets',
-				label: 'Pets',
+				column: 'Visit',
+				label: 'Visit',
 				sort: false,
 				filter: false,
 				type: listColumnType.String
-	  		},
+			},
 			{
-	  			column: 'Vets',
-				label: 'Vets',
-				sort: false,
-				filter: false,
-				type: listColumnType.String
-	  		},
-		  	{
 				column: 'actions',
 				label: 'Actions',
 				sort: false,
@@ -135,33 +109,22 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		];
 		this.selectedColumns = this.columns;
 		this.displayedColumns = this.columns.map((obj) => { return obj.column });
-  	}
+	}
 	addNew() {
-		super.addNew(VisitsNewComponent);
+		super.addNew(InvoicesNewComponent);
 	}
 
-	completeVisit(){
-		this.completeVisitRef = this.dialog.open(CompleteVisitComponent, {
-			panelClass: "fc-modal-dialog"
-		});
-		this.completeVisitRef.afterClosed().subscribe(res => {
-			if(res){
-				console.log(res);
-			}
-		})
-	}
-
-	changeStatus(status){
+	changeStatus(status) {
 		this.dialog.open(ConfirmDialogComponent, {
 			data: {
 				confirmationType: "confirm"
 			}
 		}).afterClosed().subscribe(res => {
-			if(res){
+			if (res) {
 				console.log(res);
 				// this.dataService.changeStatus(status);
 			}
 		});
 	}
-  
+
 }

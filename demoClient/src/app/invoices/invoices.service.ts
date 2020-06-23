@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IVisits } from './ivisits';
+import { IInvoices } from './iinvoices';
 import { GenericApiService } from '../../../projects/fast-code-core/src/public_api';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
@@ -9,13 +9,13 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class VisitsService extends GenericApiService<IVisits> { 
+export class InvoicesService extends GenericApiService<IInvoices> { 
   constructor(private httpclient: HttpClient) { 
-    super(httpclient, { apiUrl: environment.apiUrl }, "visits");
+    super(httpclient, { apiUrl: environment.apiUrl }, "invoices");
   }
 
-  changeStatus(status): Observable<IVisits>{
-    return this.httpclient.put<IVisits>(`${this.apiUrl}/changeStatus`, {status: status});
+  changeStatus(status): Observable<IInvoices>{
+    return this.httpclient.put<IInvoices>(`${this.apiUrl}/changeStatus`, {status: status});
   }
   
   combineDateAndTime(date: string, time: string): Date {

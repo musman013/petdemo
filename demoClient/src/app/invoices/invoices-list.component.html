@@ -16,67 +16,45 @@
           </li>
         </ul>
       </div>
-      <div class="fc-col-md-4 fc-text-right">
+      <!-- <div class="fc-col-md-4 fc-text-right">
         <button name="add" mat-raised-button color="primary" [disabled]="!IsCreatePermission" (click)="addNew()"><i
             class="material-icons">
             add_circle_outline
           </i> &nbsp;{{'GENERAL.ACTIONS.ADD' | translate}}</button>
-      </div>
+      </div> -->
     </div>
   </div>
   <mat-card>
     <app-list-filters [columnsList]="selectedColumns" (onSearch)="applyFilter($event)"></app-list-filters>
     <div class="table-container">
       <mat-table matSort [dataSource]="items" class="mat-elevation-z8">
-        <ng-container matColumnDef="description">
-          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('description')">
-            {{getFieldLabel("Description")}}</mat-header-cell>
+        <ng-container matColumnDef="amount">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('amount')">
+            {{getFieldLabel("Amount")}}</mat-header-cell>
           <mat-cell *matCellDef="let item">
-            {{ item.description }}
+            {{ item.amount }}
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="id">
-          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('id')">
-            {{getFieldLabel("Id")}}</mat-header-cell>
+        <ng-container matColumnDef="status">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('status')">
+            {{getFieldLabel("Status")}}</mat-header-cell>
           <mat-cell *matCellDef="let item">
-            {{ item.id }}
+            {{item.status}}
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="visitDate">
-          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('visitDate')">
-            {{getFieldLabel("VisitDate")}}</mat-header-cell>
+        <ng-container matColumnDef="Visit">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Visit')">
+            {{getFieldLabel("Visit")}}</mat-header-cell>
           <mat-cell *matCellDef="let item">
-            {{item.visitDate | date: defaultDateFormat}}
-          </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="Pets">
-          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Pets')">
-            {{getFieldLabel("Pets")}}</mat-header-cell>
-          <mat-cell *matCellDef="let item">
-            {{ item.petsDescriptiveField }}
-          </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="Vets">
-          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Vets')">
-            {{getFieldLabel("Vets")}}</mat-header-cell>
-          <mat-cell *matCellDef="let item">
-            {{ item.vetsDescriptiveField }}
+            {{ item.visitsDescriptiveField }}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
           <mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
-            <button name="complete" *ngIf="isOwner" mat-button aria-label="complete visit action with a heart icon"
-              (click)="completeVisit(item)">
-              <mat-label>Complete</mat-label>
-            </button>
-            <button name="cancel" *ngIf="!isOwner" mat-button aria-label="cancel visit action"
-              (click)="changeStatus('cancel')">
-              <mat-label>Cancel</mat-label>
-            </button>
-            <button name="confirm" *ngIf="!isOwner" mat-button aria-label="confirm visit action"
-              (click)="changeStatus('confirm')">
-              <mat-label>Confirm</mat-label>
+            <button name="cancel" *ngIf="!item.status != 'Paid'" mat-button aria-label="pay visit action"
+              (click)="changeStatus('pay')">
+              <mat-label>Pay</mat-label>
             </button>
             <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"
               matTooltip="('GENERAL.ACTIONS.OPEN-DETAILS' | translate)" (click)="openDetails(item)">

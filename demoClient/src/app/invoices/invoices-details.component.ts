@@ -4,8 +4,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 
-import { VisitsService } from './visits.service';
-import { IVisits } from './ivisits';
+import { InvoicesService } from './invoices.service';
+import { IInvoices } from './iinvoices';
 import { BaseDetailsComponent, Globals, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';
 
 import { PetsService } from '../pets/pets.service';
@@ -14,13 +14,13 @@ import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
 
 @Component({
-	selector: 'app-visits-details',
-	templateUrl: './visits-details.component.html',
-	styleUrls: ['./visits-details.component.scss']
+	selector: 'app-invoices-details',
+	templateUrl: './invoices-details.component.html',
+	styleUrls: ['./invoices-details.component.scss']
 })
-export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implements OnInit {
-	title: string = 'Visits';
-	parentUrl: string = 'visits';
+export class InvoicesDetailsComponent extends BaseDetailsComponent<IInvoices> implements OnInit {
+	title: string = 'Invoices';
+	parentUrl: string = 'invoices';
 	//roles: IRole[];  
 	constructor(
 		public formBuilder: FormBuilder,
@@ -28,7 +28,7 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 		public route: ActivatedRoute,
 		public dialog: MatDialog,
 		public global: Globals,
-		public dataService: VisitsService,
+		public dataService: InvoicesService,
 		public pickerDialogService: PickerDialogService,
 		public errorService: ErrorService,
 		public petsService: PetsService,
@@ -39,7 +39,7 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 	}
 
 	ngOnInit() {
-		this.entityName = 'Visits';
+		this.entityName = 'Invoices';
 		this.setAssociations();
 		super.ngOnInit();
 		this.setForm();
@@ -49,24 +49,19 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 
 	setForm() {
 		this.itemForm = this.formBuilder.group({
-			description: [''],
 			id: [{ value: '', disabled: true }, Validators.required],
-			visitDate: [''],
-			visitTime: [''],
-			petId: ['', Validators.required],
-			petsDescriptiveField: [''],
+			amount: ['', Validators.required],
 			vetId: ['', Validators.required],
+			status: ['', Validators.required],
 			vetsDescriptiveField: [''],
 
 		});
 
 	}
 
-	onItemFetched(item: IVisits) {
+	onItemFetched(item: IInvoices) {
 		this.item = item;
 		this.itemForm.patchValue(item);
-		this.itemForm.get('visitDate').setValue(item.visitDate ? new Date(item.visitDate) : null);
-		this.itemForm.get('visitTime').setValue(this.dataService.formatDateStringToAMPM(item.visitDate));
 	}
 
 	setAssociations() {
@@ -75,37 +70,20 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 			{
 				column: [
 					{
-						key: 'petId',
+						key: 'visitId',
 						value: undefined,
 						referencedkey: 'id'
 					},
 
 				],
 				isParent: false,
-				table: 'pets',
-				type: 'ManyToOne',
+				table: 'visits',
+				type: 'OneToOne',
 				service: this.petsService,
-				descriptiveField: 'petsDescriptiveField',
-				referencedDescriptiveField: 'name',
-
-			},
-			{
-				column: [
-					{
-						key: 'vetId',
-						value: undefined,
-						referencedkey: 'id'
-					},
-
-				],
-				isParent: false,
-				table: 'vets',
-				type: 'ManyToOne',
-				service: this.vetsService,
-				descriptiveField: 'vetsDescriptiveField',
+				descriptiveField: 'visitsDescriptiveField',
 				referencedDescriptiveField: 'id',
 
-			},
+			}
 		];
 
 		this.childAssociations = this.associations.filter(association => {
@@ -123,11 +101,7 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 		}
 		this.submitted = true;
 		this.loading = true;
-		
-		let updatedVisit = this.itemForm.getRawValue(); 
-		updatedVisit['visitDate'] = this.dataService.combineDateAndTime(updatedVisit['visitDate'], updatedVisit['visitTime'])
-		delete updatedVisit['visitTime'];
-		this.dataService.update(updatedVisit, this.idParam)
+		this.dataService.update(this.itemForm.getRawValue(), this.idParam)
 			.pipe(first())
 			.subscribe(
 				data => {

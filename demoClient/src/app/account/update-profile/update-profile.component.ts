@@ -105,17 +105,17 @@ export class UpdateProfileComponent implements OnInit {
 
 		this.submitted = true;
 		this.loading = true;
-		let updateProfileFunction: any; 
+		let updateProfileObs: any; 
 		if(this.isOwner){
-			updateProfileFunction = this.ownersService.updateProfile;
+			updateProfileObs = this.ownersService.updateProfile(this.userForm.getRawValue());
 		}
 		else if(this.isVet){
-			updateProfileFunction = this.vetsService.updateProfile;
+			updateProfileObs = this.vetsService.updateProfile(this.userForm.getRawValue());
 		}
 		else{
-			updateProfileFunction = this.userService.updateProfile;
+			updateProfileObs = this.userService.updateProfile(this.userForm.getRawValue());
 		}
-		updateProfileFunction(this.userForm.getRawValue())
+		updateProfileObs
 			.pipe(first())
 			.subscribe(
 				data => {
