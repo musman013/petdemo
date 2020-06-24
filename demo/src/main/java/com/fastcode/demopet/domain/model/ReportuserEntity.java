@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "reportuser", schema = "reporting")
+@Table(name = "reportuser")
 @IdClass(ReportuserId.class)
 public class ReportuserEntity extends AbstractEntity {
 	

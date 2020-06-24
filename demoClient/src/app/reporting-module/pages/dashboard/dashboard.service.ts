@@ -21,16 +21,16 @@ export class DashboardService extends ShareApiService<IDashboard>{
 	// report dashboard calls
 
 	addNewReporttoNewDashboard(data: any) {
-		return this.http.post<any>('/api/dashboard/addNewReportToNewDashboard', data)
+		return this.http.post<any>(this.url + '/addNewReportToNewDashboard', data)
 	}
 	addNewReporttoExistingDashboard(data: any) {
-		return this.http.put<any>('/api/dashboard/addNewReportToExistingDashboard', data)
+		return this.http.put<any>(this.url + '/addNewReportToExistingDashboard', data)
 	}
 	addExistingReportToNewDashboard(data: any) {
-		return this.http.post<any>('/api/dashboard/addExistingReportToNewDashboard', data);
+		return this.http.post<any>(this.url + '/addExistingReportToNewDashboard', data);
 	}
 	addExistingReportToExistingDashboard(data: any) {
-		return this.http.put<any>('/api/dashboard/addExistingReportToExistingDashboard', data);
+		return this.http.put<any>(this.url + '/addExistingReportToExistingDashboard', data);
 	}
 
 }

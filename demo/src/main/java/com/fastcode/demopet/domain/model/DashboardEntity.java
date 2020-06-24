@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "dashboard", schema = "reporting")
+@Table(name = "dashboard")
 public class DashboardEntity extends AbstractEntity {
 
 	private static final long serialVersionUID = 1L;

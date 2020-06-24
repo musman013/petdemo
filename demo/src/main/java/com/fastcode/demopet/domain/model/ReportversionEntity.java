@@ -22,7 +22,7 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "reportversion", schema = "reporting")
+@Table(name = "reportversion")
 @IdClass(ReportversionId.class)
 public class ReportversionEntity extends AbstractEntity {
 	

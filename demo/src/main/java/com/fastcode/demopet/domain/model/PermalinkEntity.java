@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "permalink", schema = "reporting")
+@Table(name = "permalink")
 public class PermalinkEntity extends AbstractEntity {
 
 //    @Id

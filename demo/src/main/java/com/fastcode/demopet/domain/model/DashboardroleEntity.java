@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "dashboardrole", schema = "reporting")
+@Table(name = "dashboardrole")
 @IdClass(DashboardroleId.class)
 public class DashboardroleEntity extends AbstractEntity{
 	
