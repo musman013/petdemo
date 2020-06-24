@@ -1,7 +1,6 @@
 package com.fastcode.demopet.restcontrollers;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,20 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
 import com.fastcode.demopet.domain.irepository.IJwtRepository;
-import com.fastcode.demopet.domain.model.JwtEntity;
+import com.fastcode.demopet.domain.model.OwnersEntity;
+import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
-import com.fastcode.demopet.security.SecurityConstants;
-
-import ch.qos.logback.classic.layout.TTLLLayout;
-
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
-import com.fastcode.demopet.commons.domain.EmptyJsonResponse;
 import com.fastcode.demopet.application.visits.VisitsAppService;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.CreateInvoicesInput;
 import com.fastcode.demopet.application.invoices.dto.FindInvoicesByIdOutput;
+import com.fastcode.demopet.application.invoices.dto.InvoiceStatus;
 import com.fastcode.demopet.application.owners.OwnersAppService;
 import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
 import com.fastcode.demopet.application.pets.PetsAppService;
@@ -126,6 +122,7 @@ public class VisitsController {
 
 		return new ResponseEntity(_visitsAppService.update(Long.valueOf(id),visits), HttpStatus.OK);
 	}
+
 	@PreAuthorize("hasAnyAuthority('VISITSENTITY_READ')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<FindVisitsByIdOutput> findById(@PathVariable String id) {
@@ -136,17 +133,29 @@ public class VisitsController {
 		return new ResponseEntity(output, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyAuthority('VISITSENTITY_READ')")
+//	@PreAuthorize("hasAnyAuthority('VISITSENTITY_READ')")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity find(@RequestParam(value="search", required=false) String search, @RequestParam(value = "offset", required=false) String offset, @RequestParam(value = "limit", required=false) String limit, Sort sort) throws Exception {
 
 		if (offset == null) { offset = env.getProperty("fastCode.offset.default"); }
 		if (limit == null) { limit = env.getProperty("fastCode.limit.default"); }
 
+		UserEntity user = _userAppService.getUser();
+
 		Pageable Pageable = new OffsetBasedPageRequest(Integer.parseInt(offset), Integer.parseInt(limit), sort);
 		SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject(search);
 
-		return ResponseEntity.ok(_visitsAppService.find(searchCriteria,Pageable));
+		List<FindVisitsByIdOutput> list =_visitsAppService.find(searchCriteria,Pageable);
+
+		if(_userAppService.checkIsAdmin(user))
+		{
+			return ResponseEntity.ok(list);
+		}
+		else
+		{
+			return ResponseEntity.ok(_visitsAppService.filterVisits(list, user.getId()));
+		}
+
 	}
 
 	@PreAuthorize("hasAnyAuthority('VISITSENTITY_READ')")
@@ -185,7 +194,7 @@ public class VisitsController {
 		Optional.ofNullable(visit).orElseThrow(() -> new EntityNotFoundException(String.format("There does not exist a visits with a id=%s", id)));
 
 		UserEntity user = _userAppService.getUser();
-		FindPetsByIdOutput pet = _petsAppService.findById(visit.getId());
+		FindPetsByIdOutput pet = _petsAppService.findById(visit.getPetId());
 		FindOwnersByIdOutput owner = _ownersAppService.findById(pet.getOwnerId());
 		FindVetsByIdOutput vet = _vetsAppService.findById(user.getId());
 
@@ -225,6 +234,7 @@ public class VisitsController {
 				CreateInvoicesInput invoice = new CreateInvoicesInput();
 				invoice.setAmount(input.getInvoiceAmount());
 				invoice.setVisitId(visit.getId());
+				invoice.setStatus(InvoiceStatus.UNPAID);
 				_invoicesAppService.create(invoice);
 
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);

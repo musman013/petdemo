@@ -1,11 +1,14 @@
 package com.fastcode.demopet.application.pets;
 
 import com.fastcode.demopet.application.pets.dto.*;
+import com.fastcode.demopet.application.visits.dto.FindVisitsByIdOutput;
 import com.fastcode.demopet.domain.pets.IPetsManager;
 import com.fastcode.demopet.domain.model.QPetsEntity;
 import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.types.TypesManager;
 import com.fastcode.demopet.domain.model.TypesEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.domain.model.VisitsEntity;
 import com.fastcode.demopet.domain.owners.OwnersManager;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.commons.search.*;
@@ -175,6 +178,23 @@ public class PetsAppService implements IPetsAppService {
 		}
 		return output;
 	}
+    
+    public List<FindPetsByIdOutput> filterPets(List<FindPetsByIdOutput> list, Long userId)
+    {
+    	List<FindPetsByIdOutput> filteredList = new ArrayList<FindPetsByIdOutput>();
+    	OwnersEntity owner = _ownersManager.findById(userId);
+    	
+    	for(FindPetsByIdOutput obj : list)
+    	{
+    		if(owner !=null) {
+    		if(userId == obj.getOwnerId()) {
+    			filteredList.add(obj);
+    		}
+    		}
+    	}
+
+    	return filteredList;
+    }
 	
 	public BooleanBuilder search(SearchCriteria search) throws Exception {
 

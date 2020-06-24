@@ -11,7 +11,6 @@ public class FindInvoicesByIdOutput {
   	private Long id;
   	private Long visitId;
   	private Long visitsDescriptiveField;
-
 	private Long version;
  
 }

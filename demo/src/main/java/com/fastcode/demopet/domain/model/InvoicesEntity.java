@@ -1,10 +1,9 @@
 package com.fastcode.demopet.domain.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Date;
+
+import com.fastcode.demopet.application.invoices.dto.InvoiceStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -23,6 +22,10 @@ public class InvoicesEntity extends AbstractEntity {
   	@GeneratedValue(strategy = GenerationType.IDENTITY)
   	@Column(name = "id", nullable = false)
 	private Long id;
+  	
+  	@Basic
+  	@Column(name = "status", nullable = false, length =20)
+  	private InvoiceStatus status;
 	
   	@ManyToOne
   	@JoinColumn(name = "visitId")

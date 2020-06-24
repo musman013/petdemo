@@ -32,10 +32,24 @@ public class VetsEntity extends AbstractEntity {
 		vetspecialties.setVets(null);
 	}
 	
+	@OneToMany(mappedBy = "vets", cascade = CascadeType.ALL, orphanRemoval = true) 
+  	private Set<VisitsEntity> visitsSet = new HashSet<VisitsEntity>(); 
+	
+	public void addVisits(VisitsEntity visits) {
+		visitsSet.add(visits);
+		visits.setVets(this);
+	}
+
+	public void removeVisits(VisitsEntity visits) {
+		visitsSet.remove(visits);
+		visits.setVets(null);
+	}
+
+	
 	@OneToOne
     @MapsId
     private UserEntity user;
-
+	
 }
 
   

@@ -76,6 +76,7 @@ public class OwnersController {
 //  @PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
 	@RequestMapping(value = "/getProfile",method = RequestMethod.GET)
 	public ResponseEntity<OwnerProfile> getProfile() {
+		
 		UserEntity user = _userAppService.getUser();
 		FindOwnersByIdOutput currentowner = _ownersAppService.findById(user.getId());
 		if(currentowner == null)
@@ -83,6 +84,7 @@ public class OwnersController {
 			return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity(_ownersAppService.getProfile(currentowner), HttpStatus.OK);
+		
 	}
 	
 	@RequestMapping(value = "/updateProfile", method = RequestMethod.PUT)
@@ -149,8 +151,10 @@ public class OwnersController {
     Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("There does not exist a owners with a id=%s", id)));
 	
     _ownersAppService.delete(Long.valueOf(id));
+    
     }
     
+	
 	
 	// ------------ Update owners ------------
     @PreAuthorize("hasAnyAuthority('OWNERSENTITY_UPDATE')")

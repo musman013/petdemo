@@ -15,6 +15,7 @@ public class UpdateVisitsInput {
   	private Status status;
     private String visitNotes;
   	private Long petId;
+  	private Long vetId;
   	private Long version;
   
 }

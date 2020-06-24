@@ -13,6 +13,8 @@ public class CreateVisitsOutput {
     private Status status;
     private String visitNotes;
 	private Long petId;
+	private Long vetId;
 	private String petsDescriptiveField;
+	private String vetsDescriptiveField;
 
 }

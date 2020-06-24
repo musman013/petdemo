@@ -1,13 +1,15 @@
 package com.fastcode.demopet.emailbuilder.domain.irepository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
-import com.fastcode.demopet.emailbuilder.domain.model.EmailVariableEntity;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 
-@JaversSpringDataAuditable
+import com.fastcode.demopet.emailbuilder.domain.model.EmailVariableEntity;
+
 @Repository
 public interface IEmailVariableRepository extends JpaRepository<EmailVariableEntity, Long>, QuerydslPredicateExecutor<EmailVariableEntity> {
 

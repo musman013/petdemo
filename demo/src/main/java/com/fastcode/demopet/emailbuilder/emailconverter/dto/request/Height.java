@@ -1,8 +1,13 @@
 package com.fastcode.demopet.emailbuilder.emailconverter.dto.request;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Height {
 
 	private String unit = "";
+	
+	private List<String> units = new ArrayList<>();
 
 	private String value = "";
 
@@ -30,6 +35,14 @@ public class Height {
 
 	public void setAuto(boolean auto) {
 		this.auto = auto;
+	}
+
+	public List<String> getUnits() {
+		return units;
+	}
+
+	public void setUnits(List<String> units) {
+		this.units = units;
 	}
 
 }

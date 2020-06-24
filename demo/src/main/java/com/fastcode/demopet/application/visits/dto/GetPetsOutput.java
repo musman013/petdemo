@@ -11,7 +11,8 @@ public class GetPetsOutput {
   	private Date birthDate;
   	private Long id;
   	private String name;
-
   	private Long visitsId;
+  	private Long ownerId;
+    private Long vetId;
 
 }

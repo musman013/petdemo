@@ -13,9 +13,9 @@ public class CreateVisitsInput {
   private String description;
   private Status status;
   private String visitNotes;
-  
   @NotNull
   private Date visitDate;
   private Long petId;
+  private Long vetId;
  
 }

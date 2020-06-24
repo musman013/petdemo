@@ -12,6 +12,8 @@ public class FindVisitsByIdOutput {
   	private Date visitDate;
   	private Long petId;
   	private String petsDescriptiveField;
+  	private Long vetId;
+  	private String vetsDescriptiveField;
     private Status status;
     private String visitNotes;
 	private Long version;
