@@ -114,7 +114,7 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 		super.addNew(InvoicesNewComponent);
 	}
 
-	changeStatus(status) {
+	payInvoice(item: IInvoices) {
 		this.dialog.open(ConfirmDialogComponent, {
 			data: {
 				confirmationType: "confirm"
@@ -122,7 +122,14 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 		}).afterClosed().subscribe(res => {
 			if (res) {
 				console.log(res);
-				// this.dataService.changeStatus(status);
+				this.dataService.payInvoice(item.id).subscribe(()=>{
+					if(res){
+						this.errorService.showError(`Invoice paid`);
+					} else {
+						this.errorService.showError('An error occurred');
+					}
+				});
+				
 			}
 		});
 	}
