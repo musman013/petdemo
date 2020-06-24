@@ -66,15 +66,15 @@
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
           <mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
-            <button name="complete" *ngIf="isOwner" mat-button aria-label="complete visit action with a heart icon"
+            <button name="complete" *ngIf="isVet" mat-button aria-label="complete visit action with a heart icon"
               (click)="completeVisit(item)">
               <mat-label>Complete</mat-label>
             </button>
-            <button name="cancel" *ngIf="!isOwner" mat-button aria-label="cancel visit action"
+            <button name="cancel" *ngIf="!isVet" mat-button aria-label="cancel visit action"
               (click)="changeStatus(item, 'CANCELLED')">
               <mat-label>Cancel</mat-label>
             </button>
-            <button name="confirm" *ngIf="!isOwner" mat-button aria-label="confirm visit action"
+            <button name="confirm" *ngIf="!isVet" mat-button aria-label="confirm visit action"
               (click)="changeStatus(item, 'CONFIRMED')">
               <mat-label>Confirm</mat-label>
             </button>
