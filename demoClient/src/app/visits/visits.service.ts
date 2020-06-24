@@ -1,7 +1,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IVisits } from './ivisits';
+import { IVisits, IChangeStatusObj } from './ivisits';
 import { GenericApiService } from '../../../projects/fast-code-core/src/public_api';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
@@ -14,8 +14,8 @@ export class VisitsService extends GenericApiService<IVisits> {
     super(httpclient, { apiUrl: environment.apiUrl }, "visits");
   }
 
-  changeStatus(status): Observable<IVisits>{
-    return this.httpclient.put<IVisits>(`${this.apiUrl}/changeStatus`, {status: status});
+  changeStatus(id: number, status: IChangeStatusObj): Observable<IVisits>{
+    return this.httpclient.put<IVisits>(`${this.url}/${id}/changeStatus`, status);
   }
   
   combineDateAndTime(date: string, time: string): Date {

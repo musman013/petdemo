@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 
-import { IVisits } from './ivisits';
+import { IVisits, IChangeStatusObj, VisitStatus } from './ivisits';
 import { VisitsService } from './visits.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VisitsNewComponent } from './visits-new.component';
@@ -140,18 +140,31 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		super.addNew(VisitsNewComponent);
 	}
 
-	completeVisit(){
+	completeVisit(item: IVisits){
 		this.completeVisitRef = this.dialog.open(CompleteVisitComponent, {
 			panelClass: "fc-modal-dialog"
 		});
 		this.completeVisitRef.afterClosed().subscribe(res => {
 			if(res){
 				console.log(res);
+				let changeStatusObj: IChangeStatusObj = {
+					status: VisitStatus.Completed,
+					invoiceAmount: res.invoiceAmount,
+					visitNotes: res.visitNotes
+				}
+
+				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(res =>{
+					if(res){
+						this.errorService.showError('Visit Completed');
+					} else {
+						this.errorService.showError('An error occurred');
+					}
+				});
 			}
 		})
 	}
 
-	changeStatus(status){
+	changeStatus(item: IVisits, status: VisitStatus){
 		this.dialog.open(ConfirmDialogComponent, {
 			data: {
 				confirmationType: "confirm"
@@ -159,7 +172,17 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		}).afterClosed().subscribe(res => {
 			if(res){
 				console.log(res);
-				// this.dataService.changeStatus(status);
+				let changeStatusObj: IChangeStatusObj = {
+					status: status,
+				}
+
+				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(()=>{
+					if(res){
+						this.errorService.showError(`Visit status changed to: ${status}`);
+					} else {
+						this.errorService.showError('An error occurred');
+					}
+				});
 			}
 		});
 	}

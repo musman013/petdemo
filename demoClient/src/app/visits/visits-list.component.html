@@ -71,11 +71,11 @@
               <mat-label>Complete</mat-label>
             </button>
             <button name="cancel" *ngIf="!isOwner" mat-button aria-label="cancel visit action"
-              (click)="changeStatus('cancel')">
+              (click)="changeStatus(item, 'CANCELLED')">
               <mat-label>Cancel</mat-label>
             </button>
             <button name="confirm" *ngIf="!isOwner" mat-button aria-label="confirm visit action"
-              (click)="changeStatus('confirm')">
+              (click)="changeStatus(item, 'CONFIRMED')">
               <mat-label>Confirm</mat-label>
             </button>
             <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"
