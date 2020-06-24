@@ -2,6 +2,7 @@ package com.fastcode.demopet.application.vets;
 
 import com.fastcode.demopet.application.authorization.role.dto.FindRoleByNameOutput;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
@@ -50,6 +51,9 @@ public class VetsAppService implements IVetsAppService {
 	
 	@Autowired
 	private UserroleAppService _userroleAppService;
+	
+	@Autowired
+	private UserAppService _userAppService;
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CreateVetsOutput create(CreateVetsInput input) {
@@ -77,8 +81,13 @@ public class VetsAppService implements IVetsAppService {
 	public UpdateVetsOutput update(Long vetsId, UpdateVetsInput input) {	
 		
 		VetsEntity vets = mapper.updateVetsInputToVetsEntity(input);
-		UserEntity user = _userManager.update(_userMapper.updateUserInputToUserEntity(input));
-
+		FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(Long.valueOf(vetsId));
+		
+		UserEntity user = _userMapper.updateUserInputToUserEntity(input);
+        user.setVersion(currentUser.getVersion());
+        user.setPassword(currentUser.getPassword());
+        user=_userManager.update(user);
+        
 		VetsEntity updatedVets = _vetsManager.update(vets);
 
 		return mapper.vetsEntityAndUserEntityToUpdateVetsOutput(updatedVets, user);

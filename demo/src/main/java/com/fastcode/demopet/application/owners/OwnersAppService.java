@@ -2,6 +2,7 @@ package com.fastcode.demopet.application.owners;
 
 import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
@@ -55,6 +56,9 @@ public class OwnersAppService implements IOwnersAppService {
 	
 	@Autowired 
 	private UserroleAppService _userroleAppService;
+	
+	@Autowired 
+	private UserAppService _userAppService;
 
 	@Autowired
 	private IUserMapper _userMapper;
@@ -86,7 +90,12 @@ public class OwnersAppService implements IOwnersAppService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public UpdateOwnersOutput update(Long  ownersId, UpdateOwnersInput input) {
 
-		UserEntity user = _userManager.update(_userMapper.updateUserInputToUserEntity(input));
+		UserEntity user = _userMapper.updateUserInputToUserEntity(input);
+        FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(Long.valueOf(ownersId));
+	
+        user.setVersion(currentUser.getVersion());
+        user.setPassword(currentUser.getPassword());
+        user=_userManager.update(user);
 		OwnersEntity owners = mapper.updateOwnersInputToOwnersEntity(input);
 		OwnersEntity updatedOwners = _ownersManager.update(owners);
 
