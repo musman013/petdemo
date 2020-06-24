@@ -204,7 +204,7 @@ public class VisitsController {
 			{
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}
-			else if(input.getStatus().equals(Status.CANCELLED)) {
+			else if(!visit.getStatus().equals(Status.COMPLETED) && input.getStatus().equals(Status.CANCELLED)) {
 
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}
@@ -212,7 +212,7 @@ public class VisitsController {
 		}
 
 		else if (owner !=null && user.getId() == owner.getId()) {
-			if(new Date().after(visit.getVisitDate()) )
+			if(new Date().after(visit.getVisitDate()))
 			{
 				throw new EntityNotFoundException(
 						String.format("Visit time has been expired"));
@@ -227,7 +227,7 @@ public class VisitsController {
 
 		else if (vet != null ) {
 
-			if(visit.getStatus().equals(Status.CONFIRMED) && input.getStatus().equals(Status.COMPLETED))
+			if(new Date().after(visit.getVisitDate()) && visit.getStatus().equals(Status.CONFIRMED) && input.getStatus().equals(Status.COMPLETED))
 			{
 				Optional.ofNullable(input.getInvoiceAmount()).orElseThrow(() -> new InvalidInputException("Invoice Amount should not be null"));
 
