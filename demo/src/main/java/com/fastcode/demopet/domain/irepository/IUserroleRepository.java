@@ -17,4 +17,7 @@ public interface IUserroleRepository extends JpaRepository<UserroleEntity, Userr
 
 	@Query("select e from UserroleEntity e where e.userId = ?1")
 	List<UserroleEntity> findByUserId(Long userId);
+	
+	@Query("select e from UserroleEntity e where e.roleId = ?1")
+	List<UserroleEntity> findByRoleId(Long roleId);
 }

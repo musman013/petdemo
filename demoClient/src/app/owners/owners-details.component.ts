@@ -53,8 +53,6 @@ export class OwnersDetailsComponent extends BaseDetailsComponent<IOwners> implem
 			firstName: ['', Validators.required],
 			isActive: [false],
 			lastName: ['', Validators.required],
-			password: ['', Validators.required],
-			confirmPassword: ['', Validators.required],
 			phoneNumber: [''],
 			userName: ['', Validators.required],
 

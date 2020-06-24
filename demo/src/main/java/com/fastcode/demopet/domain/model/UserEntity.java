@@ -1,11 +1,9 @@
 package com.fastcode.demopet.domain.model;
 
-import com.fastcode.demopet.domain.model.RoleEntity;
 import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -112,14 +110,32 @@ public class  UserEntity extends AbstractEntity {
     @Basic
     @Column(name = "TwoFactorEnabled", nullable = true)
     private Boolean isTwoFactorEnabled;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) 
-    private Set<UserpermissionEntity> userpermissionSet = new HashSet<UserpermissionEntity>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) 
-    private Set<UserroleEntity> userroleSet = new HashSet<UserroleEntity>(); 
     
-    public void addUserpermission(UserpermissionEntity userpermission) {
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+  	private Set<DashboardEntity> dashboardSet = new HashSet<DashboardEntity>(); 
+  	
+  	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL) 
+	private Set<DashboardversionEntity> dashboardversionSet = new HashSet<DashboardversionEntity>(); 
+  
+  	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+  	private Set<ReportEntity> reportSet = new HashSet<ReportEntity>(); 
+  	
+  	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+  	private Set<ReportversionEntity> reportversionSet = new HashSet<ReportversionEntity>(); 
+  	
+  	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+  	private Set<UserpermissionEntity> userpermissionSet = new HashSet<UserpermissionEntity>();
+
+  	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private Set<UserroleEntity> userroleSet = new HashSet<UserroleEntity>(); 
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+  	private Set<ReportuserEntity> reportuserSet = new HashSet<ReportuserEntity>();
+  	
+  	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+  	private Set<DashboarduserEntity> dashboarduserSet = new HashSet<DashboarduserEntity>(); 
+  	
+  	public void addUserpermission(UserpermissionEntity userpermission) {
 		userpermissionSet.add(userpermission);
 		userpermission.setUser(this);
 	}
@@ -138,5 +154,66 @@ public class  UserEntity extends AbstractEntity {
 		userroleSet.remove(userrole);
 		userrole.setUser(null);
 	}
-    
+	
+	public void addReportversion(ReportversionEntity reportVersion) {
+		reportversionSet.add(reportVersion);
+		reportVersion.setUser(this);
+	}
+
+	public void removeReportversion(ReportversionEntity reportVersion) {
+		reportversionSet.remove(reportVersion);
+		reportVersion.setUser(null);
+	}
+	
+	public void addReport(ReportEntity report) {
+		reportSet.add(report);
+		report.setUser(this);
+	}
+
+	public void removeReport(ReportEntity report) {
+		reportSet.remove(report);
+		report.setUser(null);
+	}
+	
+	public void addReportuser(ReportuserEntity reportUser) {
+		reportuserSet.add(reportUser);
+		reportUser.setUser(this);
+	}
+
+	public void removeReportuser(ReportuserEntity reportUser) {
+		reportuserSet.remove(reportUser);
+		reportUser.setUser(null);
+	}
+	
+	public void addDashboardversion(DashboardversionEntity dashboardVersion) {
+		dashboardversionSet.add(dashboardVersion);
+		dashboardVersion.setUser(this);
+	}
+
+	public void removeDashboardversion(DashboardversionEntity dashboardVersion) {
+		dashboardversionSet.remove(dashboardVersion);
+		dashboardVersion.setUser(null);
+	}
+	
+	public void addDashboard(DashboardEntity dashboard) {
+		dashboardSet.add(dashboard);
+		dashboard.setUser(this);
+	}
+
+	public void removeDashboard(DashboardEntity dashboard) {
+		dashboardSet.remove(dashboard);
+		dashboard.setUser(null);
+	}
+	
+	public void addDashboarduser(DashboarduserEntity dashboarduser) {
+		dashboarduserSet.add(dashboarduser);
+		dashboarduser.setUser(this);
+	}
+
+	public void removeDashboarduser(DashboarduserEntity dashboarduser) {
+		dashboarduserSet.remove(dashboarduser);
+		dashboarduser.setUser(null);
+	}
+	
+	
 }

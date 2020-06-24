@@ -42,6 +42,10 @@ public class UserroleManager implements IUserroleManager {
 		return _userroleRepository.save(userrole);
 	}
 	
+	public List<UserroleEntity> findByRoleId(Long roleId){
+		 return _userroleRepository.findByRoleId(roleId);
+	 }
+	
 	public List<UserroleEntity> findByUserId(Long userId)
 	{
 		return _userroleRepository.findByUserId(userId);

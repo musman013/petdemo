@@ -155,7 +155,7 @@ public class OwnersController {
     }
     
 	
-	
+
 	// ------------ Update owners ------------
     @PreAuthorize("hasAnyAuthority('OWNERSENTITY_UPDATE')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)

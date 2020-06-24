@@ -11,8 +11,18 @@ import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.domain.owners.IOwnersManager;
 import com.fastcode.demopet.domain.vets.IVetsManager;
+import com.fastcode.demopet.reporting.domain.dashboarduser.DashboarduserManager;
+import com.fastcode.demopet.reporting.domain.dashboardversion.IDashboardversionManager;
+import com.fastcode.demopet.reporting.domain.dashboardversionreport.IDashboardversionreportManager;
+import com.fastcode.demopet.reporting.domain.reportuser.ReportuserManager;
+import com.fastcode.demopet.reporting.domain.reportversion.IReportversionManager;
+import com.fastcode.demopet.domain.model.DashboarduserEntity;
+import com.fastcode.demopet.domain.model.DashboardversionEntity;
+import com.fastcode.demopet.domain.model.DashboardversionreportEntity;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.QUserEntity;
+import com.fastcode.demopet.domain.model.ReportuserEntity;
+import com.fastcode.demopet.domain.model.ReportversionEntity;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +52,21 @@ public class UserAppService implements IUserAppService {
 	
 	@Autowired
 	private IVetsManager _vetManager;
+	
+	@Autowired
+	private DashboarduserManager _dashboarduserManager;
+	
+	@Autowired
+	private ReportuserManager _reportuserManager;
+	
+	@Autowired
+	private IDashboardversionManager _dashboardversionManager;
+	
+	@Autowired
+	private IReportversionManager _reportversionManager;
+	
+	@Autowired
+	private IDashboardversionreportManager _reportDashboardManager;
 
 	@Autowired
 	private IUserMapper mapper;
@@ -77,6 +102,38 @@ public class UserAppService implements IUserAppService {
 		{
 			_vetManager.delete(vet);
 		}
+		
+		List<DashboardversionreportEntity> dvrList = _reportDashboardManager.findByUserId(userId);
+		for(DashboardversionreportEntity dvr : dvrList) {
+			_reportDashboardManager.delete(dvr);
+		}
+		
+	    List<DashboarduserEntity> duList = _dashboarduserManager.findByUserId(userId);
+	    for(DashboarduserEntity du : duList )
+	    {
+	    	_dashboarduserManager.delete(du);
+	    }
+	    
+	    List<ReportuserEntity> ruList = _reportuserManager.findByUserId(userId);
+	    for(ReportuserEntity du : ruList )
+	    {
+	    	_reportuserManager.delete(du);
+	    }
+	    
+	   List<DashboardversionEntity> dvList= _dashboardversionManager.findByUserId(userId);
+	   for(DashboardversionEntity du : dvList )
+	    {
+	    	_dashboardversionManager.delete(du);
+	    }
+	   
+	   List<ReportversionEntity> rvList = _reportversionManager.findByUserId(userId);
+	   for(ReportversionEntity rv : rvList)
+	   {
+		   _reportversionManager.delete(rv);
+	   }
+	    
+		_userManager.delete(existing);
+		
 		
 		_userManager.delete(existing);
 	

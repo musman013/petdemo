@@ -50,6 +50,7 @@ export class VetsDetailsComponent extends BaseDetailsComponent<IVets> implements
 			firstName: ['', Validators.required],
 			lastName: ['', Validators.required],
 			phoneNumber: [''],
+			isActive: [false],
 			userName: ['', Validators.required],
 		});
 

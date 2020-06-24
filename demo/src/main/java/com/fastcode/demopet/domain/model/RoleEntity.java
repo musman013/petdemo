@@ -1,7 +1,7 @@
 package com.fastcode.demopet.domain.model;
 
 import javax.persistence.*;
-import java.io.Serializable;
+
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -53,5 +53,32 @@ public class RoleEntity extends AbstractEntity {
     	userroleSet.remove(userrole);
         userrole.setRole(null);
     } 
+    
+    
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) 
+  	private Set<ReportroleEntity> reportroleSet = new HashSet<ReportroleEntity>(); 
+  	
+  	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL) 
+  	private Set<DashboardroleEntity> dashboardroleSet = new HashSet<DashboardroleEntity>(); 
+    
+    public void addDashboardrole(DashboardroleEntity dashboardrole) {
+        dashboardroleSet.add(dashboardrole);
+        dashboardrole.setRole(this);
+    }
+ 
+    public void removeDashboardrole(DashboardroleEntity dashboardrole) {
+    	dashboardroleSet.remove(dashboardrole);
+        dashboardrole.setRole(null);
+    }
+    
+    public void addReportrole(ReportroleEntity reportrole) {
+        reportroleSet.add(reportrole);
+        reportrole.setRole(this);
+    }
+ 
+    public void removeReportrole(ReportroleEntity reportrole) {
+    	reportroleSet.remove(reportrole);
+        reportrole.setRole(null);
+    }
 
 }

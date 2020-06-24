@@ -5,8 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-
-import javax.validation.constraints.Positive;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.UserroleId;
 import com.fastcode.demopet.domain.model.UserEntity;
@@ -22,6 +20,8 @@ public interface IUserroleManager {
     UserroleEntity update(UserroleEntity userrole);
 
     UserroleEntity findById(UserroleId userroleId);
+    
+    List<UserroleEntity> findByRoleId(Long roleId);
     
     List<UserroleEntity> findByUserId(Long userId);
 	

@@ -21,16 +21,10 @@ import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
-import com.fastcode.demopet.commons.domain.EmptyJsonResponse;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.*;
-import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
-import com.fastcode.demopet.application.owners.dto.OwnerProfile;
-import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
-import com.fastcode.demopet.application.visits.VisitsAppService;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 

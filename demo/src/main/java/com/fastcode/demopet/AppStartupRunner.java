@@ -94,6 +94,10 @@ public class AppStartupRunner implements ApplicationRunner {
 		entityList.add("invoices");
 		entityList.add("vetspecialties");
 		entityList.add("owners");
+		
+		entityList.add("report");
+		entityList.add("dashboard");
+		entityList.add("reportdashboard");
 
 		for(String entity: entityList) {
 			if(!environment.getProperty("fastCode.auth.method").equals("database") && entity.equals("user"))
@@ -102,17 +106,45 @@ public class AppStartupRunner implements ApplicationRunner {
 				addEntityPermissions(entity, role.getId(), false);
 		}
 		
-		addEntityPermissions("invoices", role1.getId(), true);
-		addEntityPermissions("visits", role1.getId(), true);
-		addEntityPermissions("pets", role1.getId(), false);
 		
-		addEntityPermissions("invoices", role2.getId(), true);
-		addEntityPermissions("visits", role2.getId(), true);
-
+		assignEntityPermissions("pets", role1);
+		assignEntityReadPermission("invoices", role1);
+		assignEntityReadPermission("visits", role1);
+		assignEntityReadPermission("invoices", role2);
+		assignEntityReadPermission("visits", role2);
+		
 		addEntityHistoryPermissions("entityHistory", role.getId());
 		addAuditTrailPermission("auditTrail", role.getId());
 		loggingHelper.getLogger().info("Completed creating the data in the database");
 
+	}
+	
+	private void assignEntityPermissions(String entity, RoleEntity role)
+	{
+		
+		PermissionEntity pe= permissionManager.findByPermissionName(entity.toUpperCase() + "ENTITY_UPDATE");
+		RolepermissionEntity pe2RP= new RolepermissionEntity(pe.getId(), role.getId());
+		rolepermissionManager.create(pe2RP);
+		
+		PermissionEntity pe1 = permissionManager.findByPermissionName(entity.toUpperCase() + "ENTITY_READ");
+		RolepermissionEntity pe2RP1 = new RolepermissionEntity(pe1.getId(), role.getId());
+		rolepermissionManager.create(pe2RP1);
+		
+		PermissionEntity pe2= permissionManager.findByPermissionName(entity.toUpperCase() + "ENTITY_CREATE");
+		RolepermissionEntity pe2RP2 = new RolepermissionEntity(pe2.getId(), role.getId());
+		rolepermissionManager.create(pe2RP2);
+		
+		PermissionEntity pe3= permissionManager.findByPermissionName(entity.toUpperCase() + "ENTITY_DELETE");
+		RolepermissionEntity pe2RP3= new RolepermissionEntity(pe3.getId(), role.getId());
+		rolepermissionManager.create(pe2RP3);
+		
+	}
+	private void assignEntityReadPermission(String entity, RoleEntity role)
+	{
+		PermissionEntity pe= permissionManager.findByPermissionName(entity.toUpperCase() + "ENTITY_READ");
+		
+		RolepermissionEntity pe2RP = new RolepermissionEntity(pe.getId(), role.getId());
+		rolepermissionManager.create(pe2RP);
 	}
 
 	private void addEntityHistoryPermissions(String entity, long roleId) {
