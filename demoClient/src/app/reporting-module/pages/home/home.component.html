@@ -1,0 +1,22 @@
+<div fxLayout="row" fxLayoutAlign="center">
+  <mat-card style="width:300px;" class="mt-50">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" fxLayout="column" fxLayoutAlign="center center">
+      <h3>Login</h3>
+      <mat-form-field>
+          <mat-label>Username</mat-label>
+          <input type="text" matInput placeholder="" formControlName="userName">
+          <mat-error *ngIf="!loginForm.get('userName').valid">
+              Email is <strong>required</strong>
+          </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input type="password" matInput placeholder="" formControlName="password">
+          <mat-error *ngIf="!loginForm.get('password').valid">
+              Password is <strong>required</strong>
+          </mat-error>
+      </mat-form-field>
+      <button type="submit" mat-stroked-button color="primary">Login</button>
+    </form>
+  </mat-card>
+</div>

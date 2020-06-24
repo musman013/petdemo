@@ -24,11 +24,11 @@ export class PickerComponent implements OnInit {
 	loading = false;
 	submitted = false;
 	title: string;
-	items: IPickerItem[] = [];
+	items: any[] = [];
 	@ViewChild(MatSelectionList,{ static: true }) selectionList: MatSelectionList;
 
-	selectedItem: IPickerItem;
-	selectedItems: IPickerItem[] = [];
+	selectedItem: any;
+	selectedItems: any[] = [];
 	errorMessage = '';
 	displayField: string;
 	constructor(private router: Router,

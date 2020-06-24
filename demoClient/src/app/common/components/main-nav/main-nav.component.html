@@ -42,7 +42,7 @@
 
         <mat-nav-list class="subnav">
           <ng-container *ngFor="let entity of entityList">
-            <a *ngIf="permissions[entity]" mat-list-item class="mat-sub-list-item" [routerLink]="[entity]">
+            <a *ngIf="permissions[entity]" mat-list-item class="mat-sub-list-item" routerLink="/{{entity}}">
               {{entity}}
             </a>
           </ng-container>
@@ -58,6 +58,23 @@
         </mat-expansion-panel-header>
 
         <mat-nav-list class="subnav">
+
+          <mat-expansion-panel class="expansion-panel">
+            <mat-expansion-panel-header class="subnav-header">
+              <!-- <i class="material-icons">description</i> -->
+              &nbsp;{{'MainNav.AdhocReports' | translate }}
+            </mat-expansion-panel-header>
+
+            <mat-nav-list class="subnav">
+
+              <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/schema'"> Generate Schema </a>
+              <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/reports/add'"> Generate
+                Report</a>
+              <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/myreports'"> My Reports </a>
+              <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/dashboard'"> My Dashboard </a>
+
+            </mat-nav-list>
+          </mat-expansion-panel>
 
           <mat-expansion-panel class="expansion-panel">
             <mat-expansion-panel-header class="subnav-header">
@@ -113,7 +130,7 @@
 
           <mat-nav-list class="subnav">
             <ng-container *ngFor="let entity of authEntityList">
-              <a *ngIf="permissions[entity]" mat-list-item class="mat-sub-list-item" [routerLink]="[entity]">
+              <a *ngIf="permissions[entity]" mat-list-item class="mat-sub-list-item" routerLink="/{{entity}}">
                 {{entity}}
               </a>
             </ng-container>

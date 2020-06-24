@@ -1,7 +1,7 @@
 export interface IInvoices {  
 	id: number;
-	amount: Date;
-	status: Date;
+	amount: number;
+	status: string;
 	visitsDescriptiveField?: string;
 	visitId: number;
 }

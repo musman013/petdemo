@@ -20,7 +20,7 @@ export var en: any = {
   },
   "CONFIRM-DIALOG": {
     "TITLE":"Confirm",
-    "MESSAGE": "Are you sure you want you to proceed?",
+    "MESSAGE": "Are you sure you want to proceed?",
     "DELETE": {
       "MESSAGE": "Are you sure you want to delete this entry?",
       "TITLE": "Delete"

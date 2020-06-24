@@ -55,6 +55,9 @@
         color: mat-color($background, background) !important;
         font-size: mat-font-size($fontConfig, button) !important;
     }
+    button.mat-stroked-button.mat-primary {
+        color: mat-color($fc-primary-color) !important;
+    }
 
     .mat-form-field.mat-primary {
         background: transparent !important;

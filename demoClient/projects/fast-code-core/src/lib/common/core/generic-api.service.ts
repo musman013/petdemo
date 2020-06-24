@@ -12,7 +12,7 @@ export class GenericApiService<T> {
   protected url = "";
   protected apiUrl = "";
   public suffix = '';
-  constructor(private http: HttpClient,  private config: IForRootConf, suffix: string) {
+  constructor(protected http: HttpClient,  private config: IForRootConf, suffix: string) {
     this.apiUrl = this.config.apiUrl;
     this.url = this.config.apiUrl + '/' + suffix;
     this.suffix = suffix;
@@ -61,6 +61,26 @@ export class GenericApiService<T> {
   getAssociations(parentSuffix: string, parentId: any, searchFields?: ISearchField[], offset?: number, limit?: number, sort?: string): Observable<T[]> {
 
     let url = this.apiUrl + '/' + parentSuffix + '/' + parentId + '/' + this.suffix;
+    let params = ServiceUtils.buildQueryData(searchFields, offset, limit, sort);
+    return this.http.get<T[]>(url, { params }).pipe(map((response: any) => {
+      return response;
+    }), catchError(this.handleError));
+  }
+
+  /**
+   * Fetches list of items against some
+   * parent entity which is not assigned to .
+   * @param parentSuffix Url suffix of the parent entity.
+   * @param parentId
+   * @param searchFields Search criteria. 
+   * @param offset No. of items to be skipped.
+   * @param limit Maximum no. of records.
+   * @param sort Field and direction information for sorting.
+   * @returns Observable of items list.
+   */
+  getAvailableAssociations(parentSuffix: string, parentId: any, searchFields?: ISearchField[], offset?: number, limit?: number, sort?: string): Observable<T[]> {
+
+    let url = this.apiUrl + '/' + parentSuffix + '/' + parentId + '/available' + this.suffix[0].toUpperCase() + this.suffix.slice(1);
     let params = ServiceUtils.buildQueryData(searchFields, offset, limit, sort);
     return this.http.get<T[]>(url, { params }).pipe(map((response: any) => {
       return response;

@@ -6,6 +6,7 @@
 @import 'theme-main.scss';
 @import url("../assets/font.css");
 @import './dynamic-styles.scss';
+@import "reporting.scss";
 html,
 body {
   height: 100%;
@@ -119,6 +120,9 @@ body {
   }
   .full-width {
     width: 100%;
+  }
+  .full-height{
+    height: 100%;
   }
   
   * {

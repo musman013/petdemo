@@ -1,0 +1,124 @@
+import {Component, OnInit, Input, OnChanges, SimpleChanges} from '@angular/core';
+import { CubejsClient } from '@cubejs-client/ngx';
+import { Subject, throwError } from 'rxjs';
+import * as moment from 'moment';
+import { Injectable, Inject } from '@angular/core';
+import { Observable, from } from 'rxjs';
+
+import cubejs from '@cubejs-client/core';
+
+import { ResultSet, MetaResult } from '../../models/cube.type';
+
+@Component({
+  selector: 'app-chart',
+  templateUrl: './chart.component.html',
+  styleUrls: ['./chart.component.scss']
+})
+export class ChartComponent implements OnInit, OnChanges {
+
+  @Input() chartType;
+  @Input() ctype = 'line';
+  @Input() query;
+  @Input() title;
+  private cubeJsApi;
+  private querySubject;
+  private ready = false;
+  private showChart = false;
+  private query2;
+  public chartData;
+  public chartLabels;
+  config = {
+    token:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.K9PiJkjegbhnw4Ca5pPlkTmZihoOm42w8bja9Qs2qJg",
+    options: {
+      apiUrl: "http://localhost:4200/cubejs-api/v1"
+    }
+  };
+  constructor(private cubejs: CubejsClient) {}
+  resultChanged(result){
+    console.log('Final res');
+    console.log(result);
+    console.log('Final res');
+  }
+  ngOnInit() {
+    this.querySubject = new Subject();
+    this.watch(this.querySubject)
+      .subscribe(this.resultChanged, err => console.log('HTTP Error'));
+    this.querySubject.next(this.query);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.showChart = this.chartType !== 'singleValue';
+    if (changes.hasOwnProperty('query')) {
+      if(Object.keys(changes.query.currentValue).length > 0){
+        this.query = changes.query.currentValue;
+        if (changes.query.previousValue !== undefined) {
+          this.chartData = [{data: []}];
+          this.querySubject.next(this.query);
+        }
+      } else{
+        this.title = '';
+        this.showChart = false;
+        this.chartData = 'Select measures to view chart!';
+      }
+    }
+  }
+
+  private apiInstace() {
+    if(!this.cubeJsApi) {
+      if (this.config instanceof Observable) {
+        this.config.subscribe((config) => {
+          this.cubeJsApi = cubejs(
+            config.token,
+            config.options
+          )
+        })
+      } else {
+        this.cubeJsApi = cubejs(
+          this.config.token,
+          this.config.options
+        );
+      }
+    }
+    return this.cubeJsApi;
+  }
+
+  public load(...params):Observable<ResultSet> {
+    return from(<Promise<ResultSet>>this.apiInstace().load(...params).then(
+      resultSet => {
+        console.log("in load", resultSet);
+        return resultSet;
+      })
+      .catch(error => {
+        return {"error": 'eeerror man'};
+      }));
+  }
+
+  public sql(...params):Observable<any> {
+    return from(this.apiInstace().sql(...params));
+  }
+
+  public meta(...params):Observable<MetaResult> {
+    return from(<Promise<MetaResult>>this.apiInstace().meta(...params));
+  }
+
+  public watch(query, params = {}):Observable<ResultSet> {
+    
+    return Observable.create(observer =>
+      query.subscribe({
+        next: async query => {
+          const resultSet = await this.load(query, params);
+          console.log('res in watch1');
+          console.log(resultSet);
+          try{
+            observer.next(resultSet);
+          }catch(err){
+            observer.error("some error");
+          }
+          return resultSet;
+        }
+      })
+    );
+  }
+
+}
