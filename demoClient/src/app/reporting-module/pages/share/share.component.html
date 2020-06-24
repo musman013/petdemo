@@ -1,0 +1,26 @@
+<div class="full-height">
+	<a name="cancel" href="javascript:void(0)" (click)="cancel()" class="share-cancel-btn"><i
+			class="material-icons">cancel</i></a>
+	<mat-tab-group class="share-tab-group">
+		<mat-tab label="Users">
+			<app-share-picker 
+				[displayField]="userDescriptiveField"
+				[resourceObjectId]="data.id"
+				[serviceMethod]="userServiceMethod"
+				[shareType]="data.type"
+				(selectionUpdated)="selectionUpdated($event, 'users')">
+			</app-share-picker>
+		</mat-tab>
+		<mat-tab label="Roles">
+			<app-share-picker
+				[displayField]="roleDescriptiveField"
+				[resourceObjectId]="data.id"
+				[serviceMethod]="roleServiceMethod"
+				[shareType]="data.type"
+				(selectionUpdated)="selectionUpdated($event, 'roles')">
+			</app-share-picker>
+		</mat-tab>
+	</mat-tab-group>
+
+	<button name="save" mat-raised-button color="primary" class="select-btn" (click)="select()">Select</button>
+</div>

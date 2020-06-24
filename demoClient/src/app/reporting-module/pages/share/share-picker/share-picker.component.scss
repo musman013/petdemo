@@ -1,0 +1,36 @@
+.share-picker-list{
+    height: calc(100% - 85px);
+    overflow: auto;
+}
+
+.chip-edit{
+    background: #006064
+}
+
+.chip-read{
+    background: #f16b62
+}
+
+.chip-delete{
+    background: red
+}
+
+.access-select{
+    background: #006064;
+}
+
+.share-picker-container{
+    height: 100%;
+    overflow: auto;
+}
+
+.share-picker-container .mat-select{
+    width:50%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 5px
+}
+
+span .mat-icon{
+    font-size: 18px;
+}

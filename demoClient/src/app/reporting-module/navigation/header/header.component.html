@@ -1,0 +1,48 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button mat-icon-button  fxHide.gt-xs>
+      <mat-icon (click)="onClickToggle()">menu</mat-icon>
+    </button>
+    <h1>FastCode</h1>
+    <span class="menu-spacer"></span>
+    <div class="main-menu" fxHide.lt-sm>
+      <a mat-button [routerLink]="'/schema'" routerLinkActive="active"> Generate Schema </a>
+      <a mat-button [routerLink]="'/reports/add'" routerLinkActive="active"> Generate Report</a>
+      <a mat-button [routerLink]="'/myreports'" routerLinkActive="active"> Reports </a>
+      <a mat-button [routerLink]="'/dashboard'" routerLinkActive="active"> Dashboard </a>
+    </div>
+    <a mat-button (click)="logout()" routerLinkActive="active"> Logout </a>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+
+
+<!-- <mat-sidenav-container class="sidenav-container">
+  <mat-sidenav 
+    #drawer
+    class="sidenav"
+    fixedInViewport="true"
+    [attr.role]="'navigation'"
+    >
+
+    <mat-toolbar color="primary">
+    </mat-toolbar>
+    <mat-nav-list class="nav-list">
+      <mat-expansion-panel class="expansion-panel">
+        <mat-expansion-panel-header class="subnav-header">
+          <i class="material-icons">
+            account_box
+            </i> &nbsp;reports
+        </mat-expansion-panel-header>
+
+        <a mat-list-item class="sidenav-list-item" [routerLink]="'/schema'"> Generate Schema </a>
+        <a mat-list-item class="sidenav-list-item" [routerLink]="'/reports'"> Generate Report</a>
+        <a mat-list-item class="sidenav-list-item" [routerLink]="'/myreports'"> My Reports </a>
+        <a mat-list-item class="sidenav-list-item" [routerLink]="'/dashboard'"> My Dashboard </a>
+
+        </mat-expansion-panel>
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+</mat-sidenav-container> -->

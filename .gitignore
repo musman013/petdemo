@@ -1,7 +1,7 @@
 ######################
 # Project Specific
 ######################
-demo/src/main/java/com/fastcode/demopet/logging/*
+/demo/src/main/java/com/fastcode/demopet/logging/*
 
 ######################
 # Node

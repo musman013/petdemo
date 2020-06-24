@@ -1,0 +1,94 @@
+<section  style="height: calc(100% - 65px) !important" fxLayout="row" fxLayout.lt-sm="column">
+  <div class="schema-left-panel" fxFlex.gt-xs="35" fxFlex.gt-sm="25" fxFlex.gt-md="25" fxLayout="column">
+    <button mat-raised-button color="primary" fxFlexAlign="center" fxFlexOffset="20px" (click)="onClickGenerateSchema()"
+      [disabled]="selectedSchemas.length<1">
+      <mat-icon>settings</mat-icon> Generate Schema
+    </button>
+    <mat-tab-group fxFlexOffset="20px" style="height: calc(100% - 76px);">
+      <mat-tab class="schema-tabs">
+        <ng-template mat-tab-label>
+          Tables List
+        </ng-template>
+        <form [formGroup]="schemaFormGroup">
+
+          <mat-accordion class="example-headers-align">
+            <ng-container *ngFor="let s of allSchemas">
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{s}}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <mat-list formArrayName="schemaList">
+                  <mat-list-item *ngFor="let table of allData[s]; let i = index;">
+                    <mat-checkbox (change)="checkSelectedList(i, s, table, $event)" value="table" [formControlName]="i"
+                      title="{{table}}">{{table}}</mat-checkbox>
+                  </mat-list-item>
+                </mat-list>
+
+
+              </mat-expansion-panel>
+            </ng-container>
+          </mat-accordion>
+
+          <!-- <mat-list>
+            <ng-container *ngFor="let s of allSchemas">
+              <mat-list-item class="dbname" appSchemadropdown>{{s}}</mat-list-item>
+              <mat-list style="margin-left:15px;" formArrayName="schemaList">
+                <mat-list-item *ngFor="let table of allData[s]; let i = index;">
+                  <mat-checkbox (change)="checkSelectedList(i, s, table, $event)" class="example-margin" value="table"
+                    [formControlName]="i">{{table}}</mat-checkbox>
+                </mat-list-item>
+              </mat-list>
+            </ng-container>
+          </mat-list> -->
+        </form>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          Files
+        </ng-template>
+        <!-- <mat-list>
+          <mat-list-item class="schema-file-list-item" *ngFor="let file of allFiles | keyvalue"
+            (click)="showFile(file.value)">
+            {{file.value.fileName}}
+          </mat-list-item>
+        </mat-list> -->
+        <div fxLayout fxLayoutGap="20" class="list-container">
+          <div fxLayout="column" class="report-list">
+            <div class="list">
+              <div *ngFor="let file of allFiles | keyvalue" (click)="showFile(file.value)"
+                [ngClass]="{'list-item': true, 'active': (fileContent.fileName === file.value.fileName)}"
+                 class="list-item">
+                <span class="report-icon">
+                  <mat-icon>description</mat-icon>
+                </span>
+                <div fxLayout="fc-row">
+                  <div class="title" fxFlex>
+                    {{file.value.fileName}}
+                  </div>
+                </div>
+                
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+
+  <div class="schema-right-panel" fxFlex.gt-xs="65" fxFlex.gt-sm="75" fxFlex.gt-md="75" fxLayout="column"
+    fxLayoutAlign="start">
+    <button mat-raised-button color="primary" fxFlexAlign="end" fxFlexOffset="0px" (click)="onClickUpdateSchema()"
+      [disabled]="!fileContent.fileName">
+      <mat-icon>settings</mat-icon> Update
+    </button>
+    <div class="schema-file" fxFlexOffset="20px" contenteditable="true" (input)="postContent = $event.target.innerText">
+      {{fileContent.content}}
+    </div>
+  </div>
+
+</section>

@@ -6,13 +6,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
+import { CubejsClientModule } from '@cubejs-client/ngx';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/index';
 import { SwaggerComponent } from 'src/app/swagger/swagger.component';
-import { ErrorPageComponent  } from './error-page/error-page.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 /** core components and filters for authorization and authentication **/
 
 import { AuthenticationService } from './core/authentication.service';
@@ -50,9 +51,17 @@ import { OwnersListComponent, OwnersDetailsComponent, OwnersNewComponent } from 
 import { VetSpecialtiesListComponent, VetSpecialtiesDetailsComponent, VetSpecialtiesNewComponent } from './vet-specialties/index';
 import { InvoicesListComponent, InvoicesDetailsComponent, InvoicesNewComponent } from './invoices/index';
 import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
+import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
 
+const cubejsOptions = {
+	token:
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.K9PiJkjegbhnw4Ca5pPlkTmZihoOm42w8bja9Qs2qJg",
+	options: {
+		apiUrl: "http://localhost:4200/cubejs-api/v1"
+	}
+};
 export function HttpLoaderFactory(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient);
+	return new TranslateHttpLoader(httpClient);
 }
 
 @NgModule({
@@ -89,45 +98,47 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 		CompleteVisitComponent,
 		InvoicesListComponent,
 		InvoicesDetailsComponent,
-		InvoicesNewComponent
-  ],
-  imports: [
-    BrowserModule,
-    routingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    LayoutModule,
-    SharedModule,
-    IpEmailBuilderModule.forRoot({
-      xApiKey: 't7HdQfZjGp6R96fOV4P8v18ggf6LLTQZ1puUI2tz',
-      apiPath:environment.apiUrl
-    }),
-    SchedulerModule.forRoot({
-      apiPath: environment.apiUrl
-    }),
-    FastCodeCoreModule.forRoot({
-      apiUrl: environment.apiUrl
-    }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-	  },
-	  isolate: false
-    }),
+		InvoicesNewComponent,
+    ResourceViewComponent
+	],
+	imports: [
+		BrowserModule,
+		routingModule,
+		HttpClientModule,
+		BrowserAnimationsModule,
+		LayoutModule,
+		SharedModule,
+		CubejsClientModule.forRoot(cubejsOptions),
+		IpEmailBuilderModule.forRoot({
+			xApiKey: 't7HdQfZjGp6R96fOV4P8v18ggf6LLTQZ1puUI2tz',
+			apiPath: environment.apiUrl
+		}),
+		SchedulerModule.forRoot({
+			apiPath: environment.apiUrl
+		}),
+		FastCodeCoreModule.forRoot({
+			apiUrl: environment.apiUrl
+		}),
+		TranslateModule.forRoot({
+			loader: {
+				provide: TranslateLoader,
+				useFactory: HttpLoaderFactory,
+				deps: [HttpClient]
+			},
+			isolate: false
+		}),
 
-  ],
-  providers: [
+	],
+	providers: [
 		AuthenticationService,
 		GlobalPermissionService,
 		{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
 		{ provide: HTTP_INTERCEPTORS, useClass: JwtErrorInterceptor, multi: true },
 		AuthGuard,
 	],
-  bootstrap: [AppComponent],
-  entryComponents: [
-  ]
+	bootstrap: [AppComponent],
+	entryComponents: [
+	]
 })
 export class AppModule {
 }
