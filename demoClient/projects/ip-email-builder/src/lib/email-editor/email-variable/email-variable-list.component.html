@@ -11,7 +11,7 @@
 				</ul>
 			</div>
 			<div class="fc-col-md-4 fc-text-right">
-				<button mat-raised-button color="primary" [disabled] = "!IsCreatePermission" (click)="addNew()"><i
+				<button mat-raised-button color="primary" [disabled]="!IsCreatePermission" (click)="addNew()"><i
 						class="material-icons">
 						add_circle_outline
 					</i> &nbsp;{{'EMAIL-GENERAL.ACTIONS.ADD' | translate}}</button>
@@ -58,8 +58,7 @@
 						</button>
 						<button mat-icon-button color="warn"
 							aria-label="Example icon-button with a heart icon text-dangger"
-							matTooltip="{{'EMAIL-GENERAL.ACTIONS.DELETE' | translate}}" (click)="delete(item)"
-							 [disabled]="!IsDeletePermission">
+							matTooltip="{{'EMAIL-GENERAL.ACTIONS.DELETE' | translate}}" (click)="delete(item)">
 							<mat-icon color="warn">delete</mat-icon>
 						</button>
 					</mat-cell>

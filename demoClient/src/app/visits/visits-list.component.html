@@ -10,7 +10,8 @@
           <li><a>{{title}}</a></li>
           <li *ngIf="selectedAssociation" (click)="back()">
             <span *ngIf="selectedAssociation.associatedObj">
-              {{selectedAssociation.table}}: {{selectedAssociation.associatedObj[selectedAssociation.referencedDescriptiveField]}}
+              {{selectedAssociation.table}}:
+              {{selectedAssociation.associatedObj[selectedAssociation.referencedDescriptiveField]}}
             </span>
           </li>
         </ul>
@@ -24,69 +25,77 @@
     </div>
   </div>
   <mat-card>
-	  <app-list-filters [columnsList]="selectedColumns" (onSearch)="applyFilter($event)"></app-list-filters>
-  	<div class="table-container">
-  		<mat-table matSort [dataSource]="items" class="mat-elevation-z8">
-  			<ng-container matColumnDef="description">
-  				<mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('description')"> {{getFieldLabel("Description")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item">
-  					{{ item.description }}
-  				</mat-cell>
-  			</ng-container>
-  			<ng-container matColumnDef="id">
-  				<mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('id')"> {{getFieldLabel("Id")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item">
-  					{{ item.id }}
-  				</mat-cell>
-  			</ng-container>
-  			<ng-container matColumnDef="visitDate">
-  				<mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('visitDate')"> {{getFieldLabel("VisitDate")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item">
-  					{{item.visitDate | date: defaultDateFormat}}
-  				</mat-cell>
-  			</ng-container>
-  			<ng-container matColumnDef="Pets">
-  				<mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Pets')"> {{getFieldLabel("Pets")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item">
-  					{{ item.petsDescriptiveField }}
-  				</mat-cell>
-  			</ng-container>
-  			<ng-container matColumnDef="Vets">
-  				<mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Vets')"> {{getFieldLabel("Vets")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item">
-  					{{ item.vetsDescriptiveField }}
-  				</mat-cell>
-  			</ng-container>
-  			<ng-container matColumnDef="actions">
-  				<mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
-			<button name="complete" mat-button aria-label="complete visit action with a heart icon"
-			 (click)="completeVisit(item)">
+    <app-list-filters [columnsList]="selectedColumns" (onSearch)="applyFilter($event)"></app-list-filters>
+    <div class="table-container">
+      <mat-table matSort [dataSource]="items" class="mat-elevation-z8">
+        <ng-container matColumnDef="description">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('description')">
+            {{getFieldLabel("Description")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{ item.description }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="id">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('id')">
+            {{getFieldLabel("Id")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{ item.id }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="visitDate">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('visitDate')">
+            {{getFieldLabel("VisitDate")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{item.visitDate | date: defaultDateFormat}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="Pets">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Pets')">
+            {{getFieldLabel("Pets")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{ item.petsDescriptiveField }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="Vets">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Vets')">
+            {{getFieldLabel("Vets")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{ item.vetsDescriptiveField }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
+            <button name="complete" *ngIf="isVet" mat-button aria-label="complete visit action with a heart icon"
+              (click)="completeVisit(item)">
               <mat-label>Complete</mat-label>
             </button>
-            <button name="cancel" mat-button aria-label="cancel visit action"
-               (click)="changeStatus('cancel')">
+            <button name="cancel" *ngIf="!isVet" mat-button aria-label="cancel visit action"
+              (click)="changeStatus(item, 'CANCELLED')">
               <mat-label>Cancel</mat-label>
             </button>
-            <button name="confirm" mat-button aria-label="confirm visit action" (click)="changeStatus('confirm')">
+            <button name="confirm" *ngIf="!isVet" mat-button aria-label="confirm visit action"
+              (click)="changeStatus(item, 'CONFIRMED')">
               <mat-label>Confirm</mat-label>
             </button>
             <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"
               matTooltip="('GENERAL.ACTIONS.OPEN-DETAILS' | translate)" (click)="openDetails(item)">
               <mat-icon>open_in_new</mat-icon>
             </button>
-            <button name="delete" mat-icon-button color="warn" aria-label="Example icon-button with a heart icon text-dangger" matTooltip="('GENERAL.ACTIONS.DELETE' | translate)"   [disabled]="!IsDeletePermission"
+            <button name="delete" mat-icon-button color="warn"
+              aria-label="Example icon-button with a heart icon text-dangger"
+              matTooltip="('GENERAL.ACTIONS.DELETE' | translate)" [disabled]="!IsDeletePermission"
               (click)="delete(item)">
               <mat-icon color="warn">delete</mat-icon>
             </button>
-  				</mat-cell>
-  			</ng-container>
-  			<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  			<mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  		</mat-table>
-  	</div>
-    <section  class="small-spinner-container" *ngIf="isLoadingResults">
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </div>
+    <section class="small-spinner-container" *ngIf="isLoadingResults">
       <mat-spinner></mat-spinner>
     </section>
-	</mat-card>
+  </mat-card>
 </div>

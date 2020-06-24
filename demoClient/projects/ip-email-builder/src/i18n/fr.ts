@@ -13,7 +13,7 @@ export var fr: any = {
 			"DE-LINK": "De-link"
         },
         "ERRORS": {
-            "REQUIRED": "Field is required.",
+            "REQUIRED": "Field is required or is Invalid.",
             "LENGTH-EXCEEDING": "Length cannot be greater than {{length}}.",
             "LENGTH-SHORT": "Length cannot be less than {{length}}.",
             "INVALID-FORMAT": "Invalid format.",
@@ -33,7 +33,11 @@ export var fr: any = {
                 "PROPERTY-TYPE": "Property Type",
                 "DEFAULT-VALUE": "Default Value",
                 "LAST-MODIFICATION-TIME": "Modified Date",
-                "LAST-MODIFIER-USER-ID": "Modified User"
+                "LAST-MODIFIER-USER-ID": "Modified User",
+                "SELECT-VALUE":"Select Date Format",
+                "SELECT-DATE":"Select Date",
+                "SELECT-DECIMAL":"Select Decimal Precision",
+                "ADD-NEW":"Add New"
 
             },
             "MESSAGES": {
@@ -44,6 +48,7 @@ export var fr: any = {
         "EMAIL-TEMPLATE": {
             "FIELDS": {
                 "TEMPLATE-NAME": "Template Name f",
+                "DESCRIPTION": "Description",
                 "SUBJECT": "Subject f",
                 "CATEGORY": "Category f",
                 "CC": "Cc",
@@ -60,10 +65,14 @@ export var fr: any = {
         },
         "SAVE-EMAIL-BUTTON-TEXT": "Next: Email Body",
         "SEND-TEST-EMAIL-BUTTON-TEXT": "Send a test email",
+        "RESET-BUTTON-TEXT": "Reset",
         "TEMPLATE-ATTRIBUTE-TITLE": "Email Template Attributes",
         "MESSAGES":{
             "SELECT-RECEIVER-PROMPT": "Where to send?",
             "EMAIL-SENT-SUCCESS": "Your test email has been successfully sent.",
+            "EMAIL-SAVED-SUCCESS": "Email template saved.",
+            "EMAIL-SENDING": "Sending email ....",
+            "RESET-SUCCESS":"Email Template reset successfully",
             "SAMPLE-TEMPLATE": "This text and Image are injected from <strong>Root Module</strong>. It's an example of dynamic Email, which allow you to create many awesome things, like Newsletter!",
             "SAMPLE-TEMPLATE2": "It looks like this!",
             "NO-CHANGES": "There's no changes to be saved."
@@ -183,6 +192,7 @@ export var fr: any = {
             "NO-CHANGES":"There's no changes to be saved.",
             "UNSAVED-CHANGES-WARNING":"Please save unsaved changes to preview template.",
             "DIALOG-TITLE":"Are you sure?",
+            "RESET-TITLE":"Are you sure, you want to reset the template?",
         },
         "STRUCTURE": {
             "CHANGE-SETTING-TOOLTIP": "Change structure settings",

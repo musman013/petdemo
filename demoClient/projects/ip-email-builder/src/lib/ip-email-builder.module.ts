@@ -25,7 +25,7 @@ import {
   MatSortModule,
   MatPaginatorModule,
   MatCheckboxModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule, MatAutocompleteModule, MatDatepickerModule
 } from '@angular/material';
 
 import 'hammerjs';
@@ -75,14 +75,16 @@ import { EmailRoutes } from './email-routing.module';
 //import { ILibraryRootConfg } from './interfaces';
 //import { EmailRoutingModule } from './email-routing.module';
 //import {FastCodeCoreModule,EmailRoutes} from 'fastCodeCore';
-import { FastCodeCoreModule ,ILibraryRootConfg} from 'projects/fast-code-core/src/public_api';//'fastCodeCore';
-import { GlobalPermissionService } from 'src/app/core/global-permission.service';
+import { FastCodeCoreModule ,ILibraryRootConfg} from 'projects/fast-code-core/src/public_api';
+import { EmailAttachmentComponent } from './email-editor/email-attachment/email-attachment.component';
+import { InternationalPhoneNumberModule } from 'ngx-international-phone-number';
+//'fastCodeCore';
 //import {GenericApiService} from 'fastCodeCore/public_api';
 @NgModule({
   imports: [
-   // EmailRoutingModule,
-   FastCodeCoreModule.forRoot({apiUrl:""}),   
-   RouterModule.forChild(EmailRoutes),
+    // EmailRoutingModule,
+    FastCodeCoreModule.forRoot({apiUrl: ''}),
+    RouterModule.forChild(EmailRoutes),
     HttpClientModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
@@ -114,7 +116,10 @@ import { GlobalPermissionService } from 'src/app/core/global-permission.service'
     MatPaginatorModule,
     ReactiveFormsModule,
     MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatAutocompleteModule,
+    MatDatepickerModule,
+    InternationalPhoneNumberModule
   ],
   declarations: [
     IpEmailBuilderComponent,
@@ -143,10 +148,10 @@ import { GlobalPermissionService } from 'src/app/core/global-permission.service'
     BackRepatComponent,
     ConfirmDialogComponent,
     EmptyBlockComponent,
-    
+
     TemplateEditorComponent,
-    EmailTemplateListComponent,TemplateEditorComponent,PickerComponent
-    
+    EmailTemplateListComponent,TemplateEditorComponent,PickerComponent, EmailAttachmentComponent
+
   ],
   exports: [IpEmailBuilderComponent,
      EmailTemplateListComponent,TemplateEditorComponent,EmailVariableListComponent],
@@ -166,7 +171,7 @@ export class IpEmailBuilderModule {
   static forRoot(config: ILibraryRootConfg): ModuleWithProviders {
     return {
       ngModule: IpEmailBuilderModule,
-      providers: [ GlobalPermissionService,
+      providers: [
         {
           provide: IP_CONFIG,
           useValue: config

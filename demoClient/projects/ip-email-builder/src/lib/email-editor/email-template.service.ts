@@ -8,18 +8,36 @@ import { IP_CONFIG } from '../tokens';
 
 //import {GenericApiService,ILibraryRootConfg} from 'fastCodeCore';
 //import { GenericApiService ,ILibraryRootConfg} from 'fastCodeCore';
-import { GenericApiService,ILibraryRootConfg } from 'projects/fast-code-core/src/public_api';//'projects/fast-code-core/src/lib/common/core/generic-api.service';
+import { GenericApiService, ILibraryRootConfg, ISearchField, ServiceUtils } from 'projects/fast-code-core/src/public_api';
+import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+//'projects/fast-code-core/src/lib/common/core/generic-api.service';
 @Injectable({
   providedIn: 'root'
 })
 export class EmailTemplateService extends GenericApiService<IEmailTemplate> {
   //environment.apiUrl;//'https://jsonplaceholder.typicode.com/users';
- 
-  constructor(private httpclient: HttpClient,@Inject(IP_CONFIG)  config: ILibraryRootConfg) { 
-   // super(httpclient,{xApiKey:config.xApiKey,apiPath:config.apiPath} ,'email');
-   super(httpclient,{apiUrl:config.apiPath} ,'email');
-   
+  urlPath;
+
+  constructor(private httpclient: HttpClient, @Inject(IP_CONFIG) config: ILibraryRootConfg) {
+    // super(httpclient,{xApiKey:config.xApiKey,apiPath:config.apiPath} ,'email');
+    super(httpclient, { apiUrl: config.apiPath }, 'email');
+    this.urlPath = config.apiPath;
+
   }
-  
-  
+
+  public getAllCategories(): Observable<string[]> {
+    return this.httpclient.get<string[]>(this.urlPath + '/categories', {}).pipe(map((response: any) => {
+      return response;
+    }), catchError(this.handleError));
+
+  }
+
+  public resetTemplateById(id: any): Observable<IEmailTemplate> {
+    return this.httpclient
+      .get<IEmailTemplate>(this.url + '/reset/' + id).pipe(catchError(this.handleError));
+  }
+
+
 }

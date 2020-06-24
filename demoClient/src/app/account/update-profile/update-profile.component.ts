@@ -22,7 +22,9 @@ export class UpdateProfileComponent implements OnInit {
 	user: any;
 	submitted: boolean = false;
 	loading: boolean = false;
-	role: ITokenRole; //not same as role entity
+	isOwner: boolean = false;
+	isVet: boolean = false;
+	role: ITokenRole;
 
 	/** 
    * Guard against browser refresh, close, etc.
@@ -49,6 +51,8 @@ export class UpdateProfileComponent implements OnInit {
 
 	ngOnInit() {
 		this.role = this.authenticationService.decodeToken().role;
+		this.isOwner = this.role == ITokenRole.owner;
+		this.isVet = this.role == ITokenRole.vet;
 		this.setForm();
 		this.getItem();
 	}
@@ -76,10 +80,10 @@ export class UpdateProfileComponent implements OnInit {
 
 	getItem() {
 		let getProfileObs: Observable<any>; 
-		if(this.role == ITokenRole.owner){
+		if(this.isOwner){
 			getProfileObs = this.ownersService.getProfile();
 		}
-		else if(this.role == ITokenRole.vet){
+		else if(this.isVet){
 			getProfileObs = this.vetsService.getProfile();
 		}
 		else{
@@ -101,17 +105,17 @@ export class UpdateProfileComponent implements OnInit {
 
 		this.submitted = true;
 		this.loading = true;
-		let updateProfileFunction: any; 
-		if(this.role == ITokenRole.owner){
-			updateProfileFunction = this.ownersService.updateProfile;
+		let updateProfileObs: any; 
+		if(this.isOwner){
+			updateProfileObs = this.ownersService.updateProfile(this.userForm.getRawValue());
 		}
-		else if(this.role == ITokenRole.vet){
-			updateProfileFunction = this.vetsService.updateProfile;
+		else if(this.isVet){
+			updateProfileObs = this.vetsService.updateProfile(this.userForm.getRawValue());
 		}
 		else{
-			updateProfileFunction = this.userService.updateProfile;
+			updateProfileObs = this.userService.updateProfile(this.userForm.getRawValue());
 		}
-		updateProfileFunction(this.userForm.getRawValue())
+		updateProfileObs
 			.pipe(first())
 			.subscribe(
 				data => {

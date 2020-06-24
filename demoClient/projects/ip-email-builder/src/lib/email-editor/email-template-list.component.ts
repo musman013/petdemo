@@ -5,8 +5,8 @@ import { EmailTemplateService } from './email-template.service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 import { BaseListComponent, IListColumn, listColumnType, Globals, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';
-import { GlobalPermissionService } from 'src/app/core/global-permission.service';
 import { TranslateService } from '@ngx-translate/core';
+import { GlobalPermissionService } from 'src/app/core/global-permission.service';
 
 @Component({
 	selector: 'app-emailtemplate-list',
@@ -95,9 +95,9 @@ export class EmailTemplateListComponent extends BaseListComponent<IEmailTemplate
 		public changeDetectorRefs: ChangeDetectorRef,
 		public pickerDialogService: PickerDialogService,
 		public emailService: EmailTemplateService,
-		public globalPermissionService: GlobalPermissionService,
 		public errorService: ErrorService,
-		private translate: TranslateService
+		private translate: TranslateService,
+		public globalPermissionService: GlobalPermissionService
 	) {
 		super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, emailService, errorService)
 		//this.globalPermissionService = localGlobalPermissionService;

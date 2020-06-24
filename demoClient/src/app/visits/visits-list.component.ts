@@ -1,16 +1,17 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 
-import { IVisits } from './ivisits';
+import { IVisits, IChangeStatusObj, VisitStatus } from './ivisits';
 import { VisitsService } from './visits.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VisitsNewComponent } from './visits-new.component';
-import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService, ConfirmDialogComponent } from 'projects/fast-code-core/src/public_api';
+import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService, ConfirmDialogComponent, ITokenRole } from 'projects/fast-code-core/src/public_api';
 
 import { PetsService } from '../pets/pets.service';
 import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
 import { CompleteVisitComponent } from './complete-visit/complete-visit.component';
+import { AuthenticationService } from '../core/authentication.service';
 
 @Component({
   selector: 'app-visits-list',
@@ -21,6 +22,10 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 
 	title:string = "Visits";
 	completeVisitRef: MatDialogRef<CompleteVisitComponent>;
+
+	role: ITokenRole;
+	isOwner: boolean = false;
+	isVet: boolean = false;
 	constructor(
 		public router: Router,
 		public route: ActivatedRoute,
@@ -33,6 +38,7 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		public petsService: PetsService,
 		public vetsService: VetsService,
 		public globalPermissionService: GlobalPermissionService,
+		public authenticationService: AuthenticationService,
 	) { 
 		super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, dataService, errorService)
   }
@@ -42,6 +48,9 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		this.setAssociation();
 		this.setColumns();
 		this.primaryKeys = [ "id",  ]
+		this.role = this.authenticationService.decodeToken().role;
+		this.isOwner = this.role == ITokenRole.owner;
+		this.isVet = this.role == ITokenRole.vet;
 		super.ngOnInit();
 	}
   
@@ -96,13 +105,6 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 				type: listColumnType.String
 			},
     		{
-				column: 'id',
-				label: 'id',
-				sort: false,
-				filter: false,
-				type: listColumnType.Number
-			},
-    		{
 				column: 'visitDate',
 				label: 'visitDate',
 				sort: true,
@@ -138,18 +140,31 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		super.addNew(VisitsNewComponent);
 	}
 
-	completeVisit(){
+	completeVisit(item: IVisits){
 		this.completeVisitRef = this.dialog.open(CompleteVisitComponent, {
 			panelClass: "fc-modal-dialog"
 		});
 		this.completeVisitRef.afterClosed().subscribe(res => {
 			if(res){
 				console.log(res);
+				let changeStatusObj: IChangeStatusObj = {
+					status: VisitStatus.Completed,
+					invoiceAmount: res.invoiceAmount,
+					visitNotes: res.visitNotes
+				}
+
+				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(res =>{
+					if(res){
+						this.errorService.showError('Visit Completed');
+					} else {
+						this.errorService.showError('An error occurred');
+					}
+				});
 			}
 		})
 	}
 
-	changeStatus(status){
+	changeStatus(item: IVisits, status: VisitStatus){
 		this.dialog.open(ConfirmDialogComponent, {
 			data: {
 				confirmationType: "confirm"
@@ -157,7 +172,17 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		}).afterClosed().subscribe(res => {
 			if(res){
 				console.log(res);
-				// this.dataService.changeStatus(status);
+				let changeStatusObj: IChangeStatusObj = {
+					status: status,
+				}
+
+				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(()=>{
+					if(res){
+						this.errorService.showError(`Visit status changed to: ${status}`);
+					} else {
+						this.errorService.showError('An error occurred');
+					}
+				});
 			}
 		});
 	}

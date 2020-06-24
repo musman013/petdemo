@@ -15,7 +15,7 @@ export var en: any = {
             "ADD": "Add"
         },
         "ERRORS": {
-            "REQUIRED": "Field is required.",
+            "REQUIRED": "Field is required or is Invalid.",
             "LENGTH-EXCEEDING": "Length cannot be greater than {{length}}.",
             "LENGTH-SHORT": "Length cannot be less than {{length}}.",
             "INVALID-FORMAT": "Invalid format.",
@@ -35,7 +35,11 @@ export var en: any = {
                 "PROPERTY-TYPE": "Property Type",
                 "DEFAULT-VALUE": "Default Value",
                 "LAST-MODIFICATION-TIME": "Modified Date",
-                "LAST-MODIFIER-USER-ID": "Modified User"
+                "LAST-MODIFIER-USER-ID": "Modified User",
+                "SELECT-VALUE":"Select Date Format",
+                "SELECT-DATE":"Select Date",
+                "SELECT-DECIMAL":"Select Decimal Precision",
+                "ADD-NEW":"Add New"
 
             },
             "MESSAGES": {
@@ -46,6 +50,7 @@ export var en: any = {
         "EMAIL-TEMPLATE": {
             "FIELDS": {
                 "TEMPLATE-NAME": "Template Name",
+                "DESCRIPTION": "Description",
                 "SUBJECT": "Subject",
                 "CATEGORY": "Category",
                 "CC": "Cc",
@@ -62,10 +67,14 @@ export var en: any = {
         },
         "SAVE-EMAIL-BUTTON-TEXT": "Next: Email Body",
         "SEND-TEST-EMAIL-BUTTON-TEXT": "Send a test email",
-        "TEMPLATE-ATTRIBUTE-TITLE": "Email Template Attributes",
+        "RESET-BUTTON-TEXT": "Reset",
+        "TEMPLATE-ATTRIBUTE-TITLE": "Edit Email Template Attributes",
         "MESSAGES": {
             "SELECT-RECEIVER-PROMPT": "Where to send?",
             "EMAIL-SENT-SUCCESS": "Your test email has been successfully sent.",
+             "EMAIL-SAVED-SUCCESS": "Email template saved.",
+             "EMAIL-SENDING": "Sending email ....",
+            "RESET-SUCCESS":"Email Template reset successfully",
             "SAMPLE-TEMPLATE": "<p>Dear Email Editor,</p><p >  With this email template editor, you can edit your text, and add buttons,images and dividers.The above logo image and dividers are for demo purpose, you can remove or replace them. You can view the list of supported elements by clicking the Drag & Drop Content section of the page</p><p>Thanks,</p><p>John</p>",
             "SAMPLE-TEMPLATE2": "It looks like this!",
             "NO-CHANGES": "There's no changes to be saved."
@@ -185,6 +194,7 @@ export var en: any = {
             "NO-CHANGES": "There's no changes to be saved.",
             "UNSAVED-CHANGES-WARNING": "Please save unsaved changes to preview template.",
             "DIALOG-TITLE": "Are you sure?",
+            "RESET-TITLE":"Are you sure, you want to reset the template?"
         },
         "STRUCTURE": {
             "CHANGE-SETTING-TOOLTIP": "Change structure settings",

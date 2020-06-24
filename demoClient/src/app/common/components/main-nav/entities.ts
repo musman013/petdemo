@@ -1,11 +1,12 @@
 export var Entities: string[] = [
-		"pets",
+	"pets",
 	"types",
 	"specialties",
 	"vets",
 	"visits",
 	"vetspecialties",
 	"owners",
+	"invoices",
 ]
 
 export var AuthEntities: string[] = [

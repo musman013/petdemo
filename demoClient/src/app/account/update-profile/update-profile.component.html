@@ -38,11 +38,11 @@
               <input formControlName="phoneNumber" matInput placeholder="Phone">
             </mat-form-field>
 
-            <mat-form-field *ngIf="role == ITokenRole.owner">
+            <mat-form-field *ngIf="isOwner">
               <input formControlName="address" matInput placeholder="Address">
             </mat-form-field>
 
-            <mat-form-field *ngIf="role == ITokenRole.owner">
+            <mat-form-field *ngIf="isOwner">
               <input formControlName="city" matInput placeholder="City">
             </mat-form-field>
 
@@ -67,10 +67,10 @@
               </div>
               <div class="fc-col-sm-6 fc-text-right">
                 <button name="back" mat-raised-button color="basic" (click)="onBack()">
-                  {{'General.Actions.Cancel' | translate}} </button>
+                  {{'GENERAL.ACTIONS.CANCEL' | translate}} </button>
                 <button name="save" mat-raised-button color="primary" [disabled]="!userForm.valid || loading"
                   (click)="itemNgForm.ngSubmit.emit()">
-                  {{'General.Actions.Save' | translate}}
+                  {{'GENERAL.ACTIONS.SAVE' | translate}}
                 </button>
               </div>
             </div>

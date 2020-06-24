@@ -39,12 +39,47 @@
   					{{ item.city }}
   				</mat-cell>
   			</ng-container>
-  			<ng-container matColumnDef="id">
-  				<mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('id')"> {{getFieldLabel("Id")}}</mat-header-cell>
-  				<mat-cell *matCellDef="let item">
-  					{{ item.id }}
-  				</mat-cell>
-  			</ng-container>
+  			<ng-container matColumnDef="emailAddress">
+            <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('emailAddress')"> {{getFieldLabel("EmailAddress")}}</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              {{ item.emailAddress }}
+            </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="firstName">
+            <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('firstName')"> {{getFieldLabel("FirstName")}}</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              {{ item.firstName }}
+            </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="isActive">
+            <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('isActive')"> {{getFieldLabel("IsActive")}}</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              {{ item.isActive }}
+            </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="lastName">
+            <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('lastName')"> {{getFieldLabel("LastName")}}</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              {{ item.lastName }}
+            </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="phoneNumber">
+            <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('phoneNumber')"> {{getFieldLabel("PhoneNumber")}}</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              {{ item.phoneNumber }}
+            </mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="userName">
+            <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('userName')"> {{getFieldLabel("UserName")}}</mat-header-cell>
+            <mat-cell *matCellDef="let item">
+              {{ item.userName }}
+            </mat-cell>
+          </ng-container>
   			<ng-container matColumnDef="actions">
   				<mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
   				<mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">

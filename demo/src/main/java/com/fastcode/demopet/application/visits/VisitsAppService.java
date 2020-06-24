@@ -165,7 +165,7 @@ public class VisitsAppService implements IVisitsAppService {
 				
 				Trigger trigger = TriggerBuilder.newTrigger()
 					    .withIdentity(triggerKey, triggerGroup)
-					    .startAt(new Date()) // some Date
+					    .startAt(dayBeforeVisit) // some Date
 					    .forJob(jobKey, jobGroup) // identify job with name, group strings
 					    .build();
 				getScheduler().scheduleJob(jobDetails, trigger);

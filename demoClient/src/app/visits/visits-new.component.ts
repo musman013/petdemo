@@ -2,8 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { VisitsService } from './visits.service';
 import { IVisits } from './ivisits';
 
-import { ActivatedRoute,Router} from "@angular/router";
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { ActivatedRoute, Router } from "@angular/router";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { Globals, BaseNewComponent, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -13,13 +13,13 @@ import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
 
 @Component({
-  selector: 'app-visits-new',
-  templateUrl: './visits-new.component.html',
-  styleUrls: ['./visits-new.component.scss']
+	selector: 'app-visits-new',
+	templateUrl: './visits-new.component.html',
+	styleUrls: ['./visits-new.component.scss']
 })
 export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnInit {
-  
-    title:string = "New Visits";
+
+	title: string = "New Visits";
 	constructor(
 		public formBuilder: FormBuilder,
 		public router: Router,
@@ -37,29 +37,30 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 	) {
 		super(formBuilder, router, route, dialog, dialogRef, data, global, pickerDialogService, dataService, errorService);
 	}
- 
+
 	ngOnInit() {
 		this.entityName = 'Visits';
 		this.setAssociations();
 		super.ngOnInit();
-    this.setForm();
+		this.setForm();
 		this.checkPassedData();
 		this.setPickerSearchListener();
-  }
- 		
-	setForm(){
- 		this.itemForm = this.formBuilder.group({
-      description: [''],
-      visitDate: [''],
-      petId: ['', Validators.required],
-      petsDescriptiveField : [''],
-      vetId: ['', Validators.required],
-      vetsDescriptiveField : [''],
-    });
 	}
-	 
-	setAssociations(){
-  	
+
+	setForm() {
+		this.itemForm = this.formBuilder.group({
+			description: [''],
+			visitDate: [''],
+			visitTime: [''],
+			petId: ['', Validators.required],
+			petsDescriptiveField: [''],
+			vetId: ['', Validators.required],
+			vetsDescriptiveField: [''],
+		});
+	}
+
+	setAssociations() {
+
 		this.associations = [
 			{
 				column: [
@@ -68,7 +69,7 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 						value: undefined,
 						referencedkey: 'id'
 					},
-					  
+
 				],
 				isParent: false,
 				table: 'pets',
@@ -76,7 +77,7 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 				service: this.petsService,
 				descriptiveField: 'petsDescriptiveField',
 				referencedDescriptiveField: 'name',
-		    
+
 			},
 			{
 				column: [
@@ -85,7 +86,7 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 						value: undefined,
 						referencedkey: 'id'
 					},
-					  
+
 				],
 				isParent: false,
 				table: 'vets',
@@ -93,13 +94,37 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 				service: this.vetsService,
 				descriptiveField: 'vetsDescriptiveField',
 				referencedDescriptiveField: 'id',
-		    
+
 			},
 		];
 		this.parentAssociations = this.associations.filter(association => {
 			return (!association.isParent);
 		});
 
-	}  
-    
+	}
+
+	onSubmit() {
+		// stop here if form is invalid
+		if (this.itemForm.invalid) {
+			return;
+		}
+		this.submitted = true;
+		this.loading = true;
+
+		let newVisit = this.itemForm.getRawValue(); 
+		newVisit['visitDate'] = this.dataService.combineDateAndTime(newVisit['visitDate'], newVisit['visitTime'])
+		delete newVisit['visitTime'];
+		this.dataService.create(newVisit)
+			.pipe(first())
+			.subscribe(
+				data => {
+					this.dialogRef.close(data);
+				},
+				error => {
+					this.errorService.showError("Error Occured while updating");
+					this.loading = false;
+					this.dialogRef.close(null);
+				});
+	}
+
 }
