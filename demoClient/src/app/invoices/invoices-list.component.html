@@ -53,7 +53,7 @@
           <mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
           <mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
             <button name="cancel" *ngIf="!item.status != 'Paid'" mat-button aria-label="pay visit action"
-              (click)="changeStatus('pay')">
+              (click)="payInvoice(item)">
               <mat-label>Pay</mat-label>
             </button>
             <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"

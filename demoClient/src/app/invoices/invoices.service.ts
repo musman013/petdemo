@@ -14,8 +14,8 @@ export class InvoicesService extends GenericApiService<IInvoices> {
     super(httpclient, { apiUrl: environment.apiUrl }, "invoices");
   }
 
-  changeStatus(status): Observable<IInvoices>{
-    return this.httpclient.put<IInvoices>(`${this.apiUrl}/changeStatus`, {status: status});
+  payInvoice(id: number): Observable<IInvoices>{
+    return this.httpclient.put<IInvoices>(`${this.apiUrl}/${id}/pay`, {});
   }
   
   combineDateAndTime(date: string, time: string): Date {
