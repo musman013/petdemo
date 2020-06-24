@@ -1,6 +1,5 @@
 package com.fastcode.demopet.application.invoices.dto;
 
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +10,7 @@ public class FindInvoicesByIdOutput {
   	private Long id;
   	private Long visitId;
   	private Long visitsDescriptiveField;
-
 	private Long version;
+	private InvoiceStatus status;
  
 }

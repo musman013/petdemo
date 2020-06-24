@@ -1,14 +1,52 @@
 package com.fastcode.demopet.emailbuilder.application.emailvariable.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter @Setter
 public class CreateEmailVariableOutput {
 
 	private Long id;
 	private String propertyName;
 	private String propertyType;
     private String defaultValue;
+    private String mergeType;
     
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
+	public String getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(String propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public String getMergeType() {
+		return mergeType;
+	}
+
+	public void setMergeType(String mergeType) {
+		this.mergeType = mergeType;
+	}
+	
+	
 }

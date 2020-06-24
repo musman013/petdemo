@@ -25,11 +25,8 @@ import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.commons.domain.EmptyJsonResponse;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
-import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
-import com.fastcode.demopet.application.authorization.user.dto.UserProfile;
-import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
 import com.fastcode.demopet.application.vets.VetsAppService;
 import com.fastcode.demopet.application.vets.dto.*;
 import com.fastcode.demopet.application.vetspecialties.VetSpecialtiesAppService;
@@ -156,8 +153,7 @@ public class VetsController {
 	public ResponseEntity<UpdateVetsOutput> update(@PathVariable String id, @RequestBody @Valid UpdateVetsInput vets) {
 	    FindVetsByIdOutput currentVets = _vetsAppService.findById(Long.valueOf(id));
 		Optional.ofNullable(currentVets).orElseThrow(() -> new EntityNotFoundException(String.format("Unable to update. Vets with id=%s not found.", id)));
-		
-		
+	
 		vets.setVersion(currentVets.getVersion());
     	
 	    return new ResponseEntity(_vetsAppService.update(Long.valueOf(id),vets), HttpStatus.OK);

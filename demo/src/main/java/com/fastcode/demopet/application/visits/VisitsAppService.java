@@ -1,24 +1,48 @@
 package com.fastcode.demopet.application.visits;
 
+import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
+import com.fastcode.demopet.application.pets.IPetsAppService;
+import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
+import com.fastcode.demopet.application.vets.dto.FindVetsByIdOutput;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.domain.visits.IVisitsManager;
 import com.fastcode.demopet.domain.model.QVisitsEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.domain.model.VisitsEntity;
+import com.fastcode.demopet.domain.owners.OwnersManager;
 import com.fastcode.demopet.domain.pets.PetsManager;
+import com.fastcode.demopet.domain.vets.VetsManager;
+import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.commons.search.*;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
+
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page; 
-import org.springframework.data.domain.Pageable; 
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 
 @Service
 @Validated
@@ -30,14 +54,33 @@ public class VisitsAppService implements IVisitsAppService {
 	
 	@Autowired
 	private IVisitsManager _visitsManager;
-
+	
     @Autowired
 	private PetsManager _petsManager;
+    
+    @Autowired
+	private OwnersManager _ownersManager;
+    
+    @Autowired
+    private VetsManager _vetsManager;
+    
 	@Autowired
 	private IVisitsMapper mapper;
 	
 	@Autowired
 	private LoggingHelper logHelper;
+	
+	@Autowired
+	private SchedulerFactoryBean schedulerFactoryBean;
+	
+	private Scheduler scheduler;
+
+	public Scheduler getScheduler() throws SchedulerException
+	{
+		scheduler= schedulerFactoryBean.getScheduler();
+		//scheduler.start();
+		return scheduler;
+	}
 
     @Transactional(propagation = Propagation.REQUIRED)
 	public CreateVisitsOutput create(CreateVisitsInput input) {
@@ -56,8 +99,20 @@ public class VisitsAppService implements IVisitsAppService {
 		else {
 			return null;
 		}
+	  	
+	  	if(input.getVetId() !=null)
+	  	{
+	  		VetsEntity foundVets = _vetsManager.findById(input.getVetId());
+			if(foundVets !=null) {
+				foundVets.addVisits(visits);
+			}
+			else {
+				return null;
+			}
+	  	}
 		
 		VisitsEntity createdVisits = _visitsManager.create(visits);
+		scheduleReminderJob(createdVisits.getId());
 		return mapper.visitsEntityToCreateVisitsOutput(createdVisits);
 	}
 	
@@ -81,6 +136,47 @@ public class VisitsAppService implements IVisitsAppService {
 		VisitsEntity updatedVisits = _visitsManager.update(visits);
 		
 		return mapper.visitsEntityToUpdateVisitsOutput(updatedVisits);
+	}
+	
+	public void scheduleReminderJob(Long visitId)
+	{
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		VisitsEntity visit = _visitsManager.findById(visitId);
+		
+		LocalDateTime localDate = visit.getVisitDate().toInstant().atZone(defaultZoneId).toLocalDateTime();
+		Date dayBeforeVisit =Date.from(localDate.minusDays(1).atZone(defaultZoneId).toInstant());
+
+		if(new Date().before(dayBeforeVisit)) {
+		
+		String jobKey = "job" + visitId;
+		String jobGroup = "visitReminder";
+		
+		String triggerKey = "trigger" + visitId;
+		String triggerGroup = "visitReminder";
+		try {
+			if (!(getScheduler().checkExists(new JobKey(jobKey, jobGroup)))) {
+				Class<? extends Job> className = (Class<? extends Job>) Class.forName("com.fastcode.demopet.scheduler.jobs.visitReminderEmailJob");
+				JobDetail jobDetails = JobBuilder.newJob(className)
+						.withDescription("visit reminder email")
+						.withIdentity(jobKey, jobGroup).build();
+				jobDetails.getJobDataMap().put("visitId", String.valueOf(visitId));
+			//	getScheduler().addJob(jobDetails, true, true);
+			//	getScheduler().triggerJob(new JobKey(jobKey, jobGroup));
+				
+				Trigger trigger = TriggerBuilder.newTrigger()
+					    .withIdentity(triggerKey, triggerGroup)
+					    .startAt(dayBeforeVisit) // some Date
+					    .forJob(jobKey, jobGroup) // identify job with name, group strings
+					    .build();
+				getScheduler().scheduleJob(jobDetails, trigger);
+			} 
+			else {
+				throw new EntityNotFoundException ("Job key already exists");
+			}
+		} catch (ClassNotFoundException | SchedulerException e) {
+			e.printStackTrace();
+		}
+		}
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -145,6 +241,50 @@ public class VisitsAppService implements IVisitsAppService {
 		}
 		return output;
 	}
+    
+    public List<FindVisitsByIdOutput> filterVisits(List<FindVisitsByIdOutput> list, Long userId)
+    {
+    	List<FindVisitsByIdOutput> filteredList = new ArrayList<FindVisitsByIdOutput>();
+    	OwnersEntity owner = _ownersManager.findById(userId);
+    	VetsEntity vet = _vetsManager.findById(userId);
+    	for(FindVisitsByIdOutput obj : list)
+    	{
+    		VisitsEntity visit = _visitsManager.findById(obj.getId());
+    		
+    		if(owner !=null) {
+    			PetsEntity pet = _petsManager.findById(obj.getPetId());
+    		if(userId == pet.getOwners().getId()) {
+    			filteredList.add(obj);
+    		}
+    		}
+    		if(vet !=null) {
+    			if(userId == obj.getVetId()) {
+        			filteredList.add(obj);
+        		}
+    		}
+    	}
+
+    	return filteredList;
+    }
+    
+//    public List<FindVisitsByIdOutput> filterVetsVisits(List<FindVisitsByIdOutput> list, Long userId)
+//    {
+//    	List<FindVisitsByIdOutput> filteredList = new ArrayList<FindVisitsByIdOutput>();
+//    	VetsEntity vet = _vetsManager.findById(userId);
+//    	for(FindVisitsByIdOutput obj : list)
+//    	{
+//    		VisitsEntity visit = _visitsManager.findById(obj.getId());
+//    		
+//    		if(obj.get) {
+//    			filteredList.add(obj);
+//    		}
+//    	}
+//    	
+//    	return filteredList;
+//    }
+   
+   
+
 	
 	public BooleanBuilder search(SearchCriteria search) throws Exception {
 

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.commons.domain.EmptyJsonResponse;
 import com.fastcode.demopet.application.pets.PetsAppService;
@@ -26,6 +27,7 @@ import com.fastcode.demopet.application.pets.dto.*;
 import com.fastcode.demopet.application.visits.VisitsAppService;
 import com.fastcode.demopet.application.visits.dto.FindVisitsByIdOutput;
 import com.fastcode.demopet.application.types.TypesAppService;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.owners.OwnersAppService;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +43,10 @@ public class PetsController {
     
     @Autowired
 	private VisitsAppService  _visitsAppService;
-    
-    @Autowired
-	private TypesAppService  _typesAppService;
-    
-    @Autowired
-	private OwnersAppService  _ownersAppService;
 
+    @Autowired
+    private UserAppService _userAppService;
+    
 	@Autowired
 	private LoggingHelper logHelper;
 
@@ -56,13 +55,11 @@ public class PetsController {
 	
 	
     
-    public PetsController(PetsAppService petsAppService, VisitsAppService visitsAppService, TypesAppService typesAppService, OwnersAppService ownersAppService,
+    public PetsController(PetsAppService petsAppService, VisitsAppService visitsAppService,
 	 LoggingHelper helper) {
 		super();
 		this._petsAppService = petsAppService;
     	this._visitsAppService = visitsAppService;
-    	this._typesAppService = typesAppService;
-    	this._ownersAppService = ownersAppService;
 		this.logHelper = helper;
 	}
 
@@ -112,7 +109,7 @@ public class PetsController {
 		return new ResponseEntity(output, HttpStatus.OK);
 	}
     
-    @PreAuthorize("hasAnyAuthority('PETSENTITY_READ')")
+//    @PreAuthorize("hasAnyAuthority('PETSENTITY_READ')")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity find(@RequestParam(value="search", required=false) String search, @RequestParam(value = "offset", required=false) String offset, @RequestParam(value = "limit", required=false) String limit, Sort sort) throws Exception {
 		
@@ -122,7 +119,19 @@ public class PetsController {
 		Pageable Pageable = new OffsetBasedPageRequest(Integer.parseInt(offset), Integer.parseInt(limit), sort);
 		SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject(search);
 		
-		return ResponseEntity.ok(_petsAppService.find(searchCriteria,Pageable));
+		
+		UserEntity user = _userAppService.getUser();
+
+		List<FindPetsByIdOutput> list = _petsAppService.find(searchCriteria,Pageable);
+		if(_userAppService.checkIsAdmin(user))
+		{
+			return ResponseEntity.ok(list);
+		}
+		else
+		{
+			return ResponseEntity.ok(_petsAppService.filterPets(list, user.getId()));
+		}
+		
 	}
     
     @PreAuthorize("hasAnyAuthority('PETSENTITY_READ')")

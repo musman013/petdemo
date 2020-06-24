@@ -106,7 +106,7 @@ public class EmailMjmlTemplateGenrator {
 	private String getImage(String src, Options options) {
 		String template = "<mj-image" + "\n css-class=\"ip-image-block\"" + "\n padding=\"%1$s\"" + "\n border=\"%2$s\""
 				+ "\n border-radius=\"%3$s\"" + " %4$s " + " %5$s" + "\n href=\"%6$s\"" + "\n target=\"%7$s\""
-				+ "\n align=\"%8$s\"" + "\n title=\"%9$s\"" + "\n alt=\"%10$s\"" + "\n src=\"%7$s\">" + "</mj-image>";
+				+ "\n align=\"%8$s\"" + "\n title=\"%9$s\"" + "\n alt=\"%10$s\"" + "\n src=\"%11$s\">" + "</mj-image>";
 
 		template = String.format(template, this.createPadding(options.getPadding()),
 				this.createBorder(options.getBorder()), options.getBorder().getRadius(),

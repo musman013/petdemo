@@ -45,8 +45,12 @@ public class JobsListener implements JobListener {
          JobDataMap jobMapData = context.getJobDetail().getJobDataMap();
          String[] keys = jobMapData.getKeys();
          Map<String, String> map = new HashMap<String, String>();
+         
          for (int i = 0; i < keys.length; i++) {
-             String st = jobMapData.getString(keys[i]);
+        	// String key = keys[i].toString();
+            // String st = jobMapData.getString(key);
+             Object obj = jobMapData.get(keys[i]);
+      		 String st = String.valueOf(obj);
              map.put(keys[i], st);
          }
 

@@ -14,5 +14,7 @@ public class UpdateVisitsOutput {
     private String visitNotes;
   	private Long petId;
 	private String petsDescriptiveField;
+	private Long vetId;
+  	private String vetsDescriptiveField;
 
 }

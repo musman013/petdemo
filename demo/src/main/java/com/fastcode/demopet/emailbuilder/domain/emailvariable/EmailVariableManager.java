@@ -1,5 +1,7 @@
 package com.fastcode.demopet.emailbuilder.domain.emailvariable;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Page;
@@ -45,6 +47,11 @@ public class EmailVariableManager implements IEmailVariableManager {
 	public Page<EmailVariableEntity> findAll(Predicate predicate,Pageable pageable) {
 		
 		return _emailVariableRepository.findAll(predicate,pageable);
+	}
+
+	@Override
+	public List<EmailVariableEntity> findAll() {
+		return _emailVariableRepository.findAll();
 	}
 	
 	

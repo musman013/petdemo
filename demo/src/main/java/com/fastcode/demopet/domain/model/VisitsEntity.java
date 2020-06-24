@@ -46,9 +46,14 @@ public class VisitsEntity extends AbstractEntity {
 		invoicesSet.remove(invoices);
 		invoices.setVisits(null);
 	}
+	
   	@ManyToOne
   	@JoinColumn(name = "petId")
   	private PetsEntity pets;
+  	
+  	@ManyToOne
+  	@JoinColumn(name = "vetId")
+  	private VetsEntity vets;
   	
  	@Basic
   	@Column(name = "visitDate", nullable = false)

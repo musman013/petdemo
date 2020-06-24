@@ -11,5 +11,6 @@ public class UpdateInvoicesOutput {
   	private Long id;
   	private Long visitId;
 	private Long visitsDescriptiveField;
+	private InvoiceStatus status;
 
 }

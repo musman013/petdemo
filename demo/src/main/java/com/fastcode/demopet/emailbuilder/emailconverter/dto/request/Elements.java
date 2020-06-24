@@ -1,5 +1,8 @@
 package com.fastcode.demopet.emailbuilder.emailconverter.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class Elements {
 
 	private String src = "";
@@ -13,6 +16,9 @@ public class Elements {
 	private String type = "";
 
 	private String innerText = "";
+
+	@JsonProperty("file")
+	private JsonNode file;
 
 	public Elements() {
 	}
@@ -63,6 +69,14 @@ public class Elements {
 
 	public void setInnerText(String innerText) {
 		this.innerText = innerText;
+	}
+
+	public JsonNode getFile() {
+		return file;
+	}
+
+	public void setFile(JsonNode file) {
+		this.file = file;
 	}
 
 }

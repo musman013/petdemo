@@ -12,7 +12,6 @@ import lombok.Setter;
 @Getter @Setter
 public class UpdateVetsInput extends UpdateUserInput{
 
-  	@NotNull(message = "id Should not be null")
 //  	private Integer id;
   	private Long version;
   

@@ -1,56 +1,64 @@
 package com.fastcode.demopet.emailbuilder.application.mail;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Pageable;
 
+import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
-import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.emailbuilder.application.emailtemplate.EmailTemplateAppService;
 import com.fastcode.demopet.emailbuilder.application.emailtemplate.dto.CreateEmailTemplateInput;
+import com.fastcode.demopet.emailbuilder.application.emailtemplate.dto.FindEmailTemplateByNameOutput;
 import com.fastcode.demopet.emailbuilder.application.emailvariable.EmailVariableAppService;
 import com.fastcode.demopet.emailbuilder.application.emailvariable.dto.FindEmailVariableByIdOutput;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.fastcode.demopet.emailbuilder.domain.irepository.IFileContentStore;
+import com.fastcode.demopet.emailbuilder.domain.irepository.IFileRepository;
+import com.fastcode.demopet.emailbuilder.domain.model.File;
 
 @Service
-public class EmailService implements IEmailService{
+public class EmailService implements IEmailService {
 
 	@Autowired
 	public JavaMailSender emailSender;
 
 	@Autowired
-	private Environment env;
+	private IFileContentStore contentStore;
 
 	@Autowired
-	private EmailTemplateAppService emailTemplateAppService;
-
-	@Autowired
-	private EmailVariableAppService emailVariableAppService;
+	private IFileRepository filesRepo;
 	
-	@Async
-	public void sendEmail(SimpleMailMessage email) {
-		emailSender.send(email);
-	}
+	@Autowired
+	private Environment env;
+	
+	@Autowired
+	private EmailTemplateAppService _emailTemplateAppService;
+	
+	@Autowired
+	private EmailVariableAppService _emailVariableAppService;
 	
 	public SimpleMailMessage buildEmail(String email, String appUrl, String resetCode)
 	{
@@ -64,88 +72,120 @@ public class EmailService implements IEmailService{
 		return passwordResetEmail;
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRED)
-	@Override
-	public void sendSimpleMessage(String to, String subject, String text)  {
-		try {
-
-			MimeMessage message = emailSender.createMimeMessage();
-
-			//Set Email
-			// message.setFrom("testemail@abc.com");
-
-			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-			helper.setTo(to);
-			helper.setSubject(subject);
-			helper.setText(text,true);
-			
-			
-			emailSender.send(message);
-		
-		}
-		catch (MessagingException ex) {
-			ex.printStackTrace();
-		}
-
-
+	@Async
+	public void sendEmail(SimpleMailMessage email) {
+		emailSender.send(email);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	@Override
-	public void sendSimpleMessageUsingTemplate(String to, String subject, SimpleMailMessage template,
-			String... templateArgs) {
-		// TODO Auto-generated method stub
+	public void sendMessage(String to, String cc, String bcc, String subject, String htmlContent,
+			List<File> inlineImages, List<File> attachments) {
 
-	}
+		MimeMessage message = emailSender.createMimeMessage();
 
-	@Transactional(propagation = Propagation.REQUIRED)
-	@Override
-	public void sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment) {
 		try {
 
-			MimeMessage message = emailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+					StandardCharsets.UTF_8.name());
 
-			//Set Email
-			// message.setFrom("testemail@abc.com");
+			String[] toArray = to.split(",", -1);
+			String[] ccArray = cc != null ? cc.split(",", -1) : new String[0];
+			String[] bccArray = bcc != null ? bcc.split(",", -1) : new String[0];
 
-			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-
-			helper.setTo(to);
+			helper.setTo(toArray);
+			helper.setCc(ccArray);
+			helper.setBcc(bccArray);
 			helper.setSubject(subject);
-			helper.setText(text,true);
-			if(pathToAttachment != null) {
-				FileSystemResource file = new FileSystemResource(new File(pathToAttachment));
-				helper.addAttachment(pathToAttachment, file);
+			helper.setText(htmlContent, true);
+
+			// Use the true flag to indicate the text included is HTML
+
+			for (File file : inlineImages) {
+				try {
+
+					ByteArrayResource fileStreamResource = getFileStreamResource(Long.valueOf(file.getName()));
+					if (fileStreamResource != null)
+						helper.addInline(file.getSummary(), fileStreamResource, "image/jpeg");
+				} catch (Exception e) {
+					// ignore
+					e.printStackTrace();
+				}
 			}
 
+			// Now add the real attachments
+			for (File file : attachments) {
+				ByteArrayResource fileStreamResource = getFileStreamResource(file.getId());
+				if (fileStreamResource != null)
+					helper.addAttachment(file.getName(), fileStreamResource);
+			}
 
-			emailSender.send(message);
-		}
-		catch (MessagingException ex) {
+		} catch (MessagingException ex) {
 			ex.printStackTrace();
 		}
 
+		emailSender.send(message);
 	}
 
-	private String replaceVariable(String input){
+	public ByteArrayResource getFileStreamResource(Long fileId) { // This method will download file using RestTemplate
+		try {
+			Optional<File> f = filesRepo.findById(fileId);
+			// InputStreamResource inputStreamResource = new
+			// InputStreamResource(contentStore.getContent(f.get()));
+			InputStream content = contentStore.getContent(f.get());
+			return content != null ? new ByteArrayResource(IOUtils.toByteArray(content)) : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private String appendInlineImagePrifix(String name) {
+		if (name.startsWith("cid:")) {
+			return name;
+		} else {
+			return "cid:" + name;
+		}
+	}
+	
+	
+	public void sendVisitEmail(FindEmailTemplateByNameOutput email,Map<String,String> emailVariableMap) throws IOException
+	{
+
+		if(email.getActive()!=null && email.getActive()) {
+
+			//String html = _emailTemplateAppService.convertJsonToHtml(replaceVisitVariableMap(email.getContentJson(),emailVariableMap));
+			
+			//email.setContentHtml(html);
+		//	sendMessage(email.getTo(), null, null, "Reminder", email.getContentHtml(), new ArrayList<File>(),new ArrayList<File>());
+		}
+	}
+	
+	private String replaceVisitVariableMap(String input, Map<String, String> emailVariableMap) {
 		//Sort sort = new Sort(Sort.Direction.fromString(env.getProperty("fastCode.sort.direction.default")), new String[]{env.getProperty("fastCode.sort.property.default")});
-	   // Sort sort=new Sort (Sort.by("name"));
+
 		Pageable pageable = new OffsetBasedPageRequest(Integer.parseInt(env.getProperty("fastCode.offset.default")), Integer.parseInt(env.getProperty("fastCode.limit.default")));
-		
-	//	Pageable pageable = new OffsetBasedPageRequest(0, 100);
 		HashMap<String, String> map = new HashMap<>();
 
 		List<FindEmailVariableByIdOutput> tags ;
 		try
 		{
-			
+
 			SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject("");
-			tags = emailVariableAppService.find(searchCriteria, pageable);
-			System.out.println(" tags " + tags);
+			tags = _emailVariableAppService.find(searchCriteria, pageable);
+
 			for (FindEmailVariableByIdOutput tag: tags) {
-				map.put("{{" + tag.getPropertyName() + "}}",tag.getDefaultValue());
+
+				if(emailVariableMap.containsKey(tag.getPropertyName()))
+				{
+
+					System.out.println(" KEY EXISTS " );
+					map.put("{{" + tag.getPropertyName() + "}}",emailVariableMap.get(tag.getPropertyName()));
+				}
+				else
+				{
+					System.out.println(" KEY Doesnot EXISTS " );
+					map.put("{{" + tag.getPropertyName() + "}}",tag.getDefaultValue());
+				}
 			}
 		}
 		catch(Exception ex ){
@@ -161,19 +201,10 @@ public class EmailService implements IEmailService{
 		while (m.find()) {
 			matches.add(m.group(0));
 			input = input.replaceAll(Pattern.quote(m.group(0)),map.get(m.group(0)));
+
 		}
+		System.out.println("\n\n input \n --" + input);
 		return input;
 	}
 
-	public void sendEmail(CreateEmailTemplateInput email) throws IOException
-	{
-		if(email.getActive()!=null && email.getActive()) {
-			String html = emailTemplateAppService.convertJsonToHtml(replaceVariable(email.getContentJson()));
-			email.setContentHtml(html);
-			if (email.getAttachmentpath() != null && !email.getAttachmentpath().isEmpty() )
-				sendMessageWithAttachment(email.getTo(), email.getSubject(), email.getContentHtml(), email.getAttachmentpath());
-			else
-				sendSimpleMessage(email.getTo(), email.getSubject(), email.getContentHtml());
-		}
-	}
 }
