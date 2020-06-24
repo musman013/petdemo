@@ -41,9 +41,13 @@ public class PermalinkManager implements IPermalinkManager {
 		} else {
 		    return null;
 		}
-
 	}
-
+	
+	public PermalinkEntity findByResourceAndresourceId(Long resourceId, String resource)
+	{
+		return _permalinkRepository.findByResourceIdAndResource(resourceId, resource);
+	}
+	
 	public Page<PermalinkEntity> findAll(Predicate predicate, Pageable pageable) {
 
 		return _permalinkRepository.findAll(predicate,pageable);

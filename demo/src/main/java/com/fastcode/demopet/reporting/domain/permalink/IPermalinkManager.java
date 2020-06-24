@@ -17,6 +17,8 @@ public interface IPermalinkManager {
     PermalinkEntity update(PermalinkEntity permalink);
 
     PermalinkEntity findById(UUID id);
+    
+    PermalinkEntity findByResourceAndresourceId(Long resourceId, String resource);
 	
     Page<PermalinkEntity> findAll(Predicate predicate, Pageable pageable);
 }

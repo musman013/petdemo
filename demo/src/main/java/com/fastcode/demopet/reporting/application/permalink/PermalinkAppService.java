@@ -83,6 +83,18 @@ public class PermalinkAppService implements IPermalinkAppService {
  	    FindPermalinkByIdOutput output=mapper.permalinkEntityToFindPermalinkByIdOutput(foundPermalink); 
 		return output;
 	}
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public FindPermalinkByIdOutput findByResourceAndResourceId(Long resourceId, String resource) {
+
+		PermalinkEntity foundPermalink = _permalinkManager.findByResourceAndresourceId(resourceId, resource);
+		if (foundPermalink == null)  
+			return null ; 
+ 	   
+ 	    FindPermalinkByIdOutput output = mapper.permalinkEntityToFindPermalinkByIdOutput(foundPermalink); 
+		return output;
+	}
+	
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<FindPermalinkByIdOutput> find(SearchCriteria search, Pageable pageable) throws Exception  {
 

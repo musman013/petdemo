@@ -135,6 +135,15 @@ public class PermalinkController {
 		
 		return new ResponseEntity(output, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/{resource}/{resourceId}", method = RequestMethod.GET)
+	public ResponseEntity<FindPermalinkByIdOutput> getPermalinkbyResource(@PathVariable String resource, @PathVariable String resourceId) {
+		
+		FindPermalinkByIdOutput output = _permalinkAppService.findByResourceAndResourceId(Long.valueOf(resourceId), resource);
+		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("There does not exist a resource with a id=%s", Long.valueOf(resourceId))));
+		
+		return new ResponseEntity(output, HttpStatus.OK);
+	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity find(@RequestParam(value="search", required=false) String search, @RequestParam(value = "offset", required=false) String offset, @RequestParam(value = "limit", required=false) String limit, Sort sort) throws Exception {
