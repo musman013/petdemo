@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { OwnersService } from 'src/app/owners';
 import { VetsService } from 'src/app/vets';
 import { AuthenticationService } from 'src/app/core/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-update-profile',
@@ -47,6 +48,7 @@ export class UpdateProfileComponent implements OnInit {
 		public ownersService: OwnersService,
 		public vetsService: VetsService,
 		public authenticationService: AuthenticationService,
+		public router: Router,
 	) { }
 
 	ngOnInit() {
@@ -127,6 +129,10 @@ export class UpdateProfileComponent implements OnInit {
 					this.errorService.showError("Error Occured while updating");
 					this.loading = false;
 				});
+	}
+
+	onBack(){
+		this.router.navigate(['/dashboard']);
 	}
 
 }

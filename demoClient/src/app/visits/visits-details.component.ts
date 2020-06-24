@@ -51,8 +51,10 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 		this.itemForm = this.formBuilder.group({
 			description: [''],
 			id: [{ value: '', disabled: true }, Validators.required],
+			status: [{ value: '', disabled: true }, Validators.required],
 			visitDate: [''],
 			visitTime: [''],
+			visitNotes: [''],
 			petId: ['', Validators.required],
 			petsDescriptiveField: [''],
 			vetId: ['', Validators.required],

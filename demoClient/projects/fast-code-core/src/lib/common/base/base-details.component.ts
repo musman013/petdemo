@@ -141,7 +141,9 @@ export class BaseDetailsComponent<E> implements OnInit, CanDeactivateGuard {
       .subscribe(
         data => {
           this.loading = false;
-          this.router.navigate([this.parentUrl], { relativeTo: this.route.parent });
+          // this.router.navigate([this.parentUrl], { relativeTo: this.route.parent });
+          this.router.navigate([this.router.url.substring(0, this.router.url.indexOf(this.idParam))]);
+        
         },
         error => {
           this.errorService.showError("Error Occured while updating");
@@ -153,7 +155,8 @@ export class BaseDetailsComponent<E> implements OnInit, CanDeactivateGuard {
    * Redirects back to entity list page.
    */
   onBack(): void {
-    this.router.navigate([this.parentUrl], { relativeTo: this.route.parent });
+    // this.router.navigate([this.parentUrl], { relativeTo: this.route.parent });
+    this.router.navigate([this.router.url.substring(0, this.router.url.indexOf(this.idParam))]);
   }
 
   /**

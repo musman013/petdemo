@@ -34,6 +34,11 @@
           </ngx-timepicker-field>
         </div>
 
+        <mat-form-field>
+          <textarea formControlName="visitNotes" matInput placeholder="Enter visitNotes" [readonly]="true">
+          </textarea>
+        </mat-form-field>
+
         <mat-form-field *ngFor="let association of parentAssociations">
           <input type="text" matInput formControlName="{{association.descriptiveField}}"
             placeholder="{{association.table}}" aria-label="Number" [matAutocomplete]="auto"

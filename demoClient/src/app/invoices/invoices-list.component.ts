@@ -12,6 +12,7 @@ import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
 import { AuthenticationService } from '../core/authentication.service';
 import { VisitsService } from '../visits';
+import { VisitStatus } from '../visits/ivisits';
 
 @Component({
 	selector: 'app-invoices-list',
@@ -23,8 +24,8 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 	title: string = "Invoices";
 
 	role: ITokenRole;
-	isOwner: boolean = false;
-	isVet: boolean = false;
+	ITokenRole = ITokenRole;
+	VisitStatus = VisitStatus;
 	constructor(
 		public router: Router,
 		public route: ActivatedRoute,
@@ -47,8 +48,6 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 		this.setColumns();
 		this.primaryKeys = ["id",]
 		this.role = this.authenticationService.decodeToken().role;
-		this.isOwner = this.role == ITokenRole.owner;
-		this.isVet = this.role == ITokenRole.vet;
 		super.ngOnInit();
 	}
 
@@ -114,7 +113,7 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 		super.addNew(InvoicesNewComponent);
 	}
 
-	payInvoice(item: IInvoices) {
+	payInvoice(item: IInvoices, index) {
 		this.dialog.open(ConfirmDialogComponent, {
 			data: {
 				confirmationType: "confirm"
@@ -122,14 +121,15 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 		}).afterClosed().subscribe(res => {
 			if (res) {
 				console.log(res);
-				this.dataService.payInvoice(item.id).subscribe(()=>{
-					if(res){
+				this.dataService.payInvoice(item.id).subscribe(res => {
+					if (res) {
+						this.items[index].status = res.status;
 						this.errorService.showError(`Invoice paid`);
 					} else {
 						this.errorService.showError('An error occurred');
 					}
 				});
-				
+
 			}
 		});
 	}

@@ -12,7 +12,7 @@ import { GlobalPermissionService } from 'src/app/core/global-permission.service'
 })
 export class CompleteVisitComponent implements OnInit {
   
-  title:string = "New Visits";
+  title:string = "Complete Visit";
   itemForm: FormGroup;
   constructor(
 		public formBuilder: FormBuilder,

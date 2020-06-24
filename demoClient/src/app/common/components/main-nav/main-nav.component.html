@@ -158,9 +158,10 @@
       <span>
 
 
-        <button mat-button [matMenuTriggerFor]="menu" *ngIf="authenticationService.token"><i class="material-icons">
-            account_circle
-          </i></button>
+        <button mat-button [matMenuTriggerFor]="menu" *ngIf="authenticationService.token">
+          <i class="material-icons">account_circle</i>
+          <span>{{authenticationService.decodeToken().sub}}</span>
+        </button>
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="logout()"><i class="material-icons"
               style="position: relative;top: 7px;color: red;">power_settings_new</i>&nbsp; Logout</button>
