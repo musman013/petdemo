@@ -73,7 +73,9 @@ public class OwnersAppService implements IOwnersAppService {
 
 		OwnersEntity owners = mapper.createOwnersInputToOwnersEntity(input);
 		owners.setUser(user);
-
+		
+		assignOwnerRole(owners.getId());
+		
 		OwnersEntity createdOwners = _ownersManager.create(owners);
 		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners,user);
 	}
