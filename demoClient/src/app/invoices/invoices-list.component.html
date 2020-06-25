@@ -51,17 +51,19 @@
         </ng-container>
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
-          <mat-cell *matCellDef="let item" (click)="$event.stopPropagation()">
-            <button name="cancel" *ngIf="!item.status != 'Paid'" mat-button aria-label="pay visit action"
-              (click)="payInvoice(item)">
+          <mat-cell *matCellDef="let item; let i = index" (click)="$event.stopPropagation()">
+            <button name="cancel" 
+              *ngIf="item.status != 'PAID' && role != ITokenRole.vet" mat-button aria-label="pay visit action"
+              (click)="payInvoice(item, i)">
               <mat-label>Pay</mat-label>
             </button>
-            <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"
+            <!-- <button name="edit" mat-icon-button aria-label="Example icon-button with a heart icon text-dangger"
               matTooltip="('GENERAL.ACTIONS.OPEN-DETAILS' | translate)" (click)="openDetails(item)">
               <mat-icon>open_in_new</mat-icon>
-            </button>
+            </button> -->
             <button name="delete" mat-icon-button color="warn"
               aria-label="Example icon-button with a heart icon text-dangger"
+              *ngIf="role != ITokenRole.vet && role != ITokenRole.owner"
               matTooltip="('GENERAL.ACTIONS.DELETE' | translate)" [disabled]="!IsDeletePermission"
               (click)="delete(item)">
               <mat-icon color="warn">delete</mat-icon>

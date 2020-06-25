@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 import { IVisits, IChangeStatusObj, VisitStatus } from './ivisits';
 import { VisitsService } from './visits.service';
@@ -14,18 +14,19 @@ import { CompleteVisitComponent } from './complete-visit/complete-visit.componen
 import { AuthenticationService } from '../core/authentication.service';
 
 @Component({
-  selector: 'app-visits-list',
-  templateUrl: './visits-list.component.html',
-  styleUrls: ['./visits-list.component.scss']
+	selector: 'app-visits-list',
+	templateUrl: './visits-list.component.html',
+	styleUrls: ['./visits-list.component.scss']
 })
 export class VisitsListComponent extends BaseListComponent<IVisits> implements OnInit {
 
-	title:string = "Visits";
+	title: string = "Visits";
 	completeVisitRef: MatDialogRef<CompleteVisitComponent>;
 
+	ITokenRole = ITokenRole;
+	VisitStatus = VisitStatus;
 	role: ITokenRole;
-	isOwner: boolean = false;
-	isVet: boolean = false;
+
 	constructor(
 		public router: Router,
 		public route: ActivatedRoute,
@@ -38,34 +39,32 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		public petsService: PetsService,
 		public vetsService: VetsService,
 		public globalPermissionService: GlobalPermissionService,
-		public authenticationService: AuthenticationService,
-	) { 
+		public authenticationService: AuthenticationService
+	) {
 		super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, dataService, errorService)
-  }
+	}
 
 	ngOnInit() {
 		this.entityName = 'Visits';
 		this.setAssociation();
 		this.setColumns();
-		this.primaryKeys = [ "id",  ]
+		this.primaryKeys = ["id",]
 		this.role = this.authenticationService.decodeToken().role;
-		this.isOwner = this.role == ITokenRole.owner;
-		this.isVet = this.role == ITokenRole.vet;
 		super.ngOnInit();
 	}
-  
-  
-	setAssociation(){
-  	
+
+
+	setAssociation() {
+
 		this.associations = [
 			{
 				column: [
-                      {
-					  	key: 'petId',
-					  	value: undefined,
-					  	referencedkey: 'id'
-					  },
-					  
+					{
+						key: 'petId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+
 				],
 				isParent: false,
 				descriptiveField: 'petsDescriptiveField',
@@ -77,12 +76,12 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 			},
 			{
 				column: [
-                      {
-					  	key: 'vetId',
-					  	value: undefined,
-					  	referencedkey: 'id'
-					  },
-					  
+					{
+						key: 'vetId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+
 				],
 				isParent: false,
 				descriptiveField: 'vetsDescriptiveField',
@@ -94,17 +93,17 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 			},
 		];
 	}
-  
-  	setColumns(){
-  		this.columns = [
-    		{
+
+	setColumns() {
+		this.columns = [
+			{
 				column: 'description',
 				label: 'description',
 				sort: true,
 				filter: true,
 				type: listColumnType.String
 			},
-    		{
+			{
 				column: 'visitDate',
 				label: 'visitDate',
 				sort: true,
@@ -112,20 +111,27 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 				type: listColumnType.Date
 			},
 			{
-	  			column: 'Pets',
+				column: 'status',
+				label: 'status',
+				sort: true,
+				filter: true,
+				type: listColumnType.String
+			},
+			{
+				column: 'Pets',
 				label: 'Pets',
 				sort: false,
 				filter: false,
 				type: listColumnType.String
-	  		},
+			},
 			{
-	  			column: 'Vets',
+				column: 'Vets',
 				label: 'Vets',
 				sort: false,
 				filter: false,
 				type: listColumnType.String
-	  		},
-		  	{
+			},
+			{
 				column: 'actions',
 				label: 'Actions',
 				sort: false,
@@ -135,17 +141,17 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		];
 		this.selectedColumns = this.columns;
 		this.displayedColumns = this.columns.map((obj) => { return obj.column });
-  	}
+	}
 	addNew() {
 		super.addNew(VisitsNewComponent);
 	}
 
-	completeVisit(item: IVisits){
+	completeVisit(item: IVisits, index) {
 		this.completeVisitRef = this.dialog.open(CompleteVisitComponent, {
 			panelClass: "fc-modal-dialog"
 		});
 		this.completeVisitRef.afterClosed().subscribe(res => {
-			if(res){
+			if (res) {
 				console.log(res);
 				let changeStatusObj: IChangeStatusObj = {
 					status: VisitStatus.Completed,
@@ -153,8 +159,10 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 					visitNotes: res.visitNotes
 				}
 
-				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(res =>{
-					if(res){
+				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(res => {
+					if (res) {
+						this.items[index].status = res.status;
+						this.items[index].visitNotes = res.visitNotes;
 						this.errorService.showError('Visit Completed');
 					} else {
 						this.errorService.showError('An error occurred');
@@ -164,21 +172,22 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 		})
 	}
 
-	changeStatus(item: IVisits, status: VisitStatus){
+	changeStatus(item: IVisits, index, status: VisitStatus) {
 		this.dialog.open(ConfirmDialogComponent, {
 			data: {
 				confirmationType: "confirm"
 			}
 		}).afterClosed().subscribe(res => {
-			if(res){
+			if (res) {
 				console.log(res);
 				let changeStatusObj: IChangeStatusObj = {
 					status: status,
 				}
 
-				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(()=>{
-					if(res){
+				this.dataService.changeStatus(item.id, changeStatusObj).subscribe(res => {
+					if (res) {
 						this.errorService.showError(`Visit status changed to: ${status}`);
+						this.items[index].status = res.status;
 					} else {
 						this.errorService.showError('An error occurred');
 					}
@@ -186,5 +195,5 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 			}
 		});
 	}
-  
+
 }

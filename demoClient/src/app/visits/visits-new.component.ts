@@ -93,7 +93,7 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 				type: 'ManyToOne',
 				service: this.vetsService,
 				descriptiveField: 'vetsDescriptiveField',
-				referencedDescriptiveField: 'id',
+				referencedDescriptiveField: 'userName',
 
 			},
 		];

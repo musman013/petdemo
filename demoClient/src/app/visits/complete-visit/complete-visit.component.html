@@ -9,7 +9,8 @@
             <form [formGroup]="itemForm" #itemNgForm="ngForm" (ngSubmit)="onSubmit()" class="item-form">
 
                 <mat-form-field>
-                    <input formControlName="visitNotes" matInput placeholder="Enter visit notes">
+                    <textarea formControlName="visitNotes" matInput placeholder="Enter visit notes">
+                        </textarea>
                 </mat-form-field>
                 <mat-form-field>
                     <input formControlName="invoiceAmount" type="number" matInput placeholder="Enter invoice amount">

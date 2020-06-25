@@ -1,8 +1,9 @@
-export interface IVisits {  
-
+export interface IVisits {
+	visitNotes: string;
 	description?: string;
 	id: number;
 	visitDate?: Date;
+	status: VisitStatus;
 	petsDescriptiveField?: string;
 	petId: number;
 	vetsDescriptiveField?: number;
