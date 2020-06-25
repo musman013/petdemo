@@ -1,4 +1,4 @@
-import { Component, OnInit,  Output, Inject, EventEmitter ,Input, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, Output, Inject, EventEmitter, Input, ChangeDetectorRef } from "@angular/core";
 import { ReportPasswordComponent } from '../myreports/report-password/report-password.component';
 import { Globals, BaseListComponent, PickerDialogService, ErrorService, ISearchField, operatorType, PickerComponent, listProcessingType } from 'projects/fast-code-core/src/public_api';
 import { IPermalink } from '../permalink/ipermalink';
@@ -6,10 +6,10 @@ import { PermalinkService } from '../permalink/permalink.service';
 import { ChartComponent } from '../../pages/chart/chart.component';
 import { MatInputModule, MAT_DIALOG_DATA, MatSnackBar, MatDialog, MatDialogRef, getMatAutocompleteMissingPanelError } from "@angular/material";
 import { IReport } from '../reports/Ireport';
-import { ClipboardModule  } from 'ngx-clipboard';
+import { ClipboardModule } from 'ngx-clipboard';
 
 export enum AccessOptions {
-  Login  = 'Login',
+  Login = 'Login',
   noLogin = 'noLogin',
   Password = 'Password'
 }
@@ -23,7 +23,7 @@ export enum AccessOptions {
 export class PermalinkComponent implements OnInit {
 
   // @Output() externalShareView: EventEmitter<any> = new EventEmitter();
-  selectedReport: IReport;
+  // selectedReport: IReport;
   // externalShareView: boolean = true;
   accessOption: string;
   accessOptionIcon: string;
@@ -48,32 +48,45 @@ export class PermalinkComponent implements OnInit {
     public errorService: ErrorService,
 
     @Inject(MAT_DIALOG_DATA) public data: any) {
-        this.title = "External Share Options";
-        this.selectedReport = data.report;
-    }
+    this.title = "External Share Options";
+  }
 
 
   ngOnInit() {
-    this.createPermalink();
+    this.getPermalink();
+  }
 
+  getPermalink() {
+    this.permalinkservice.getByResrouce(this.data.resource, this.data.resourceId).subscribe(res => {
+      if (res) {
+        this.permalink = res;
+        this.selectAccessOption(this.permalink.authentication);
+      }
+      else {
+        this.createPermalink();
+      }
+    }, err => {
+      this.createPermalink();
+    })
   }
 
   createPermalink() {
-    console.log(this.selectedReport);
-    this.permalink = {authentication: 'Login',
+    this.permalink = {
+      authentication: 'Login',
       description: false,
       refreshRate: 10,
       rendering: 'interactive',
       height: 600,
       width: 800,
-      resource: this.data.type,
+      resource: this.data.resource,
       password: null,
-      resourceId: this.selectedReport.id,
-      toolbar: false};
+      resourceId: this.data.resourceId,
+      toolbar: false
+    };
     this.permalinkservice.create(this.permalink).subscribe(permalink => {
-    this.permalink = permalink;
-    this.selectAccessOption(this.permalink.authentication);
-    console.log(permalink);
+      this.permalink = permalink;
+      this.selectAccessOption(this.permalink.authentication);
+      console.log(permalink);
     });
 
   }
@@ -112,7 +125,7 @@ export class PermalinkComponent implements OnInit {
       this.passwordDialogRef.afterClosed().subscribe(action => {
         if (action.confirm) {
           this.accessPassword = action.password;
-          console.log('password set', this.accessPassword  );
+          console.log('password set', this.accessPassword);
         } else {
           this.accessPassword = '';
           console.log('no password set');
@@ -126,12 +139,12 @@ export class PermalinkComponent implements OnInit {
     // this.permalink.refreshRate = this.refreshrate;
     this.permalink.password = this.accessPassword;
     this.permalink.rendering = 'interactive';
-    this.permalink.resourceId = this.selectedReport.id;
+    this.permalink.resourceId = this.data.resourceId;
     console.log(this.permalink);
     this.permalinkservice.update(this.permalink, this.permalink.id).subscribe(permalink => {
       this.permalink = permalink;
       console.log(permalink);
-      this.permalindialogRef.close({confirm : true});
+      this.permalindialogRef.close({ confirm: true });
     });
 
   }

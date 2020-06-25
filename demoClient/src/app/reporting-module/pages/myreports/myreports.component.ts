@@ -327,7 +327,6 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
   }
 
   shareExternaly(report: IReport) {
-    this.shareReport = report;
     // this.externalShareView = true;
 
     this.permalinkDialogRef = this.dialog.open(PermalinkComponent, {
@@ -335,8 +334,8 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
             width: '50%',
             height: '80%',
             data: {
-              type: 'report',
-              report: this.shareReport
+              resource: 'report',
+              resourceId: report.id
             }
           });
     this.permalinkDialogRef.afterClosed().subscribe(action => {

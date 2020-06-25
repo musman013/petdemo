@@ -73,8 +73,7 @@ export class EditDashboardComponent implements OnInit {
     });
   }
 
-  shareExternaly(report: IDashboard) {
-    this.shareReport = report;
+  shareExternaly(dashboard: IDashboard) {
     // this.externalShareView = true;
 
     this.permalinkDialogRef = this.dialog.open(PermalinkComponent, {
@@ -82,8 +81,8 @@ export class EditDashboardComponent implements OnInit {
             width: '50%',
             height: '80%',
             data: {
-              type: 'report',
-              report: this.shareReport
+              resource: 'dashboard',
+              resourceId: dashboard.id
             }
           });
     this.permalinkDialogRef.afterClosed().subscribe(action => {
