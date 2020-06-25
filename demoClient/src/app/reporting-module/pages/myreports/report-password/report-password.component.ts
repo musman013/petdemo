@@ -21,15 +21,19 @@ export class ReportPasswordComponent {
     public snackBar: MatSnackBar,
     private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-      if (this.data.type == 'Password') {
-        this.title = "Password";
-      } else {
-        this.title = "Set Password";
-      }
+    if (this.data.type == 'Password') {
+      this.title = "Password";
+    } else {
+      this.title = "Set Password";
     }
+  }
 
   confirm() {
-      this.dialogRef.close({ 'password': this.reportpassword , 'confirm': true });
+    this.dialogRef.close({ 'password': this.reportpassword, 'confirm': true });
+  }
+
+  cancel() {
+    this.dialogRef.close(null);
   }
 
   confirmPassword(value: string): void {

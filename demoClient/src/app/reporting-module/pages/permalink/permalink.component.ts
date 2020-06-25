@@ -116,6 +116,7 @@ export class PermalinkComponent implements OnInit {
       if (!this.permalink.password) {
         this.passwordDialogRef = this.dialog.open(ReportPasswordComponent, {
           disableClose: true,
+          panelClass: "fc-modal-dialog",
           data: {
             type: 'setPassword'
           }

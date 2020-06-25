@@ -84,10 +84,10 @@
             <mat-nav-list class="subnav">
 
               <a mat-list-item class="mat-sub-list-item" *ngIf="permissions['email']"
-                routerLink="/email/emailtemplates">{{'MainNav.Email.EmailTemplate' | translate }}
+                routerLink="email/emailtemplates">{{'MainNav.Email.EmailTemplate' | translate }}
               </a>
               <a mat-list-item class="mat-sub-list-item" *ngIf="permissions['emailvariable']"
-                routerLink="/email/emailvariables">{{'MainNav.Email.EmailVariables' | translate }}
+                routerLink="email/emailvariables">{{'MainNav.Email.EmailVariables' | translate }}
               </a>
 
             </mat-nav-list>
@@ -100,14 +100,14 @@
 
             <mat-nav-list class="subnav">
 
-              <a mat-list-item class="mat-sub-list-item" routerLink="/jobs"
+              <a mat-list-item class="mat-sub-list-item" routerLink="jobs"
                 *ngIf="permissions['jobdetails']">{{'MainNav.JobScheduling.Jobs' | translate }}
               </a>
-              <a mat-list-item class="mat-sub-list-item" routerLink="/executingJobs" *ngIf="permissions['jobdetails']">{{'MainNav.JobScheduling.ExecutingJobs' 
+              <a mat-list-item class="mat-sub-list-item" routerLink="executingJobs" *ngIf="permissions['jobdetails']">{{'MainNav.JobScheduling.ExecutingJobs' 
                 | translate }} </a>
-              <a mat-list-item class="mat-sub-list-item" routerLink="/triggers" *ngIf="permissions['triggerdetails']">{{'MainNav.JobScheduling.Triggers' | 
+              <a mat-list-item class="mat-sub-list-item" routerLink="triggers" *ngIf="permissions['triggerdetails']">{{'MainNav.JobScheduling.Triggers' | 
                 translate }} </a>
-              <a mat-list-item class="mat-sub-list-item" routerLink="/executionHistory"
+              <a mat-list-item class="mat-sub-list-item" routerLink="executionHistory"
                 *ngIf="permissions['jobdetails']">{{'MainNav.JobScheduling.ExecutionHistory' 
                 | translate }} </a>
 
@@ -136,10 +136,10 @@
             </ng-container>
           </mat-nav-list>
         </mat-expansion-panel>
-        <a mat-list-item class="sidenav-list-item" routerLink="/entityHistory"
+        <a mat-list-item class="sidenav-list-item" routerLink="entityHistory"
           *ngIf="permissions['ENTITYHISTORY']">{{'MainNav.EntityHistory' | translate }}
         </a>
-        <a mat-list-item class="sidenav-list-item" routerLink="/apiHistory"
+        <a mat-list-item class="sidenav-list-item" routerLink="apiHistory"
           *ngIf="permissions['AUDITTRAIL']">{{'MainNav.APiHistory' | translate }}
         </a>
       </mat-expansion-panel>

@@ -92,11 +92,25 @@ export class InvoicesListComponent extends BaseListComponent<IInvoices> implemen
 				type: listColumnType.Date
 			},
 			{
-				column: 'Visit',
-				label: 'Visit',
+				column: 'owner',
+				label: 'Owner',
 				sort: false,
 				filter: false,
 				type: listColumnType.String
+			},
+			{
+				column: 'vet',
+				label: 'Vet',
+				sort: false,
+				filter: false,
+				type: listColumnType.String
+			},
+			{
+				column: 'visit',
+				label: 'Visit',
+				sort: false,
+				filter: false,
+				type: listColumnType.Date
 			},
 			{
 				column: 'actions',

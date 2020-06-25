@@ -92,7 +92,7 @@ export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit 
 				type: 'ManyToOne',
 				service: this.ownersService,
 				descriptiveField: 'ownersDescriptiveField',
-				referencedDescriptiveField: 'id',
+				referencedDescriptiveField: 'userName',
 		    
 			},
 		];

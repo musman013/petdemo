@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
-import {AccessOptions} from '../myreports/myreports.component';
+import { AccessOptions } from '../myreports/myreports.component';
 import { AuthenticationService } from 'src/app/core/authentication.service';
-import { Router, ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { viewClassName } from '@angular/compiler';
 import { ReportPasswordComponent } from '../myreports/report-password/report-password.component';
 import { MatInputModule, MatSnackBar, MatDialog, MatDialogRef, getMatAutocompleteMissingPanelError } from "@angular/material";
@@ -16,96 +16,96 @@ import * as _ from 'lodash';
 })
 
 export class ResourceViewComponent implements OnInit {
-//   resource = {authentication: 'noLogin',
-//   description: true,
-//   refreshRate: '120',
-//   rendering: '',
-//   resource: 'report',
-//   // resource: 'dashboard',
-//   password: 'abcd',
-//   resourceId: '',
-//   toolbar: true,
-//   title: true,
-//   // data: {
-//   //   description: 'Dashboard',
-//   //   editable: null,
-//   //   id: 2,
-//   //   isAssignedByRole: null,
-//   //   isPublished: true,
-//   //   isRefreshed: null,
-//   //   isResetable: true,
-//   //   isResetted: null,
-//   //   isShareable: true,
-//   //   ownerDescriptiveField: null,
-//   //   ownerId: 1,
-//   //   ownerSharingStatus: null,
-//   //   recipientSharingStatus: null,
-//   //   reportDetails: [{
-//   //     ctype: 'line',
-//   //     description: 'desc',
-//   //     editable: null,
-//   //     id: 1,
-//   //     isAssignedByDashboard: false,
-//   //     isAssignedByRole: null,
-//   //     isPublished: true,
-//   //     isRefreshed: null,
-//   //     isResetable: null,
-//   //     isResetted: null,
-//   //     orderId: 0,
-//   //     ownerId: 1,
-//   //     ownerSharingStatus: null,
-//   //     query: {
-//   //       dimensions: [],
-//   //       filters: [],
-//   //       measures: ['Apps.count'],
-//   //       // order: {Apps.count: "desc"},
-//   //       timeDimensions: [{dimension: 'Apps.createdDate',granularity: 'week'}]
-//   //     },
-//   //     recipientSharingStatus: null,
-//   //     reportType: 'line',
-//   //     reportWidth: 'fullchart',
-//   //     sharedWithMe: null,
-//   //     sharedWithOthers: true,
-//   //     title: 'new report',
-//   //     userId: 1,
-//   //     version: 'running'
-//   //   }],
-//   //   sharedWithMe: null,
-//   //   sharedWithOthers: null,
-//   //   title: 'Test',
-//   //   userId: 1
-//   //   }
-//   data: {
-//     ctype: 'line',
-//     description: 'desc',
-//     editable: false,
-//     id: 1,
-//     isAssignedByDashboard: false,
-//     isAssignedByRole: false,
-//     isPublished: true,
-//     isRefreshed: false,
-//     isResetted: false,
-//     ownerId: 1,
-//     ownerSharingStatus: false,
-//     query: {
-//     dimensions: [],
-//     filters: [],
-//     measures: ["Apps.count"],
-//     // order: {Apps.count: "desc"},
-//     timeDimensions: [{granularity: "week", dimension: "Apps.createdDate"}]},
-//     recipientSharingStatus: false,
-//     reportType: "line",
-//     reportWidth: null,
-//     sharedWithMe: false,
-//     sharedWithOthers: true,
-//     title: "new report",
-//     userId: 1,
-//     version: "running"
-//   }
+  //   resource = {authentication: 'noLogin',
+  //   description: true,
+  //   refreshRate: '120',
+  //   rendering: '',
+  //   resource: 'report',
+  //   // resource: 'dashboard',
+  //   password: 'abcd',
+  //   resourceId: '',
+  //   toolbar: true,
+  //   title: true,
+  //   // data: {
+  //   //   description: 'Dashboard',
+  //   //   editable: null,
+  //   //   id: 2,
+  //   //   isAssignedByRole: null,
+  //   //   isPublished: true,
+  //   //   isRefreshed: null,
+  //   //   isResetable: true,
+  //   //   isResetted: null,
+  //   //   isShareable: true,
+  //   //   ownerDescriptiveField: null,
+  //   //   ownerId: 1,
+  //   //   ownerSharingStatus: null,
+  //   //   recipientSharingStatus: null,
+  //   //   reportDetails: [{
+  //   //     ctype: 'line',
+  //   //     description: 'desc',
+  //   //     editable: null,
+  //   //     id: 1,
+  //   //     isAssignedByDashboard: false,
+  //   //     isAssignedByRole: null,
+  //   //     isPublished: true,
+  //   //     isRefreshed: null,
+  //   //     isResetable: null,
+  //   //     isResetted: null,
+  //   //     orderId: 0,
+  //   //     ownerId: 1,
+  //   //     ownerSharingStatus: null,
+  //   //     query: {
+  //   //       dimensions: [],
+  //   //       filters: [],
+  //   //       measures: ['Apps.count'],
+  //   //       // order: {Apps.count: "desc"},
+  //   //       timeDimensions: [{dimension: 'Apps.createdDate',granularity: 'week'}]
+  //   //     },
+  //   //     recipientSharingStatus: null,
+  //   //     reportType: 'line',
+  //   //     reportWidth: 'fullchart',
+  //   //     sharedWithMe: null,
+  //   //     sharedWithOthers: true,
+  //   //     title: 'new report',
+  //   //     userId: 1,
+  //   //     version: 'running'
+  //   //   }],
+  //   //   sharedWithMe: null,
+  //   //   sharedWithOthers: null,
+  //   //   title: 'Test',
+  //   //   userId: 1
+  //   //   }
+  //   data: {
+  //     ctype: 'line',
+  //     description: 'desc',
+  //     editable: false,
+  //     id: 1,
+  //     isAssignedByDashboard: false,
+  //     isAssignedByRole: false,
+  //     isPublished: true,
+  //     isRefreshed: false,
+  //     isResetted: false,
+  //     ownerId: 1,
+  //     ownerSharingStatus: false,
+  //     query: {
+  //     dimensions: [],
+  //     filters: [],
+  //     measures: ["Apps.count"],
+  //     // order: {Apps.count: "desc"},
+  //     timeDimensions: [{granularity: "week", dimension: "Apps.createdDate"}]},
+  //     recipientSharingStatus: false,
+  //     reportType: "line",
+  //     reportWidth: null,
+  //     sharedWithMe: false,
+  //     sharedWithOthers: true,
+  //     title: "new report",
+  //     userId: 1,
+  //     version: "running"
+  //   }
 
-// };
-resource: any;
-// resource: any = {
+  // };
+  resource: any;
+  // resource: any = {
   // data:{
   //   title: '',
   // },
@@ -117,25 +117,25 @@ resource: any;
   //   resource: 'report',
   //   toolbar: false
   // }
-// };
-accessPassword: string;
-showResourceView = false;
-resourceViewId: any;
-selectedChart:any= "Select Chart";
-query: any;
-queryParam: any;
-chartType: any;
-timeFilterBy: any;
-interval :any;
+  // };
+  accessPassword: string;
+  showResourceView = false;
+  resourceViewId: any;
+  selectedChart: any = "Select Chart";
+  query: any;
+  queryParam: any;
+  chartType: any;
+  timeFilterBy: any;
+  interval: any;
 
-passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
+  passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
   constructor(
     private authenticationService: AuthenticationService,
     private router: Router,
     public dialog: MatDialog,
     public resourceViewService: ResourceViewService,
     private route: ActivatedRoute,
-    ) {}
+  ) { }
 
   ngOnInit() {
     this.resourceViewId = this.route.snapshot.paramMap.get('id');
@@ -145,7 +145,7 @@ passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
       this.buildQuery();
       console.log(resource);
       this.interval = setInterval(this.checkreload, this.resource.resourceInfo.refreshRate * 1000);
-      // this.checkAccessOption();
+      this.checkAccessOption();
     });
 
   }
@@ -154,8 +154,8 @@ passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
     console.log('in checkreload');
     console.log(this.resource);
     if (!this.resource) {
-        console.log('calling reload');
-        this.interval.clear();
+      console.log('calling reload');
+      this.interval.clear();
     }
     this.reload();
   }
@@ -168,7 +168,7 @@ passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
     this.buildQuery();
   }
 
-  showChart(type, chart , icon) {
+  showChart(type, chart, icon) {
     this.resource.data.reportType = type;
     this.chartType = type;
     this.selectedChart = chart;
@@ -183,21 +183,21 @@ passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
 
     switch (this.resource.resourceInfo.authentication) {
       case (AccessOptions.Login):
-      if (this.authenticationService.token) {
-       this.viewresource();
-      }
-      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
-      return false;
-      break;
+        if (this.authenticationService.token) {
+          this.viewresource();
+        }
+        this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+        return false;
+        break;
 
       case (AccessOptions.noLogin):
-      this.viewresource();
-      break;
+        this.viewresource();
+        break;
 
 
       case (AccessOptions.Password):
-      this.passwordDialog();
-      break;
+        this.passwordDialog();
+        break;
     }
 
   }
@@ -212,7 +212,7 @@ passwordDialogRef: MatDialogRef<ReportPasswordComponent>;
     this.passwordDialogRef.afterClosed().subscribe(action => {
       if (action.confirm) {
         this.accessPassword = action.password;
-        console.log('password set', this.accessPassword  );
+        console.log('password set', this.accessPassword);
         if (this.accessPassword == this.resource.password) {
           this.viewresource();
         }

@@ -70,6 +70,40 @@ export class PetsDetailsComponent extends BaseDetailsComponent<IPets> implements
 	setAssociations(){
   	
 		this.associations = [
+			{
+				column: [
+					{
+						key: 'typeId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+					  
+				],
+				isParent: false,
+				table: 'types',
+				type: 'ManyToOne',
+				service: this.typesService,
+				descriptiveField: 'typesDescriptiveField',
+				referencedDescriptiveField: 'name',
+		    
+			},
+			{
+				column: [
+					{
+						key: 'ownerId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+					  
+				],
+				isParent: false,
+				table: 'owners',
+				type: 'ManyToOne',
+				service: this.ownersService,
+				descriptiveField: 'ownersDescriptiveField',
+				referencedDescriptiveField: 'userName',
+		    
+			},
 		];
 		
 		this.childAssociations = this.associations.filter(association => {
