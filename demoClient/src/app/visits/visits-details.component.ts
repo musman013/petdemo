@@ -105,7 +105,7 @@ export class VisitsDetailsComponent extends BaseDetailsComponent<IVisits> implem
 				type: 'ManyToOne',
 				service: this.vetsService,
 				descriptiveField: 'vetsDescriptiveField',
-				referencedDescriptiveField: 'id',
+				referencedDescriptiveField: 'userName',
 
 			},
 		];

@@ -6,7 +6,7 @@ export interface IVisits {
 	status: VisitStatus;
 	petsDescriptiveField?: string;
 	petId: number;
-	vetsDescriptiveField?: number;
+	vetsDescriptiveField?: string;
 	vetId: number;
 }
 
