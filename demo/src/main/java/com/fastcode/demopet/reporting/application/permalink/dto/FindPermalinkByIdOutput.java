@@ -20,5 +20,6 @@ public class FindPermalinkByIdOutput {
 	private Boolean toolbar;
 	private String password;
 	private Long userId;
+	private Long version;
 
 }

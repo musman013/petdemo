@@ -124,6 +124,7 @@ public class PermalinkController {
 		FindPermalinkByIdOutput currentPermalink = _permalinkAppService.findById(id);
 		Optional.ofNullable(currentPermalink).orElseThrow(() -> new EntityNotFoundException(String.format("Unable to update. Permalink with id=%snot found.", id)));
 		
+		permalink.setVersion(currentPermalink.getVersion());
 		return new ResponseEntity(_permalinkAppService.update(id,permalink), HttpStatus.OK);
 	}
 	
