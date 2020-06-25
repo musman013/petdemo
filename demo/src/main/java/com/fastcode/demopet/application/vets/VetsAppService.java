@@ -164,6 +164,7 @@ public class VetsAppService implements IVetsAppService {
 		for (int i = 0; i < list.size(); i++) {
 			if(!(
 					list.get(i).replace("%20","").trim().equals("userId") ||
+					list.get(i).replace("%20","").trim().equals("userName") ||
 					list.get(i).replace("%20","").trim().equals("id") ||
 					list.get(i).replace("%20","").trim().equals("vetspecialties")
 					)) 
@@ -176,15 +177,16 @@ public class VetsAppService implements IVetsAppService {
 	public BooleanBuilder searchKeyValuePair(QVetsEntity vets, Map<String,SearchFields> map,Map<String,String> joinColumns) {
 		BooleanBuilder builder = new BooleanBuilder();
 
-		//		for (Map.Entry<String, SearchFields> details : map.entrySet()) {
-		//            if(details.getKey().replace("%20","").trim().equals("firstName")) {
-		//				if(details.getValue().getOperator().equals("contains"))
-		//					builder.and(vets.firstName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-		//				else if(details.getValue().getOperator().equals("equals"))
-		//					builder.and(vets.firstName.eq(details.getValue().getSearchValue()));
-		//				else if(details.getValue().getOperator().equals("notEqual"))
-		//					builder.and(vets.firstName.ne(details.getValue().getSearchValue()));
-		//			}
+				for (Map.Entry<String, SearchFields> details : map.entrySet()) {
+		            if(details.getKey().replace("%20","").trim().equals("userName")) {
+						if(details.getValue().getOperator().equals("contains"))
+							builder.and(vets.user.userName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
+						else if(details.getValue().getOperator().equals("equals"))
+							builder.and(vets.user.userName.eq(details.getValue().getSearchValue()));
+						else if(details.getValue().getOperator().equals("notEqual"))
+							builder.and(vets.user.userName.ne(details.getValue().getSearchValue()));
+					}
+				}
 		//            if(details.getKey().replace("%20","").trim().equals("lastName")) {
 		//				if(details.getValue().getOperator().equals("contains"))
 		//					builder.and(vets.lastName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));

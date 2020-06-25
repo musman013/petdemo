@@ -73,8 +73,9 @@ public class OwnersAppService implements IOwnersAppService {
 
 		OwnersEntity owners = mapper.createOwnersInputToOwnersEntity(input);
 		owners.setUser(user);
-
+		
 		OwnersEntity createdOwners = _ownersManager.create(owners);
+		assignOwnerRole(owners.getId());
 		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners,user);
 	}
 	
@@ -173,6 +174,7 @@ public class OwnersAppService implements IOwnersAppService {
 					list.get(i).replace("%20","").trim().equals("address") ||
 					list.get(i).replace("%20","").trim().equals("city") ||
 					list.get(i).replace("%20","").trim().equals("userId") ||
+					list.get(i).replace("%20","").trim().equals("userName") ||
 					list.get(i).replace("%20","").trim().equals("id") ||
 					list.get(i).replace("%20","").trim().equals("pets")
 					)) 
@@ -201,6 +203,15 @@ public class OwnersAppService implements IOwnersAppService {
 					builder.and(owners.city.eq(details.getValue().getSearchValue()));
 				else if(details.getValue().getOperator().equals("notEqual"))
 					builder.and(owners.city.ne(details.getValue().getSearchValue()));
+			}
+			
+			if(details.getKey().replace("%20","").trim().equals("userName")) {
+				if(details.getValue().getOperator().equals("contains"))
+					builder.and(owners.user.userName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
+				else if(details.getValue().getOperator().equals("equals"))
+					builder.and(owners.user.userName.eq(details.getValue().getSearchValue()));
+				else if(details.getValue().getOperator().equals("notEqual"))
+					builder.and(owners.user.userName.ne(details.getValue().getSearchValue()));
 			}
 			//            if(details.getKey().replace("%20","").trim().equals("firstName")) {
 			//				if(details.getValue().getOperator().equals("contains"))
