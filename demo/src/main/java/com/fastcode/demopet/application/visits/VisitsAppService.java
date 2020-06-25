@@ -1,9 +1,5 @@
 package com.fastcode.demopet.application.visits;
 
-import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
-import com.fastcode.demopet.application.pets.IPetsAppService;
-import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
-import com.fastcode.demopet.application.vets.dto.FindVetsByIdOutput;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.domain.visits.IVisitsManager;
 import com.fastcode.demopet.domain.model.QVisitsEntity;
@@ -18,7 +14,6 @@ import com.fastcode.demopet.commons.search.*;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -33,14 +28,12 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
@@ -112,6 +105,7 @@ public class VisitsAppService implements IVisitsAppService {
 	  	}
 		
 		VisitsEntity createdVisits = _visitsManager.create(visits);
+	//	scheduleVisitConfirmationJob(createdVisits.getId());
 		scheduleReminderJob(createdVisits.getId());
 		return mapper.visitsEntityToCreateVisitsOutput(createdVisits);
 	}
@@ -148,10 +142,10 @@ public class VisitsAppService implements IVisitsAppService {
 
 		if(new Date().before(dayBeforeVisit)) {
 		
-		String jobKey = "job" + visitId;
+		String jobKey = "ReminderJob" + visitId;
 		String jobGroup = "visitReminder";
 		
-		String triggerKey = "trigger" + visitId;
+		String triggerKey = "ReminderTrigger" + visitId;
 		String triggerGroup = "visitReminder";
 		try {
 			if (!(getScheduler().checkExists(new JobKey(jobKey, jobGroup)))) {
@@ -160,9 +154,7 @@ public class VisitsAppService implements IVisitsAppService {
 						.withDescription("visit reminder email")
 						.withIdentity(jobKey, jobGroup).build();
 				jobDetails.getJobDataMap().put("visitId", String.valueOf(visitId));
-			//	getScheduler().addJob(jobDetails, true, true);
-			//	getScheduler().triggerJob(new JobKey(jobKey, jobGroup));
-				
+			
 				Trigger trigger = TriggerBuilder.newTrigger()
 					    .withIdentity(triggerKey, triggerGroup)
 					    .startAt(dayBeforeVisit) // some Date
@@ -177,6 +169,37 @@ public class VisitsAppService implements IVisitsAppService {
 			e.printStackTrace();
 		}
 		}
+	}
+	
+	public void scheduleVisitConfirmationJob(Long visitId)
+	{
+		String jobKey = "confirmationjob" + visitId;
+		String jobGroup = "visitConfirmation";
+		
+		String triggerKey = "confirmationTrigger" + visitId;
+		String triggerGroup = "visitConfirmation";
+		try {
+			if (!(getScheduler().checkExists(new JobKey(jobKey, jobGroup)))) {
+				Class<? extends Job> className = (Class<? extends Job>) Class.forName("com.fastcode.demopet.scheduler.jobs.visitConfirmationEmailJob");
+				JobDetail jobDetails = JobBuilder.newJob(className)
+						.withDescription("visit confirmation email")
+						.withIdentity(jobKey, jobGroup).build();
+				jobDetails.getJobDataMap().put("visitId", String.valueOf(visitId));
+			
+				Trigger trigger = TriggerBuilder.newTrigger()
+					    .withIdentity(triggerKey, triggerGroup)
+					    .startAt(new Date()) // some Date
+					    .forJob(jobKey, jobGroup) // identify job with name, group strings
+					    .build();
+				getScheduler().scheduleJob(jobDetails, trigger);
+			} 
+			else {
+				throw new EntityNotFoundException ("Job key already exists");
+			}
+		} catch (ClassNotFoundException | SchedulerException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)
