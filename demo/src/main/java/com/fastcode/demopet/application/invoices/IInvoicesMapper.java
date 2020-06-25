@@ -15,7 +15,11 @@ public interface IInvoicesMapper {
    
    @Mappings({ 
    @Mapping(source = "visits.id", target = "visitId"),                   
-   @Mapping(source = "visits.id", target = "visitsDescriptiveField"),                    
+   @Mapping(source = "visits.visitDate", target = "visitsDescriptiveField"), 
+   @Mapping(source = "visits.vets.id", target = "vetId"),                   
+   @Mapping(source = "visits.vets.user.userName", target = "vetsDescriptiveField"), 
+   @Mapping(source = "visits.pets.owners.id", target = "ownerId"),                   
+   @Mapping(source = "visits.pets.owners.user.userName", target = "ownersDescriptiveField")
    }) 
    CreateInvoicesOutput invoicesEntityToCreateInvoicesOutput(InvoicesEntity entity);
 
@@ -24,13 +28,21 @@ public interface IInvoicesMapper {
 
     @Mappings({ 
     @Mapping(source = "visits.id", target = "visitId"),                   
-    @Mapping(source = "visits.id", target = "visitsDescriptiveField"),                    
+    @Mapping(source = "visits.visitDate", target = "visitsDescriptiveField"), 
+    @Mapping(source = "visits.vets.id", target = "vetId"),                   
+    @Mapping(source = "visits.vets.user.userName", target = "vetsDescriptiveField"), 
+    @Mapping(source = "visits.pets.owners.id", target = "ownerId"),                   
+    @Mapping(source = "visits.pets.owners.user.userName", target = "ownersDescriptiveField")
    }) 
    UpdateInvoicesOutput invoicesEntityToUpdateInvoicesOutput(InvoicesEntity entity);
 
    @Mappings({ 
    @Mapping(source = "visits.id", target = "visitId"),                   
-   @Mapping(source = "visits.id", target = "visitsDescriptiveField"),                    
+   @Mapping(source = "visits.visitDate", target = "visitsDescriptiveField"),
+   @Mapping(source = "visits.vets.id", target = "vetId"),                   
+   @Mapping(source = "visits.vets.user.userName", target = "vetsDescriptiveField"), 
+   @Mapping(source = "visits.pets.owners.id", target = "ownerId"),                   
+   @Mapping(source = "visits.pets.owners.user.userName", target = "ownersDescriptiveField")
    }) 
    FindInvoicesByIdOutput invoicesEntityToFindInvoicesByIdOutput(InvoicesEntity entity);
 

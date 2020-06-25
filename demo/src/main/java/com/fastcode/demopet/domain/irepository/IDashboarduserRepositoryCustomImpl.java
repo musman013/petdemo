@@ -30,7 +30,7 @@ public class IDashboarduserRepositoryCustomImpl implements IDashboarduserReposit
 		String schema = env.getProperty("spring.jpa.properties.hibernate.default_schema");
 		String qlString = String.format(""
 				+ "SELECT * "
-				+ "FROM %s.user e "
+				+ "FROM %s.f_user e "
 				+ "WHERE e.id NOT IN "
 				+ "    (SELECT user_id "
 				+ "     FROM %s.dashboarduser "
@@ -61,7 +61,7 @@ public class IDashboarduserRepositoryCustomImpl implements IDashboarduserReposit
 		String schema = env.getProperty("spring.jpa.properties.hibernate.default_schema");
 		String qlString = String.format(""
 				+ "SELECT * "
-				+ "FROM %s.user e "
+				+ "FROM %s.f_user e "
 				+ "WHERE e.id IN "
 				+ "    (SELECT user_id "
 				+ "     FROM %s.dashboarduser du "

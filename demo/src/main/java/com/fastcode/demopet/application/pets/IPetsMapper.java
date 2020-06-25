@@ -18,7 +18,7 @@ public interface IPetsMapper {
    @Mapping(source = "types.id", target = "typeId"),                   
    @Mapping(source = "types.name", target = "typesDescriptiveField"),                    
    @Mapping(source = "owners.user.id", target = "ownerId"),                   
-   @Mapping(source = "owners.user.firstName", target = "ownersDescriptiveField"),                    
+   @Mapping(source = "owners.user.userName", target = "ownersDescriptiveField"),                    
    }) 
    CreatePetsOutput petsEntityToCreatePetsOutput(PetsEntity entity);
 
@@ -29,7 +29,7 @@ public interface IPetsMapper {
     @Mapping(source = "types.id", target = "typeId"),                   
     @Mapping(source = "types.name", target = "typesDescriptiveField"),                    
     @Mapping(source = "owners.user.id", target = "ownerId"),                   
-    @Mapping(source = "owners.user.firstName", target = "ownersDescriptiveField"),                    
+    @Mapping(source = "owners.user.userName", target = "ownersDescriptiveField"),                    
    }) 
    UpdatePetsOutput petsEntityToUpdatePetsOutput(PetsEntity entity);
 
@@ -37,7 +37,7 @@ public interface IPetsMapper {
    @Mapping(source = "types.id", target = "typeId"),                   
    @Mapping(source = "types.name", target = "typesDescriptiveField"),                    
    @Mapping(source = "owners.user.id", target = "ownerId"),                   
-   @Mapping(source = "owners.user.firstName", target = "ownersDescriptiveField"),                    
+   @Mapping(source = "owners.user.userName", target = "ownersDescriptiveField"),                    
    }) 
    FindPetsByIdOutput petsEntityToFindPetsByIdOutput(PetsEntity entity);
 
