@@ -11,7 +11,6 @@ public class GetVisitsOutput {
   	private String description;
   	private Long id;
   	private Date visitDate;
-
   	private Long invoicesId;
 
 }

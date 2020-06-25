@@ -10,7 +10,11 @@ public class UpdateInvoicesOutput {
   	private Long amount;
   	private Long id;
   	private Long visitId;
-	private Long visitsDescriptiveField;
+	private Date visitsDescriptiveField;
 	private InvoiceStatus status;
+	private Long vetId;
+	private String vetsDescriptiveField;
+	private Long ownerId;
+	private String ownersDescriptiveField;
 
 }
