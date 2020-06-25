@@ -17,7 +17,7 @@ public class UpdatePermalinkInput {
   private String authentication;
   private Boolean description;
   @NotNull(message = "id Should not be null")
-  @Length(max = 256, message = "id must be less than 256 characters")
+//  @Length(max = 256, message = "id must be less than 256 characters")
   private UUID id;
   private Long refreshRate;
   @NotNull(message = "rendering Should not be null")
@@ -29,5 +29,6 @@ public class UpdatePermalinkInput {
   private Long resourceId;
   private Boolean toolbar;
   private Long userId;
+  private Long version;
 
 }
