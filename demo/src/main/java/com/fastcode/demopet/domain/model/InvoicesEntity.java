@@ -31,8 +31,6 @@ public class InvoicesEntity extends AbstractEntity {
   	@JoinColumn(name = "visitId")
   	private VisitsEntity visits;
   	
-
-
 }
 
   

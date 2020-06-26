@@ -128,9 +128,22 @@ public class AppStartupRunner implements ApplicationRunner {
 		addEntityHistoryPermissions("entityHistory", role.getId());
 		addAuditTrailPermission("auditTrail", role.getId());
 		addFlowablePrivileges(role.getId());
+		assignFlowableTaskPermission(role2);
+		assignFlowableTaskPermission(role1);
 		loggingHelper.getLogger().info("Completed creating the data in the database");
 
 	}
+	
+	private void assignFlowableTaskPermission(RoleEntity role)
+	{
+		 PermissionEntity pe = permissionManager.findByPermissionName("access-task");
+		 
+		 RolepermissionEntity pe2RP= new RolepermissionEntity(pe.getId(), role.getId());
+		 rolepermissionManager.create(pe2RP);
+		 
+		 idmIdentityService.addGroupPrivilegeMapping(role.getName(), pe.getName());
+	}
+	
 	
 	private void assignEntityPermissions(String entity, RoleEntity role)
 	{

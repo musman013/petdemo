@@ -106,7 +106,7 @@ public class VisitsAppService implements IVisitsAppService {
 		
 		VisitsEntity createdVisits = _visitsManager.create(visits);
 		scheduleVisitConfirmationJob(createdVisits.getId());
-		//scheduleReminderJob(createdVisits.getId());
+		scheduleReminderJob(createdVisits.getId());
 
 		return mapper.visitsEntityToCreateVisitsOutput(createdVisits);
 	}
@@ -136,10 +136,9 @@ public class VisitsAppService implements IVisitsAppService {
 	public void scheduleReminderJob(Long visitId)
 	{
 		ZoneId defaultZoneId = ZoneId.systemDefault();
-		VisitsEntity visit = _visitsManager.findById(visitId);
 		
-		LocalDateTime localDate = visit.getVisitDate().toInstant().atZone(defaultZoneId).toLocalDateTime();
-		Date dayBeforeVisit =Date.from(localDate.minusDays(1).atZone(defaultZoneId).toInstant());
+		LocalDateTime localDate = new Date().toInstant().atZone(defaultZoneId).toLocalDateTime();
+		Date dayBeforeVisit =Date.from(localDate.plusMinutes(1).atZone(defaultZoneId).toInstant());
 
 		if(new Date().before(dayBeforeVisit)) {
 		

@@ -73,13 +73,13 @@ public class visitReminderEmailJob implements Job {
 		map.put("visitDateTime",visit.getVisitDate().toString());
 		map.put("visitVetName", vet.getFirstName() + " " + vet.getLastName());
 		
-		try {
-			_mailAppservice.sendVisitEmail(emailTemplate,map);
-		} catch (IOException e1) {
-			System.out.println("Error while sending email");
-			e1.printStackTrace();
-		
-		}
+//		try {
+//			_mailAppservice.sendVisitEmail(emailTemplate,map);
+//		} catch (IOException e1) {
+//			System.out.println("Error while sending email");
+//			e1.printStackTrace();
+//		
+//		}
 	}
 
 }

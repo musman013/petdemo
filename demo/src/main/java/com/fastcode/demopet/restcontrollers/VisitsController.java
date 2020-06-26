@@ -27,6 +27,7 @@ import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.application.visits.VisitsAppService;
 import com.fastcode.demopet.application.visits.dto.*;
+import com.fastcode.demopet.StartProcessService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.CreateInvoicesInput;
@@ -57,6 +58,9 @@ public class VisitsController {
 
 	@Autowired
 	private InvoicesAppService  _invoicesAppService;
+	
+	@Autowired
+	private StartProcessService _processService;
 
 	@Autowired
 	private PetsAppService  _petsAppService;
@@ -234,8 +238,9 @@ public class VisitsController {
 				CreateInvoicesInput invoice = new CreateInvoicesInput();
 				invoice.setAmount(input.getInvoiceAmount());
 				invoice.setVisitId(visit.getId());
-				invoice.setStatus(InvoiceStatus.UNPAID);
-				_invoicesAppService.create(invoice);
+				invoice.setStatus(InvoiceStatus.Unpaid);
+			//	_invoicesAppService.create(invoice);
+				_processService.startProcess("demo" + visit.getId(), invoice);
 
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}

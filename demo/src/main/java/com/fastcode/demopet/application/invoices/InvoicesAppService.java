@@ -106,7 +106,7 @@ public class InvoicesAppService implements IInvoicesAppService {
         VisitsEntity visits = _visitsManager.findById(invoices.getVisits().getId());
 		if(_userAppService.checkIsAdmin(user) || user.getId() == visits.getPets().getOwners().getId())
 		{
-			invoices.setStatus(InvoiceStatus.PAID);
+			invoices.setStatus(InvoiceStatus.Paid);
 			InvoicesEntity updatedInvoices =_invoicesManager.update(invoices);
 			return mapper.invoicesEntityToUpdateInvoicesOutput(updatedInvoices);
 		}
