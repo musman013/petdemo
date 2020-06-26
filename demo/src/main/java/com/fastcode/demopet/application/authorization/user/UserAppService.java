@@ -5,11 +5,14 @@ import com.fastcode.demopet.commons.search.SearchFields;
 import com.fastcode.demopet.commons.search.SearchUtils;
 import com.fastcode.demopet.security.SecurityUtils;
 import com.fastcode.demopet.application.authorization.user.dto.*;
+import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.domain.owners.IOwnersManager;
+import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.domain.vets.IVetsManager;
 import com.fastcode.demopet.reporting.domain.dashboarduser.DashboarduserManager;
 import com.fastcode.demopet.reporting.domain.dashboardversion.IDashboardversionManager;
@@ -70,12 +73,23 @@ public class UserAppService implements IUserAppService {
 
 	@Autowired
 	private IUserMapper mapper;
+	
+	@Autowired
+ 	private ActIdUserMapper actIdUserMapper;
+ 	
+ 	@Autowired
+ 	private FlowableIdentityService idmIdentityService;
+ 	
 
     @Transactional(propagation = Propagation.REQUIRED)
 	public CreateUserOutput create(CreateUserInput input) {
 
 		UserEntity user = mapper.createUserInputToUserEntity(input);		
 		UserEntity createdUser = _userManager.create(user);
+		//Map and create flowable user
+ 		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(createdUser);
+ 		idmIdentityService.createUser(createdUser, actIdUser);
+ 		
 		return mapper.userEntityToCreateUserOutput(createdUser);
 	}
 
@@ -84,6 +98,8 @@ public class UserAppService implements IUserAppService {
 
 		UserEntity user = mapper.updateUserInputToUserEntity(input);
 		UserEntity updatedUser = _userManager.update(user);
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(updatedUser);
+ 		idmIdentityService.updateUser(updatedUser, actIdUser);
 		return mapper.userEntityToUpdateUserOutput(updatedUser);
 	}
 	
@@ -133,9 +149,7 @@ public class UserAppService implements IUserAppService {
 	   }
 	    
 		_userManager.delete(existing);
-		
-		
-		_userManager.delete(existing);
+		idmIdentityService.deleteUser(existing.getUserName());
 	
 	}
 	@Transactional(readOnly = true)

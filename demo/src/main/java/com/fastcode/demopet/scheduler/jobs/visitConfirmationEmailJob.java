@@ -1,6 +1,7 @@
 package com.fastcode.demopet.scheduler.jobs;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,10 +12,6 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
@@ -57,23 +54,7 @@ public class visitConfirmationEmailJob implements Job {
 		System.out.println("Instance " + key );
 
 		FindEmailTemplateByNameOutput emailTemplate = _emailAppservice.findByName("Template_1");
-		Pageable pageable = new OffsetBasedPageRequest(Integer.parseInt(env.getProperty("fastCode.offset.default")), Integer.parseInt(env.getProperty("fastCode.limit.default")), Sort.by("id"));
-
 		Map<String,String> map = new HashMap<String,String>();
-		// SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject("");
-		// List<FindEmailVariableByIdOutput> list=new ArrayList<FindEmailVariableByIdOutput>();
-		// try {
-		// list = _emailVariableAppservice.find(searchCriteria, pageable);
-		//
-		// } catch (Exception e2) {
-		// System.out.println(" Error while fetching list");
-		// e2.printStackTrace();
-		// }
-		//
-
-		// for (FindEmailVariableByIdOutput tag: list) {
-		// map.put(tag.getPropertyName(),"");
-		// }
 
 		Object obj = dataMap.get("visitId");
 		String visitId = String.valueOf(obj);
@@ -82,23 +63,27 @@ public class visitConfirmationEmailJob implements Job {
 		UserEntity user = owner.getUser();
 		PetsEntity pet = visit.getPets();
 		UserEntity vet = visit.getVets().getUser();
+		
 		emailTemplate.setTo(user.getEmailAddress());
 
-//		map.put("Pet owner EmailAddress", user.getEmailAddress());
 		map.put("petOwner_firstName", user.getFirstName());
 		map.put("visitPetName", pet.getName());
-		map.put("visitDateTime",visit.getVisitDate().toString());
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy hh:mm:ss:S aa");
+		String formattedDate = dateFormat.format(visit.getVisitDate()).toString();
+		System.out.println("visit Date " +visit.getVisitDate().toString());
+		System.out.println("formatted Date " + formattedDate);
+		map.put("visitDateTime",formattedDate);
 		map.put("visitVetName", vet.getFirstName() + " " + vet.getLastName());
 		
-//		map.put("visit link","https://localhost:4200/visit/" + visitId);
-		try {
-			_mailAppservice.sendVisitEmail(emailTemplate,map);
-
-
-		} catch (IOException e1) {
-			System.out.println(" Error while sending email");
-			e1.printStackTrace();
-
-		}
+//		try {
+//			_mailAppservice.sendVisitEmail(emailTemplate,map);
+//
+//		} catch (IOException e1) {
+//			System.out.println(" Error while sending email");
+//			e1.printStackTrace();
+//
+//
+//		}
 	}
 }

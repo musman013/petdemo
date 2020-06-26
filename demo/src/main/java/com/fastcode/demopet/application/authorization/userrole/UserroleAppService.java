@@ -1,6 +1,7 @@
 package com.fastcode.demopet.application.authorization.userrole;
 
 import com.fastcode.demopet.application.authorization.userrole.dto.*;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.authorization.userrole.IUserroleManager;
 import com.fastcode.demopet.domain.model.QUserroleEntity;
 import com.fastcode.demopet.domain.model.UserroleEntity;
@@ -33,6 +34,9 @@ public class UserroleAppService implements IUserroleAppService {
 	static final int case3=3;
 	
 	@Autowired
+ 	private FlowableIdentityService idmIdentityService;
+	
+	@Autowired
 	private IUserroleManager _userroleManager;
 	
     @Autowired
@@ -62,6 +66,7 @@ public class UserroleAppService implements IUserroleAppService {
 				{
 				    foundUser.addUserrole(userrole);
 					foundRole.addUserrole(userrole);
+					idmIdentityService.addUserGroupMapping(foundUser.getUserName(), foundRole.getName());
 					
 					return mapper.userAndRoleEntityToCreateUserroleOutput(foundUser, foundRole);
 				}
@@ -88,6 +93,8 @@ public class UserroleAppService implements IUserroleAppService {
 					userrole.setUser(foundUser);
 					
 					UserroleEntity updatedUserrole = _userroleManager.update(userrole);
+					idmIdentityService.updateUserGroupMapping(updatedUserrole.getUser().getUserName(), updatedUserrole.getRole().getName());
+					
 					return mapper.userroleEntityToUpdateUserroleOutput(updatedUserrole);
 				}
 		     }
@@ -122,6 +129,7 @@ public class UserroleAppService implements IUserroleAppService {
 		role.removeUserrole(existing);
 		
 		_userroleManager.delete(existing);
+		idmIdentityService.deleteUserGroupMapping(user.getUserName(), role.getName());
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)

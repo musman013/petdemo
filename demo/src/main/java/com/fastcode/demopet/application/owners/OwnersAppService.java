@@ -1,41 +1,34 @@
 package com.fastcode.demopet.application.owners;
 
-import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
-import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
-import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
-import com.fastcode.demopet.application.authorization.user.dto.UpdateUserInput;
-import com.fastcode.demopet.application.authorization.user.dto.UpdateUserOutput;
-import com.fastcode.demopet.application.authorization.user.dto.UserProfile;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
 import com.fastcode.demopet.application.owners.dto.*;
+import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.owners.IOwnersManager;
+import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.domain.model.QOwnersEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.commons.search.*;
-import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 
 import java.util.*;
-
-import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page; 
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
 
 @Service
 @Validated
@@ -65,12 +58,20 @@ public class OwnersAppService implements IOwnersAppService {
 
 	@Autowired
 	private IOwnersMapper mapper;
-
+	
+	@Autowired
+ 	private ActIdUserMapper actIdUserMapper;
+ 	
+ 	@Autowired
+ 	private FlowableIdentityService idmIdentityService;
+ 	
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CreateOwnersOutput create(CreateOwnersInput input) {
 
 		UserEntity user = _userManager.create(_userMapper.createUserInputToUserEntity(input));
-
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(user);
+ 		idmIdentityService.createUser(user, actIdUser);
+ 		
 		OwnersEntity owners = mapper.createOwnersInputToOwnersEntity(input);
 		owners.setUser(user);
 		
@@ -86,6 +87,7 @@ public class OwnersAppService implements IOwnersAppService {
 		input.setRoleId(role.getId());
 		input.setUserId(userId);
 		_userroleAppService.create(input);
+		
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -97,6 +99,10 @@ public class OwnersAppService implements IOwnersAppService {
         user.setVersion(currentUser.getVersion());
         user.setPassword(currentUser.getPassword());
         user=_userManager.update(user);
+        
+        ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity( user);
+ 		idmIdentityService.updateUser( user, actIdUser);
+ 		
 		OwnersEntity owners = mapper.updateOwnersInputToOwnersEntity(input);
 		OwnersEntity updatedOwners = _ownersManager.update(owners);
 
@@ -110,6 +116,9 @@ public class OwnersAppService implements IOwnersAppService {
 		_ownersManager.delete(existing);
 		_userroleAppService.deleteByUserId(existing.getUser().getId());
 		_userManager.delete(existing.getUser());
+		
+		idmIdentityService.deleteUser(existing.getUser().getUserName());
+		
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

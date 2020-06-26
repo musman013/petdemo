@@ -1,6 +1,7 @@
 package com.fastcode.demopet.application.authorization.userpermission;
 
 import com.fastcode.demopet.application.authorization.userpermission.dto.*;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.authorization.userpermission.IUserpermissionManager;
 import com.fastcode.demopet.domain.model.QUserpermissionEntity;
 import com.fastcode.demopet.domain.model.UserpermissionEntity;
@@ -40,6 +41,9 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 	static final int case3=3;
 	
 	@Autowired
+ 	private FlowableIdentityService idmIdentityService;
+	
+	@Autowired
 	private IUserpermissionManager _userpermissionManager;
   
     @Autowired
@@ -71,6 +75,8 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 					foundUser.addUserpermission(userpermission);
 					foundPermission.addUserpermission(userpermission);
 					
+					idmIdentityService.addUserPrivilegeMapping(foundUser.getUserName(), foundPermission.getName());
+					
 					CreateUserpermissionOutput output = mapper.userAndPermissionEntityToCreateUserpermissionOutput(foundUser, foundPermission);
 					output.setRevoked(input.getRevoked());
 					return output;
@@ -100,6 +106,8 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 					userpermission.setRevoked(input.getRevoked());
 					
 					UserpermissionEntity updatedUserpermission = _userpermissionManager.update(userpermission);
+					idmIdentityService.updateUserPrivilegeMapping(updatedUserpermission.getUser().getUserName(), updatedUserpermission.getPermission().getName());
+					
 					return mapper.userpermissionEntityToUpdateUserpermissionOutput(updatedUserpermission);
 				}
 			}
@@ -133,6 +141,8 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 		
 		user.removeUserpermission(existing);
 		permission.removeUserpermission(existing);
+		
+		idmIdentityService.deleteUserPrivilegeMapping(user.getUserName(), permission.getName());
 	}
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
