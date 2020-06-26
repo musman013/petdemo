@@ -31,6 +31,10 @@ export class MainService {
     return this.http.post('http://localhost:4200/saveschema', updatedContent);
   }
 
+  generateAggregatedMeasures(){
+    return this.http.get('http://localhost:4200/generateAggregatedMeasures');
+  }
+
   login(details){
     this.http.post('/api/login',details).subscribe(res => {
       localStorage.setItem('user',JSON.stringify({userId:1,...res}))

@@ -1,0 +1,27 @@
+<div title="{{content.name}}" class="media-list">
+  <article class="media">
+    <figure class="media-left icon-gig">
+        <mat-icon *ngIf="content.mimeType == 'text/plain'">library_books</mat-icon>
+        <mat-icon *ngIf="content.mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'">note</mat-icon>
+        <mat-icon *ngIf="content.mimeType == 'application/pdf'">picture_as_pdf</mat-icon>
+    </figure>
+    <div class="media-body">
+      <i *ngIf="content.contentAvailable && content.simpleType" class="icon icon-{{content.simpleType}}"></i>
+      <h4>{{content.name}}</h4>
+      <div class="subtle">{{'TASK.MESSAGE.CONTENT-UPLOADED-BY' | translate}} <span
+          user-name="content.createdBy"><b>{{content.createdBy | titlecase}}</b></span> ,
+        {{content.created | date:"medium"}}
+      </div>
+    </div>
+    <div class="media-right">
+      <!-- since browsers do not honour "downlaod" attribute in case of cors   -->
+      <a *ngIf="content.contentAvailable && (!content.source)" target="_blank" download="{{content.rawUrl}}"
+        href="{{content.rawUrl}}">
+        <mat-icon title="Download" color="basic">cloud_download</mat-icon>
+      </a>
+      <a *ngIf="!readOnly" (click)="deleteContent(); $event.preventDefault(); $event.stopPropagation();">
+        <mat-icon title="Remove" color="warn">delete</mat-icon>
+      </a>
+    </div>
+  </article>
+</div>

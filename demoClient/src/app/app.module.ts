@@ -8,6 +8,10 @@ import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common
 import { LayoutModule } from '@angular/cdk/layout';
 import { CubejsClientModule } from '@cubejs-client/ngx';
 
+import { UpgradeModule } from "@angular/upgrade/static";
+import { UrlHandlingStrategy } from '@angular/router';
+import { TaskAppModule } from 'projects/task-app/src/public_api';
+
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -64,6 +68,15 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 	return new TranslateHttpLoader(httpClient);
 }
 
+export class CustomHandlingStrategy implements UrlHandlingStrategy {
+	shouldProcessUrl(url) {
+		let urlStr = url.toString().split('/');
+		return url.toString() == "/" || (urlStr.length > 1 && urlStr[1] != "flowable-admin")
+	}
+	extract(url) { return url; }
+	merge(url, whole) { return url; }
+}
+
 @NgModule({
 	declarations: [
 		ErrorPageComponent,
@@ -99,7 +112,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 		InvoicesListComponent,
 		InvoicesDetailsComponent,
 		InvoicesNewComponent,
-    ResourceViewComponent
+		ResourceViewComponent
 	],
 	imports: [
 		BrowserModule,
@@ -127,6 +140,10 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 			},
 			isolate: false
 		}),
+		UpgradeModule,
+		TaskAppModule.forRoot({
+			apiPath: environment.flowableUrl + "/flowable-task" // url where task backend app is running
+		}),
 
 	],
 	providers: [
@@ -135,6 +152,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 		{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
 		{ provide: HTTP_INTERCEPTORS, useClass: JwtErrorInterceptor, multi: true },
 		AuthGuard,
+		{ provide: UrlHandlingStrategy, useClass: CustomHandlingStrategy },
 	],
 	bootstrap: [AppComponent],
 	entryComponents: [

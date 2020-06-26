@@ -28,3 +28,8 @@ export var SchedulerEntities = [
 	'triggerdetails'
 ];
 
+export var ProcessPermissions: string[] = [
+	"access-admin",
+	"access-task",
+];
+

@@ -140,7 +140,7 @@ public class VisitsAppService implements IVisitsAppService {
 		LocalDateTime localDate = new Date().toInstant().atZone(defaultZoneId).toLocalDateTime();
 		Date dayBeforeVisit =Date.from(localDate.plusMinutes(1).atZone(defaultZoneId).toInstant());
 
-		if(new Date().before(dayBeforeVisit)) {
+//		if(new Date().before(dayBeforeVisit)) {
 		
 		String jobKey = "ReminderJob" + visitId;
 		String jobGroup = "visitReminder";
@@ -168,7 +168,7 @@ public class VisitsAppService implements IVisitsAppService {
 		} catch (ClassNotFoundException | SchedulerException e) {
 			e.printStackTrace();
 		}
-		}
+//		}
 	}
 	
 	public void scheduleVisitConfirmationJob(Long visitId)

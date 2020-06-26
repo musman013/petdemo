@@ -31,29 +31,53 @@
     "Entities": "Entities",
     "AccessMgmt": "User Management",
     "Users": "Users",
-    "Language": "Language",   
+    "Language": "Language",
     "Monitoring": "Monitoring",
-    "Message" : "Welcome to fastcode",
+    "Message": "Welcome to fastcode",
     "Tools": "Tools",
     "Administration": "Administration",
     "About": "About",
     "API": "API",
-    "EntityHistory": "Entity History"
-    ,
-    "APiHistory": "User Audit Trail"
-    ,
+    "EntityHistory": "Entity History",
+    "APiHistory": "User Audit Trail",
     "EmailTemplate": "Email Templates",
     "Email": {
-      "Title":"Email Template Builder",
-      "EmailTemplate":"Email Templates",
-      "EmailVariables":"Email Merge Fields"
+      "Title": "Email Template Builder",
+      "EmailTemplate": "Email Templates",
+      "EmailVariables": "Email Merge Fields"
     },
     "JobScheduling": {
-      "Title":"Jobs Scheduler",
-      "Jobs":"Jobs",
-      "ExecutingJobs":"Executing Jobs",
-      "Triggers":"Triggers",
-      "ExecutionHistory":"Execution History"
+      "Title": "Jobs Scheduler",
+      "Jobs": "Jobs",
+      "ExecutingJobs": "Executing Jobs",
+      "Triggers": "Triggers",
+      "ExecutionHistory": "Execution History"
+    },
+    "BPMModeler": "BPM Modeler",
+    "ProcessAdmin": {
+      "Title": "Business Process Management",
+      "ProcessEngine": "Process Engine",
+      "CmmnEngine": "CMMN Engine",
+      "AppEngine": "App Engine",
+      "FormEngine": "Form Engine",
+      "ContentEngine": "Content Engine",
+      "DmnEngine": "DMN Engine",
+      "Deployments": "Deployments",
+      "Definitions": "Definitions",
+      "Instances": "Instances",
+      "Tasks": "Tasks",
+      "Jobs": "Jobs",
+      "EventSubscriptions": "Event subscriptions",
+      "Configuration": "Configuration",
+      "ConfigurationEngine": "API URL Configuration",
+      "DecisionTables": "Decision tables",
+      "DecisionTableExecutions": "Executions",
+      "ContentItems": "Content items"
+    },
+    "Task": {
+      "Title": "Task Application",
+      "Tasks": "Tasks",
+      "Processes": "Processes"
     }
   }
 }

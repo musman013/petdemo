@@ -1,0 +1,164 @@
+<section  class="spinner-container"  *ngIf="isLoadingResults">
+  <mat-spinner></mat-spinner>
+</section>
+
+<div fxLayout fxLayoutGap="20" class="list-container full-page">
+  <div fxLayout="column" *ngIf="showList || !isMediumDeviceOrLess" fxFlex="{{listFlexWidth}}" class="task-list" (onScroll)="onTableScroll()"
+    appVirtualScroll>
+    <!-- <div class="task-list-header">
+
+      <div *ngIf="!filter.expanded">
+        <div class="filter-icon-expand noselect">
+          <label (click)="toggleFilter()" class="full-width">
+            {{'TASK.FILTER.SHOW' | translate}}&nbsp;&nbsp;&nbsp;&nbsp;<i class="material-icons">expand_more</i>
+          </label>
+        </div>
+      </div>
+
+      <div *ngIf="filter.expanded">
+        <div class="filter-icon-collapse noselect">
+          <label (click)="toggleFilter()" class="full-width">
+            {{'TASK.FILTER.HIDE' | translate}}&nbsp;&nbsp;&nbsp;&nbsp;<i class="material-icons">expand_less</i>
+          </label>
+        </div>
+      </div>
+
+      <div class="summary" *ngIf="filter.expanded">
+        <div class="form-group">
+          <label translate="TASK.FILTER.TEXT"></label>
+          <input class="form-control" type="text" placeholder="{{'TASK.FILTER.TEXT-PLACEHOLDER' | translate}}"
+            [(ngModel)]="filter.param.text" (ngModelChange)="applyFilters()">
+            <mat-form-field class="full-width">
+              <input matInput placeholder="{{'TASK.FILTER.TEXT-PLACEHOLDER' | translate}}" [(ngModel)]="filter.param.text" (ngModelChange)="applyFilters()" />
+            </mat-form-field>
+        </div>
+        <div class="form-group">
+          <label translate="TASK.FILTER.STATE"></label>
+          <div class="selection toggle">
+            <div class="toggle-2" *ngFor="let option of stateFilterOptions" [ngClass]="{'active' : filter.param.state.id == option.id}">
+              <button class="btn btn-xs" (click)="selectStateFilter(option)">{{option.title | translate}}</button>
+            </div>
+            <mat-radio-group aria-label="Select an option">
+              <mat-radio-button value="{{option.title | translate}}" *ngFor="let option of stateFilterOptions"  (click)="selectStateFilter(option)">{{option.title | translate}}</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div> -->
+        <!-- <mat-form-field class="full-width">
+          <label translate="TASK.FILTER.APP"></label>
+          <mat-select [disabled]="filter.loading" (selectionChange)="applyFilters()" [(ngModel)]="filter.param.appDefinitionKey">
+            <mat-option *ngFor="let option of apps" [value]="option.appDefinitionKey">
+              {{ (option.name? option.name : 'TASK.FILTER.APP-PLACEHOLDER') | translate}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+        <!-- <mat-form-field class="full-width">
+          <label translate="TASK.FILTER.PROCESS-DEFINITION"></label>
+          <mat-select [disabled]="filter.loading" (selectionChange)="applyFilters()" [(ngModel)]="filter.param.processDefinitionId">
+            <mat-option *ngFor="let option of processDefinitions" [value]="option.id">
+              {{option.name | translate}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+        <!-- {{assignmentOptions | json}}
+        <mat-form-field class="full-width">
+          <label translate="TASK.FILTER.ASSIGNMENT"></label>
+          <mat-select [disabled]="filter.loading" (selectionChange)="applyFilters()" [(ngModel)]="filter.param.assignment">
+            <mat-option *ngFor="let option of assignmentOptions" [value]="option.id">
+              {{option.title | translate}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+
+        <!-- <div class="fc-text-right">
+          <button color="default" mat-flat-button (click)="toggleFilter()">Cancel</button>&nbsp;&nbsp;
+          <button color="warn" mat-flat-button (click)="resetFilters(); refreshFilter();">{{'TASK.FILTER.RESET' | translate}}</button>
+        </div> 
+
+      </div>
+    </div> -->
+
+    <div class="sort-value-block">
+        <!-- <label translate="TASK.FILTER.TEXT"></label>
+        <input class="form-control" type="text" placeholder="{{'TASK.FILTER.TEXT-PLACEHOLDER' | translate}}"
+          [(ngModel)]="filter.param.text" (ngModelChange)="applyFilters()"> -->
+          <mat-form-field class="full-width">
+            <input matInput placeholder="{{'TASK.FILTER.TEXT-PLACEHOLDER' | translate}}" [(ngModel)]="filter.param.text" (ngModelChange)="applyFilters()" />
+          </mat-form-field>
+      <!-- <div class="form-group">
+        <label translate="TASK.FILTER.STATE"></label>
+        <div class="selection toggle">         
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button value="{{option.title | translate}}" *ngFor="let option of stateFilterOptions"  (click)="selectStateFilter(option)">{{option.title | translate}}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>       -->
+      <div class="sort-value">
+          <div class="toggle-2" *ngFor="let option of stateFilterOptions" [ngClass]="{'active' : filter.param.state.id == option.id}" style="display:inline-block; margin-right:6px; ">
+            <a class="filter-link" (click)="selectStateFilter(option)">{{option.title | translate}}</a>
+          </div>
+        <!-- <mat-form-field class="full-width">
+          <mat-select (selectionChange)="sortChanged()" [(ngModel)]="filter.param.sort">
+            <mat-option *ngFor="let sort of sorts" [value]="sort.id">
+              {{sort.title | translate}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+      </div>
+
+      <div class="create-task">
+        <button color="primary" mat-flat-button (click)="createTask()">{{'TASK.ACTION.CREATE' | translate}}</button>
+      </div>
+    </div>
+
+	<mat-progress-bar *ngIf="filter.loading" mode="indeterminate"></mat-progress-bar>
+    <div class="list">
+      <div *ngFor="let task of tasks" [ngClass]="{'list-item': true, 'active': (selectedTask.id === task.id)}" class="list-item"
+        (click)="selectTask(task)">        
+        <span class="task-icon"><mat-icon>{{task.endDate == null?'assignment_late':'assignment_turned_in'}}</mat-icon></span>
+        <div fxLayout="fc-row">
+          <div class="title" fxFlex>{{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}</div>    
+         
+        </div>
+        <!-- <div fxLayout="row">
+          {{task.description && task.description || ('TASK.MESSAGE.NO-DESCRIPTION' | translate)}}
+        </div> -->
+        <div class="content">
+          <span *ngIf="task.assignee.id" class="assignTo">
+            <mat-icon>perm_identity</mat-icon>&nbsp;{{task.assignee.firstName && task.assignee.firstName != 'null' ?
+            task.assignee.firstName : ''}} {{task.assignee.lastName && task.assignee.lastName != 'null' ?
+            task.assignee.lastName : ''}}&nbsp;           
+            <small [ngClass]="task.endDate == null?'open':'completed'"> <mat-icon>{{task.endDate == null?'info':'check_circle_outline'}}</mat-icon>{{task.endDate == null?'Open':'Completed'}}</small>
+           
+          </span>
+          <span *ngIf="!task.assignee.id" translate="TASK.MESSAGE.NO-ASSIGNEE">
+          </span>          
+        </div>
+        <div class="created">
+          <div fxFlex="nogrow" class="badge-time text-danger" *ngIf="task.dueDate">
+               <mat-icon style="font-size: 18px;position: relative;top: 4px;margin-right: -7px;">notifications_none</mat-icon>&nbsp;{{'TASK.MESSAGE.DUE-ON' | translate}} {{(task.dueDate | date:'medium')}}
+          </div>
+          <div fxFlex="nogrow" class="badge-time" *ngIf="!task.dueDate">
+            {{'TASK.MESSAGE.CREATED-ON' | translate}} {{(task.created | date:'medium')}}
+          </div>   
+        </div>
+        
+      </div>
+       
+    </div>
+    <div class="nothing-to-see" *ngIf="tasks.length == 0">
+      <span translate="TASK.MESSAGE.NO-TASKS"></span>
+    </div>
+
+  </div>
+
+  <div fxLayout="column" *ngIf="!showList || !isMediumDeviceOrLess" fxFlex="{{detailsFlexWidth}}">
+      
+      <div class="fc-col-sm-12"  *ngIf="isMediumDeviceOrLess">        
+          <button color="default" mat-flat-button class="full-width" (click)="showList=!showList" class="back-to-tasklist-btn"><mat-icon>reply_all</mat-icon>&nbsp;&nbsp;{{'TASK.ACTION.TOGGLE-LIST' | translate}}</button>       
+      </div>
+      
+    <app-task-details [ngClass]="{'task-details-wrap': !isMediumDeviceOrLess,'task-details-wrap-small': isMediumDeviceOrLess}" fxLayout="column" (onCreateTask)="createTask()" [task]="selectedTask" (onOpenTask)="onOpenTask($event)"
+      (onTaskCompletion)="onTaskCompletion()"></app-task-details>
+  </div>
+
+</div>

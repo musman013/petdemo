@@ -6,6 +6,7 @@ export const environment = {
 	production: false,
 	apiUrl: '/api',//'https://localhost:5556',
 	authUrl: 'http://localhost:5555',
+	flowableUrl: "http://localhost:8080"
 
 };
 

@@ -46,7 +46,7 @@ const aggregations = [
 ];
 const time_aggregations = ["min", "max"];
 const general_aggregations = ["count", "countDistinct", "countDistinctApprox"];
-app.get("/updateSchema", (req, res) => {
+app.get("/generateAggregatedMeasures", (req, res) => {
   fs.readdirAsync("./schema").then(filenames => {
     //console.log(filenames);
     filenames.forEach(fileName => {

@@ -1,0 +1,517 @@
+<section class="spinner-container" *ngIf="isLoadingResults">
+  <mat-spinner></mat-spinner>
+</section>
+<section class="list-container">
+  <div class="header task-processing {{taskType}}" *ngIf="task">
+    <span class="task-type">
+      <mat-icon>assignment_turned_in</mat-icon>&nbsp;Task
+    </span>
+    <div class="fc-row">
+      <div class="fc-col-lg-6 fc-col-xl-8">
+        <h2 class="title">{{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}</h2>
+        <p class="desc">{{task.description}}</p>
+      </div>
+      <div class="fc-col-lg-6 fc-col-xl-4">
+        <ul class="detail">
+          <li>
+            <!-- due date -->
+            <span class="detail-label">
+              <mat-icon>event_available</mat-icon>&nbsp;Created:
+            </span>
+
+            {{task.created | date}}
+
+            <span *ngIf="task.endDate">{{task.dueDate && (task.dueDate | date:'medium') || ('TASK.MESSAGE.NO-DUEDATE' |
+                        translate)}}</span>
+          </li>
+          <li>
+
+            <!-- assignee -->
+            <span class="detail-label">
+              <mat-icon>account_box</mat-icon>&nbsp;{{'TASK.FIELD.ASSIGNEE' | translate}}:
+            </span>
+            <button
+              *ngIf="!task.endDate && task.assignee && (task.assignee.id == account.id || (task.initiatorCanCompleteTask && task.processInstanceStartUserId == ('' + account.id)))"
+              mat-button (click)="openSetTaskAssigneeDialog()">
+              <app-user-name [user]="task.assignee"></app-user-name>
+            </button>
+            <!-- <input type="text" placeholder="Pick one" aria-label="Number" matInput [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option>Menu 1</mat-option>
+              <mat-option>Menu 2</mat-option>
+              <mat-option>Menu 3</mat-option>
+            </mat-autocomplete> -->
+            <span class="detail-label"
+              *ngIf="task.assignee && (task.endDate || (task.assignee.id != account.id && (!task.initiatorCanCompleteTask || task.processInstanceStartUserId != ('' + account.id))))">
+              <app-user-name [user]="task.assignee"></app-user-name>
+            </span>
+            <span class="detail-label" *ngIf="(task.endDate && !task.assignee) || !task.assignee"
+              translate="TASK.MESSAGE.NO-ASSIGNEE"></span>
+          </li>
+
+          <li>
+            <!-- due date -->
+            <span class="detail-label">
+              <mat-icon>date_range</mat-icon>&nbsp;{{'TASK.FIELD.DUE' | translate}}:
+            </span>
+            <!-- <button mat-button *ngIf="!task.endDate && !taskUpdating" (click)="updateDueDate()">
+              {{task.dueDate && (task.dueDate | date:'medium') || ('TASK.MESSAGE.NO-DUEDATE' | translate)}}
+            </button> -->
+            <button mat-button *ngIf="!task.endDate && !taskUpdating" (click)="picker.open()">
+              {{task.dueDate && (task.dueDate | date) || ('TASK.MESSAGE.NO-DUEDATE' | translate)}}
+            </button>&nbsp;&nbsp;
+            <button mat-icon-button matTooltip="Clear date" *ngIf="task.dueDate!=null" (click)="updateDueDate(null)">
+              <mat-icon color="warn" class="clear_dueDate">cancel</mat-icon>
+            </button>
+            <input matInput [matDatepicker]="picker" style="position:absolute; z-index:-999; font-size:0;"
+              (dateChange)="updateDueDate($event.value)">
+            <mat-datepicker #picker></mat-datepicker>
+            <span *ngIf="task.endDate">{{task.dueDate && (task.dueDate | date) || ('TASK.MESSAGE.NO-DUEDATE' |
+                    translate)}}</span>
+          </li>
+
+          <li>
+            <!-- process instance -->
+            <span *ngIf="task.processInstanceId && processInstance" class="detail-label">
+              <mat-icon>brightness_high</mat-icon>&nbsp;{{'TASK.FIELD.PROCESS-INSTANCE' |
+                    translate}}:
+            </span>
+            <span *ngIf="task.processInstanceId && processInstance">
+              <button #openProcessInstance mat-button (click)="openProcessInstance(processInstance.id)">{{processInstance.name && processInstance.name ||
+                      processInstance.processDefinitionName}}</button>
+            </span></li>
+
+          <li>
+            <!-- parent task -->
+            <span *ngIf="task.parentTaskId" class="detail-label">
+              <mat-icon>share</mat-icon>&nbsp;{{'TASK.FIELD.PARENT-TASK' | translate}}:
+            </span>
+            <span *ngIf="task.parentTaskId">
+              <a (click)="openTaskInstance(task.parentTaskId)">{{task.parentTaskName}}</a>
+            </span>
+          </li>
+          <li>
+            <span class="detail-label" *ngIf="task.endDate != null && task.endDate != undefined">
+              <mat-icon>check_circle_outline</mat-icon>&nbsp;{{'TASK.FIELD.ENDED' | translate}}:
+            </span>
+            <span *ngIf="task.endDate != null && task.endDate != undefined">{{task.endDate | date:'medium'}}</span>
+          </li>
+          <li>
+            <span class="detail-label" *ngIf="task.endDate != null && task.endDate != undefined">
+              <mat-icon>schedule</mat-icon>&nbsp;{{'TASK.FIELD.DURATION' | translate}}:
+            </span>
+            <span *ngIf="task.endDate != null && task.endDate != undefined">{{task.duration}}</span>
+
+            <!-- <span class="detail-label" *ngIf="task.formKey" (click)="toggleForm()">
+              <button mat-stroked-button color="accent">
+                <span *ngIf="activeTab == 'form'">
+                  {{'TASK.TITLE.SHOW-DETAILS' | translate}}
+                </span>
+                <span *ngIf="activeTab == 'details'">
+                  {{'TASK.TITLE.SHOW-FORM' | translate}}
+                </span>
+              </button>
+            </span> -->
+          </li>
+        </ul>
+      </div>
+      <div class="fc-col-sm-12 fc-text-right">
+        <div class="button-wrapper">
+          <button mat-flat-button color="primary"
+            *ngIf="!task.formKey && !task.endDate && (task.assignee.id == account.id || (task.initiatorCanCompleteTask && task.processInstanceStartUserId == ('' + account.id)))"
+            [disabled]="completeButtonDisabled || uploadInProgress" (click)="completeTask()">
+            {{'TASK.ACTION.COMPLETE' | translate}}
+          </button>
+
+          <button mat-button color="accent" *ngIf="(task.assignee == null || task.assignee == undefined) &&
+              (task.memberOfCandidateGroup || task.memberOfCandidateUsers ||
+              (task.initiatorCanCompleteTask && task.processInstanceStartUserId == ('' + account.id)))"
+            translate="TASK.ACTION.CLAIM" ng-disabled="claimButtonDisabled || uploadInProgress"
+            (click)="claimTask()">Save</button>
+          <button mat-icon-button class="basic">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+
+        <!-- <app-form *ngIf="formData" [taskId]="task.id" [formData]="formData" [outcomesOnly]="true"></app-form> -->
+      </div>
+    </div>
+
+    <!-- 
+        <div class="summary-header clearfix" ng-class="{'pack': involvementSummary.count == 0 &amp;&amp; contentSummary.count == 0}">
+          <div class="clearfix" (click)="showDetails()">
+            <div class="title title-lg" *ngIf="involvementSummary.count == 0">
+              {{'TASK.TITLE.NO-PEOPLE-INVOLVED' | translate}}
+            </div>
+      
+            <div *ngFor="let user of involvementSummary.items">
+              <app-user-picture [userId]="user.id"></app-user-picture>
+            </div>
+      
+            <div class="user-picture more" *ngIf="involvementSummary.overflow">
+              <span>...</span>
+            </div>
+          </div>
+          <div class="clearfix" (click)="showDetails()">
+            <div class="title title-lg" *ngIf="contentSummary.count == 0">
+              {{'TASK.TITLE.NO-CONTENT-ITEMS' | translate}}
+            </div>
+      
+            <div class="related-content" *ngFor="let content of contentSummary.items" title="{{content.name}}">
+              <i class="icon icon-{{content.simpleType}}"></i>
+            </div>
+      
+            <div class="related-content more" *ngIf="contentSummary.overflow">
+              <span>...</span>
+            </div>
+          </div>
+          <div class="clearfix" (click)="showDetails()">
+            <div class="title title-lg" *ngIf="commentSummary.count == 1">
+              1 {{'TASK.TITLE.COMMENT-COUNT' | translate}}
+            </div>
+            <div class="title title-lg" *ngIf="commentSummary.count > 1">
+              <span>{{commentSummary.count}}</span> {{'TASK.TITLE.COMMENTS-COUNT' | translate}}
+            </div>
+            <div class="title title-lg" *ngIf="commentSummary.count == 0">
+              {{'TASK.TITLE.NO-COMMENTS' | translate}}
+            </div>
+          </div>
+          <div class="clearfix" (click)="showDetails()">
+            <div class="title title-lg" *ngIf="subTaskSummary.count == 1">
+              1 {{'TASK.TITLE.SUBTASK-COUNT' | translate}}
+            </div>
+            <div class="title title-lg" *ngIf="subTaskSummary.count > 1">
+              <span>{{subTaskSummary.count}}</span> {{'TASK.TITLE.SUBTASKS-COUNT' | translate}}
+            </div>
+            <div class="title title-lg" *ngIf="subTaskSummary.count == 0">
+              {{'TASK.TITLE.NO-SUBTASKS' | translate}}
+            </div>
+          </div>
+          <div *ngIf="task.formKey" (click)="toggleForm()">
+            <button mat-stroked-button color="accent">
+              <span *ngIf="activeTab == 'form'">
+                {{'TASK.TITLE.SHOW-DETAILS' | translate}}
+              </span>
+              <span *ngIf="activeTab == 'details'">
+                {{'TASK.TITLE.SHOW-FORM' | translate}}
+              </span>
+      
+            </button>
+          </div>
+        </div> -->
+  </div>
+  <br>
+  <br>
+  <mat-card>
+    <div class="details-content" *ngIf="task" ng-class="{'split': activeTab == 'details' && hasDetails() == true}">
+      <mat-tab-group>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>list_alt</mat-icon>
+            Task
+          </ng-template>
+          <section style="min-height:340px;">
+            <br>
+            <br>
+            <!-- <app-form *ngIf="formData" [taskId]="task.id" [formData]="formData" (onTaskCompletion)="emitOnTaskCompletion()" [hideButtons]="task.endDate"[disableForm]="((!task.assignee || task.assignee.id != account.id) && (!task.initiatorCanCompleteTask || task.processInstanceStartUserId != ('' + account.id)))"> -->
+            <app-form *ngIf="formData" [taskId]="task.id" [formData]="formData"
+              (onTaskCompletion)="emitOnTaskCompletion()" [hideButtons]="task.endDate" [disableForm]="false">
+            </app-form>
+          </section>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>perm_identity</mat-icon>
+            People
+          </ng-template>
+          <section class="people_involve">
+            <br>
+            <br>
+            <div class="add-people">
+              <form class="search-form">
+                <!-- <mat-form-field class="form-field full-width">
+                  <input matInput placeholder="Search" (input)="onSearch($event.target.value)"
+                    [disabled]="task?.endDate !== null">
+                </mat-form-field> -->
+                <!-- <mat-dialog-content class="form-field full-width" *ngIf="searchList">
+                  <mat-selection-list>
+                    <mat-list-option *ngFor="let item of users" [value]="item">
+                      <mat-icon mat-list-icon>perm_identity</mat-icon>
+                      <h4 mat-line>{{item.fullName}}</h4>
+                      <mat-divider></mat-divider>
+                    </mat-list-option>
+                  </mat-selection-list>
+                </mat-dialog-content> -->
+                <mat-form-field class="full-width">
+                  <mat-icon matSuffix>assignment_ind</mat-icon>
+                  <input type="text" placeholder="Search People" aria-label="Number" matInput  [matAutocomplete]="auto"  (input)="onSearch($event.target.value)"  [disabled]="task?.endDate !== null">
+                  
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let item of users" [value]="item.fullName" (click)="involvePerson(item)">
+                      {{item.fullName}}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+                <!-- <mat-form-field class="example-chip-list">
+                  <mat-chip-list #chipList aria-label="Fruit selection">
+                    <mat-chip *ngFor="let fruit of assignee" [selectable]="selectable" [removable]="removable" (removed)="remove(fruit)">
+                      {{fruit}}
+                      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="Search" #assigneeInput [formControl]="assigneLIst" [matAutocomplete]="auto"
+                      [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
+                  </mat-chip-list>
+                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                    <mat-option *ngFor="let user of task.assignee  | async" [value]="assignee">
+                      {{user | json}}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field> -->
+                <!-- <button mat-raised-button (click)="onSelect()" color="primary" [disabled]="task?.endDate !== null">
+                  <mat-icon>supervised_user_circle</mat-icon>&nbsp;{{'GENERAL.ACTION.SELECT' | translate}}
+                </button> -->
+              </form>
+            </div>
+            <div class="task-help-entry" *ngIf="!task.endDate && !hasDetails()">
+              <div class="task-content" (click)="involvePerson()">
+                <mat-icon>person</mat-icon>
+                <span title="{{'TASK.ACTION.INVOLVE' | translate}}">{{'TASK.HELP.ADD-PEOPLE' | translate}}</span>
+              </div>
+            </div>
+            <div *ngIf="activeTab == 'details' && hasDetails() == true">
+              <!-- INVOLVED PEOPLE AND CONTENT-->
+              <section class="details-section full-width">
+                <ul class="generic-list selectable">
+                  <li *ngFor="let person of task.involvedPeople; let i = index" class="clearfix">
+                    <div class="user-details">
+                      <app-user-picture [userId]="person.id"></app-user-picture>
+                      <app-user-name [user]="person"></app-user-name>
+                    </div>
+                    <div class="actions" *ngIf="!task.endDate">
+                      <a (click)="removeInvolvedUser(person,i)">
+                        <mat-icon title="Remove">clear</mat-icon>
+                      </a>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </section>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>folder_open</mat-icon>
+            {{'TASK.TITLE.CONTENT'| translate}}
+          </ng-template>
+          <br>
+          <br>
+          <section>
+            <input type="file" [hidden]="true" (change)="fileChange($event)" #fileInput />
+            <div class="fc-col-sm-12 fc-text-right">
+              <button mat-raised-button color="accent" (click)="toggleCreateContent()"
+                disabled="{{task?.endDate != null? true: false}}">Add Document</button>
+            </div>
+            <!-- add content -->
+            <div *ngIf="task-content-list?.length > 0" class="fc-col-sm-12">
+              <div class="task-help-entry" (click)="toggleCreateContent()"
+                *ngIf="contentSummary.addContent == null || contentSummary.addContent == undefined || contentSummary.addContent == false">
+                <div class="task-content">
+                  <mat-icon>cloud_upload</mat-icon>
+                  <span>{{'TASK.HELP.ADD-CONTENT' | translate}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="fc-col-sm-12" *ngIf="activeTab == 'details' && hasDetails() == true">
+              <!-- INVOLVED PEOPLE AND CONTENT-->
+
+              <mat-card class="details-section full-width" *ngIf="!contentSummary.loading">
+                <mat-card-content>
+                  <ul id="related-content-list" class="generic-list selectable task-content-list">
+                    <li *ngFor="let content of content.data" title="{{content.name}}" class="full-width">
+                      <app-document-preview (onContentDeleted)="onContentDeleted(content)" [content]="content"
+                        [task]="task">
+                      </app-document-preview>
+                    </li>
+                  </ul>
+                </mat-card-content>
+              </mat-card>
+
+            </div>
+          </section>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>chat_bubble_outline</mat-icon>
+            {{'TASK.SECTION.COMMENTS' | translate}}
+          </ng-template>
+          <!-- add comment -->
+          <div *ngIf="!task.endDate && !hasDetails()">
+            <!-- <div (click)="addComment()" class="task-help-entry"
+              *ngIf="commentSummary.addComment == null || commentSummary.addComment == undefined || commentSummary.addComment == false">
+              <div class="task-content">
+              <mat-icon>message</mat-icon>
+              <span>{{'TASK.HELP.ADD-COMMENT' | translate}}</span></div>
+            </div> -->
+            <!-- <form [formGroup]="commentForm" #commentNgForm="ngForm" (ngSubmit)="onSubmitComments()"
+              class="comment-form">
+              <div class="full-width">
+                <br> 
+                <br>
+                <br>
+                <mat-form-field class="full-width">  
+                  <textarea formControlName="comment" matInput
+                    placeholder="{{ 'TASK.MESSAGE.NEW-COMMENT-PLACEHOLDER' | translate}}"
+                    class="comment-textarea"></textarea>
+                  <mat-error
+                    *ngIf="commentForm.get('comment').errors && commentForm.get('comment').errors['required'] && commentForm.get('comment').touched">
+                    Comment
+                    {{'GENERAL.ERROR.REQUIRED' | translate}}</mat-error>
+                  <mat-error
+                    *ngIf="commentForm.get('comment').errors && commentForm.get('comment').errors['maxlength']">Length
+                    cannot be greater than {{commentForm.get('comment').errors.maxlength.requiredLength}}</mat-error>
+                  <button mat-raised-button (click)="commentNgForm.ngSubmit.emit()" color="primary"
+                    [disabled]="!commentForm.valid || loading" class="full-width comment-save">
+                    {{'GENERAL.ACTION.SAVE' | translate}}
+                  </button>
+                </mat-form-field>
+              </div>
+            </form> -->
+          </div>
+
+          <div class="task-comment-list-tab">
+            <!-- COMMENTS -->
+            <mat-card class="details-section full-width">
+
+              <mat-card-content>
+                <ul class="generic-list comments selectable">
+                  <li *ngFor="let comment of comments.data; let i = index">
+
+                    <div class="title">
+                      <app-user-picture [userId]="comment.createdBy"></app-user-picture>
+                      <b class="name">{{comment.createdBy | titlecase}}</b> <small
+                        class="time">{{(comment.created | date:'medium')}}</small>
+                    </div>
+                    <!-- <div class="message">{{comment.message | slice : 0:300 }}&nbsp; -->
+                    <div class="message">{{comment.message}}&nbsp;
+                      <!-- <a href="javascript:void(0)" *ngIf="comment.message.length > 300" (click)="(textLimit[i] == 300? textLimit[i] = 100000000000: textLimit[i]=300)">{{textLimit[i] == 300? 'Read more': 'Read less'}}</a> -->
+                    </div>
+                  </li>
+                  <li class="add-new-comment" *ngIf="task?.endDate == null">
+                    <form [formGroup]="commentForm" #commentNgForm="ngForm" (ngSubmit)="onSubmitComments()"
+                      class="comment-form">
+                      <div class="full-width">
+                        <mat-form-field class="full-width">
+                          <textarea formControlName="comment" matInput
+                            placeholder="{{ 'TASK.MESSAGE.NEW-COMMENT-PLACEHOLDER' | translate}}"
+                            class="comment-textarea"></textarea>
+                          <mat-error
+                            *ngIf="commentForm.get('comment').errors && commentForm.get('comment').errors['required'] && commentForm.get('comment').touched">
+                            Comment
+                            {{'GENERAL.ERROR.REQUIRED' | translate}}</mat-error>
+                          <mat-error
+                            *ngIf="commentForm.get('comment').errors && commentForm.get('comment').errors['maxlength']">
+                            Length
+                            cannot be greater than {{commentForm.get('comment').errors.maxlength.requiredLength}}
+                          </mat-error>
+                          <button mat-raised-button (click)="commentNgForm.ngSubmit.emit()" color="primary"
+                            [disabled]="!commentForm.valid || loading" class="full-width comment-save">
+                            {{'GENERAL.ACTION.SAVE' | translate}}
+                          </button>
+                        </mat-form-field>
+                      </div>
+                    </form>
+                  </li>
+                </ul>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>post_add</mat-icon>
+            Sub Task
+          </ng-template>
+          <!-- add sub task-->
+          <div *ngIf="!task.endDate && subTasks?.length == 0">
+            <div class="task-help-entry" id="toggle-create-subtask"
+              *ngIf="contentSummary.addContent == null || contentSummary.addContent == undefined || contentSummary.addContent == false">
+              <div class="task-content">
+                <mat-icon (click)="createSubTask()">assignment_turned_in</mat-icon>
+                <span (click)="createSubTask()">{{'TASK.HELP.ADD-SUBTASK' | translate}}</span>
+              </div>
+            </div>
+          </div>
+          <section class="details-section" *ngIf="!subTaskSummary.loading">
+            <br>
+            <div class="fc-col-sm-12 fc-text-right" *ngIf="subTasks?.length > 0">
+              <button mat-raised-button color="primary"
+                (click)="createSubTask()">{{'TASK.HELP.ADD-SUBTASK' | translate}}</button>
+            </div>
+            <br>
+            <br>
+            <ul id="related-subtask-list" class="sub-task-list">
+              <li *ngFor="let task of subTasks" title="{{task.name}}" (click)="openTaskInstance(task)">
+                <div>
+                  <div class="pull-right">
+                    <span class="badge" *ngIf="task.dueDate">
+                      {{'TASK.MESSAGE.DUE-ON' | translate}} {{(task.dueDate | date:'medium')}}
+                    </span>
+                    <span class="badge" *ngIf="!task.dueDate">
+                      {{'TASK.MESSAGE.CREATED-ON' | translate}} {{(task.created | date:'medium')}}
+                    </span>
+                  </div>
+                  <div class="title">
+                    {{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}
+                  </div>
+                  <div class="summary">
+                    {{task.description && task.description || ('TASK.MESSAGE.NO-DESCRIPTION' |
+                        translate)}}
+                  </div>
+                  <div class="detail">
+                    <span *ngIf="task.assignee.id">
+                      {{'TASK.MESSAGE.ASSIGNEE' | translate}} {{task.assignee.firstName &&
+                          task.assignee.firstName != 'null' ? task.assignee.firstName : ''}}
+                      {{task.assignee.lastName && task.assignee.lastName != 'null' ?
+                          task.assignee.lastName : ''}}
+                    </span>
+                    <span *ngIf="!task.assignee.id" translate="TASK.MESSAGE.NO-ASSIGNEE">
+                    </span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+          </section>
+
+          <!-- <div class="section" *ngIf="activeTab == 'form' && formData != null && formData != undefined"> -->
+          <!-- <div class="section" *ngIf="activeTab == 'form'">
+           
+            <app-form *ngIf="formData" [taskId]="task.id" [formData]="formData"
+              (onTaskCompletion)="emitOnTaskCompletion()" [hideButtons]="task.endDate"
+              [disableForm]="((!task.assignee || task.assignee.id != account.id) && (!task.initiatorCanCompleteTask || task.processInstanceStartUserId != ('' + account.id)))">
+            </app-form>
+          </div> -->
+        </mat-tab>
+      </mat-tab-group>
+      <!-- FORM -->
+    </div>
+    <div class="help-container text-center" *ngIf="!task || !task.id">
+          <p class="description">
+            {{'TASK.MESSAGE.NO-TASKS-HELP' | translate}}
+          </p>
+          <h3 class="toggle-create-task">
+            
+            <span>{{'TASK.MESSAGE.NO-TASKS-CREATE-TASK' | translate}}</span>
+          </h3>      
+          <button mat-raised-button (click)="createTask()" color="primary"><mat-icon>assignment_turned_in</mat-icon>&nbsp;&nbsp; Create Task</button>
+    </div>
+  </mat-card>
+
+
+</section>

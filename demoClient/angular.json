@@ -40,6 +40,46 @@
       },
       "projectType": "library"
     },
+    "task-app": {
+      "sourceRoot": "projects/task-app/src",
+      "prefix": "lib",
+      "root": "projects/task-app",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/task-app/tsconfig.lib.json",
+              "projects/task-app/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "karmaConfig": "projects/task-app/karma.conf.js",
+            "tsConfig": "projects/task-app/tsconfig.spec.json",
+            "main": "projects/task-app/src/test.ts"
+          }
+        },
+        "build": {
+          "configurations": {
+            "production": {
+              "project": "projects/task-app/ng-package.prod.json"
+            }
+          },
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/task-app/tsconfig.lib.json",
+            "project": "projects/task-app/ng-package.json"
+          }
+        }
+      },
+      "projectType": "library"
+    },
     "demoClient": {
       "sourceRoot": "src",
       "prefix": "app",
@@ -99,7 +139,8 @@
           "options": {
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/flowable_admin"
             ],
             "outputPath": "dist/demoClient",
             "tsConfig": "src/tsconfig.app.json",

@@ -2,6 +2,7 @@ package com.fastcode.demopet.scheduler.jobs;
 
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,18 +69,20 @@ public class visitReminderEmailJob implements Job {
 		
 		emailTemplate.setTo(user.getEmailAddress());
 		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy hh:mm:ss:S aa");
+		String formattedDate = dateFormat.format(visit.getVisitDate()).toString();
+		map.put("visitDateTime",formattedDate);
 		map.put("petOwner_firstName", user.getFirstName());
 		map.put("petName", pet.getName());
-		map.put("visitDateTime",visit.getVisitDate().toString());
 		map.put("visitVetName", vet.getFirstName() + " " + vet.getLastName());
 		
-//		try {
-//			_mailAppservice.sendVisitEmail(emailTemplate,map);
-//		} catch (IOException e1) {
-//			System.out.println("Error while sending email");
-//			e1.printStackTrace();
-//		
-//		}
+		try {
+			_mailAppservice.sendVisitEmail(emailTemplate,map);
+		} catch (IOException e1) {
+			System.out.println("Error while sending email");
+			e1.printStackTrace();
+		
+		}
 	}
 
 }
