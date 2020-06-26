@@ -14,8 +14,11 @@ import com.fastcode.demopet.domain.owners.IOwnersManager;
 import com.fastcode.demopet.domain.vets.IVetsManager;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 
@@ -37,6 +40,9 @@ import java.util.stream.Collectors;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private IUserManager _userManager;
+    private FlowableIdentityService idmIdentityService;
+
+    private static final String COOKIE_NAME = "FLOWABLE_REMEMBER_ME";
     private IOwnersManager _ownerManager;
     private IVetsManager _vetManager;
     private IJwtRepository jwtRepo;
@@ -48,6 +54,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     	this._ownerManager = ctx.getBean(IOwnersManager.class);
     	this._vetManager = ctx.getBean(IVetsManager.class);
 		this.jwtRepo = ctx.getBean(IJwtRepository.class);
+		this.idmIdentityService = ctx.getBean(FlowableIdentityService.class);
     }
     
     @Override
@@ -78,12 +85,16 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Claims claims = Jwts.claims();
         String userName = "";
+        String cookieValue = null;
    
         if (auth != null) {
             if (auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
                 userName = ((User) auth.getPrincipal()).getUsername();
                 claims.setSubject(userName);
             }
+            if(userName != "") {
+                cookieValue = idmIdentityService.createTokenAndCookie(userName, request, res);
+           }
         }
         
         claims.put("scopes", (auth.getAuthorities().stream().map(s -> s.toString()).collect(Collectors.toList())));
@@ -124,7 +135,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrintWriter out = res.getWriter();
         out.println("{");
         out.println("\"token\":" + "\"" + SecurityConstants.TOKEN_PREFIX + token + "\"");
-     
+        if(cookieValue != null) {
+            out.println(",\"" + COOKIE_NAME + "\":" + "\"" + cookieValue + "\"");
+        }
         out.println("}");
         out.close();
 

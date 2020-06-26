@@ -6,6 +6,8 @@ import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
+import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.application.vets.dto.*;
 import com.fastcode.demopet.domain.vets.IVetsManager;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
@@ -14,6 +16,7 @@ import com.fastcode.demopet.domain.model.QVetsEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.commons.search.*;
 import com.querydsl.core.BooleanBuilder;
 
@@ -54,12 +57,20 @@ public class VetsAppService implements IVetsAppService {
 	
 	@Autowired
 	private UserAppService _userAppService;
+	
+	@Autowired
+ 	private ActIdUserMapper actIdUserMapper;
+ 	
+ 	@Autowired
+ 	private FlowableIdentityService idmIdentityService;
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CreateVetsOutput create(CreateVetsInput input) {
 
 		VetsEntity vets = mapper.createVetsInputToVetsEntity(input);
 		UserEntity user = _userManager.create(_userMapper.createUserInputToUserEntity(input));
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(user);
+ 		idmIdentityService.createUser(user, actIdUser);
 		assignVetRole(user.getId());
 		
 		vets.setUser(user);
@@ -88,6 +99,9 @@ public class VetsAppService implements IVetsAppService {
         user.setPassword(currentUser.getPassword());
         user=_userManager.update(user);
         
+        ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity( user);
+ 		idmIdentityService.updateUser( user, actIdUser);
+        
 		VetsEntity updatedVets = _vetsManager.update(vets);
 
 		return mapper.vetsEntityAndUserEntityToUpdateVetsOutput(updatedVets, user);
@@ -100,6 +114,8 @@ public class VetsAppService implements IVetsAppService {
 		_vetsManager.delete(existing);
 		_userroleAppService.deleteByUserId(existing.getUser().getId());
 		_userManager.delete(existing.getUser());
+		
+		idmIdentityService.deleteUser(existing.getUser().getUserName());
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

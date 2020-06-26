@@ -102,15 +102,15 @@ public class visitReminderEmailJob implements Job {
 		map.put("PetName",visit.getPets().getName());
 		
 		map.put("visit link","https://localhost:4200/visit/" + visitId);
-//		try {
-//			_mailAppservice.sendVisitEmail(emailTemplate,map);
-//
-//
-//		} catch (IOException e1) {
-//			System.out.println(" Error while sending email");
-//			e1.printStackTrace();
-//		
-//	}
+		try {
+			_mailAppservice.sendVisitEmail(emailTemplate,map);
+
+
+		} catch (IOException e1) {
+			System.out.println(" Error while sending email");
+			e1.printStackTrace();
+		
+	}
 	}
 
 }

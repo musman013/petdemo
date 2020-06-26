@@ -1,11 +1,14 @@
 package com.fastcode.demopet;
 
 import com.fastcode.demopet.domain.model.*;
+import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.domain.authorization.permission.IPermissionManager;
 import com.fastcode.demopet.domain.authorization.rolepermission.IRolepermissionManager;
 import com.fastcode.demopet.domain.authorization.userrole.IUserroleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
+import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -21,6 +24,12 @@ import java.util.List;
 @Component
 @Profile("bootstrap")
 public class AppStartupRunner implements ApplicationRunner {
+	
+	@Autowired
+    private FlowableIdentityService idmIdentityService;
+	
+	@Autowired
+    private ActIdUserMapper actIdUserMapper;
 
 	@Autowired
 	private Environment environment;
@@ -48,15 +57,15 @@ public class AppStartupRunner implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) {
+		
+		idmIdentityService.deleteAllUsersGroupsPrivileges();
 
 		System.out.println("*****************Creating Default Users/Roles/Permissions *************************");
 
 		// Create permissions for default entities
-
 		loggingHelper.getLogger().info("Creating the data in the database");
 
 		// Create roles
-
 		RoleEntity role = new RoleEntity();
 		role.setName("ROLE_Admin");
 		role.setDisplayName("Role1");
@@ -72,6 +81,9 @@ public class AppStartupRunner implements ApplicationRunner {
 		role2.setDisplayName("Role3");
 		role2 = roleManager.create(role2);
 		addDefaultUser(role);
+		idmIdentityService.createGroup("ROLE_Admin");
+		idmIdentityService.createGroup("ROLE_Owner");
+		idmIdentityService.createGroup("ROLE_Vet");
 
 		List<String> entityList = new ArrayList<String>();
 		entityList.add("role");
@@ -115,6 +127,7 @@ public class AppStartupRunner implements ApplicationRunner {
 		
 		addEntityHistoryPermissions("entityHistory", role.getId());
 		addAuditTrailPermission("auditTrail", role.getId());
+		addFlowablePrivileges(role.getId());
 		loggingHelper.getLogger().info("Completed creating the data in the database");
 
 	}
@@ -193,6 +206,45 @@ public class AppStartupRunner implements ApplicationRunner {
 			rolepermissionManager.create(pe4RP);
 		}
 	}
+	
+	 private void addFlowablePrivileges(long roleId) {
+			PermissionEntity pe5 = new PermissionEntity("access-idm","");
+	        PermissionEntity pe6 = new PermissionEntity("access-admin","");
+	        PermissionEntity pe7 = new PermissionEntity("access-modeler","");
+	        PermissionEntity pe8 = new PermissionEntity("access-task","");
+	        PermissionEntity pe9 = new PermissionEntity("access-rest-api","");
+	         
+	        pe5 = permissionManager.create(pe5);
+	        pe6 = permissionManager.create(pe6);
+	        pe7 = permissionManager.create(pe7);
+	        pe8 = permissionManager.create(pe8);
+	        pe9 = permissionManager.create(pe9);
+	         
+	        RolepermissionEntity pe5RP = new RolepermissionEntity(pe5.getId(), roleId);
+	        RolepermissionEntity pe6RP = new RolepermissionEntity(pe6.getId(), roleId);
+	        RolepermissionEntity pe7RP = new RolepermissionEntity(pe7.getId(), roleId);
+	        RolepermissionEntity pe8RP = new RolepermissionEntity(pe8.getId(), roleId);
+	        RolepermissionEntity pe9RP = new RolepermissionEntity(pe9.getId(), roleId);
+	         
+	        rolepermissionManager.create(pe5RP);
+	        rolepermissionManager.create(pe6RP);
+	        rolepermissionManager.create(pe7RP);
+	        rolepermissionManager.create(pe8RP);
+	        rolepermissionManager.create(pe9RP);
+	 
+	        idmIdentityService.createPrivilege("access-idm");
+	        idmIdentityService.createPrivilege("access-admin");
+	        idmIdentityService.createPrivilege("access-modeler");
+	        idmIdentityService.createPrivilege("access-task");
+	        idmIdentityService.createPrivilege("access-rest-api");
+	 
+	        idmIdentityService.addGroupPrivilegeMapping("ROLE_Admin", pe5.getName());
+	        idmIdentityService.addGroupPrivilegeMapping("ROLE_Admin", pe6.getName());
+	        idmIdentityService.addGroupPrivilegeMapping("ROLE_Admin", pe7.getName());
+	        idmIdentityService.addGroupPrivilegeMapping("ROLE_Admin", pe8.getName());
+	        idmIdentityService.addGroupPrivilegeMapping("ROLE_Admin", pe9.getName());
+	         
+		}
 
 	private void addDefaultUser(RoleEntity role) {
 		UserEntity admin = new UserEntity();
@@ -207,5 +259,9 @@ public class AppStartupRunner implements ApplicationRunner {
 		urole.setRoleId(role.getId());
 		urole.setUserId(admin.getId());
 		urole=userroleManager.create(urole);
+	
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(admin);
+ 		idmIdentityService.createUser(admin, actIdUser);
+ 		idmIdentityService.addUserGroupMapping("admin", role.getName());
 	}
 }
