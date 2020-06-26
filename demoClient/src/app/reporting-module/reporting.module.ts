@@ -46,6 +46,7 @@ import { environment } from 'src/environments/environment';
 import { UpdateDashboardComponent } from './modalDialogs/update-dashboard/update-dashboard.component';
 import { CalculateFieldComponent } from './pages/calculate-field/calculate-field.component';
 import { SharedModule } from '../shared/shared.module';
+import { ReportPasswordComponent } from './pages/myreports/report-password/report-password.component';
 const cubejsOptions = {
   token:
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.K9PiJkjegbhnw4Ca5pPlkTmZihoOm42w8bja9Qs2qJg",
@@ -75,7 +76,7 @@ const cubejsOptions = {
     SaveReportsComponent,
     DashboardListComponent,
     ShareComponent,
-    // ReportPasswordComponent,
+    ReportPasswordComponent,
     SharePickerComponent,
     DashboardMainComponent,
     MyreportsMainComponent,
@@ -108,7 +109,8 @@ const cubejsOptions = {
     SaveReportsComponent,
     UpdateDashboardComponent,
     PermalinkComponent,
-    CalculateFieldComponent
+    CalculateFieldComponent,
+    ReportPasswordComponent
   ]
 })
 export class ReportingModule { }

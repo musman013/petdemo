@@ -75,7 +75,7 @@ export class PetsListComponent extends BaseListComponent<IPets> implements OnIni
 				],
 				isParent: false,
 				descriptiveField: 'ownersDescriptiveField',
-				referencedDescriptiveField: 'id',
+				referencedDescriptiveField: 'userName',
 				service: this.ownersService,
 				associatedObj: undefined,
 				table: 'owners',

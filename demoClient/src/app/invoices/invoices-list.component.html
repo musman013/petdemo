@@ -42,11 +42,25 @@
             {{item.status}}
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="Visit">
-          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('Visit')">
+        <ng-container matColumnDef="owner">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('owner')">
+            {{getFieldLabel("Owner")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{ item.ownersDescriptiveField }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="vet">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('vet')">
+            {{getFieldLabel("Vet")}}</mat-header-cell>
+          <mat-cell *matCellDef="let item">
+            {{ item.vetsDescriptiveField }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="visit">
+          <mat-header-cell mat-sort-header *matHeaderCellDef [disabled]="!isColumnSortable('visit')">
             {{getFieldLabel("Visit")}}</mat-header-cell>
           <mat-cell *matCellDef="let item">
-            {{ item.visitsDescriptiveField }}
+            {{ item.visitsDescriptiveField | date: 'mediumDate'}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="actions">

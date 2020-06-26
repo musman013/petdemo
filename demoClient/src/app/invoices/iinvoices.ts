@@ -4,4 +4,8 @@ export interface IInvoices {
 	status: string;
 	visitsDescriptiveField?: string;
 	visitId: number;
+	ownersDescriptiveField?: string;
+	ownerId: number;
+	vetDescriptiveField?: string;
+	vetId: number;
 }

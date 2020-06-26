@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,16 +51,16 @@ public class EmailService implements IEmailService {
 
 	@Autowired
 	private IFileRepository filesRepo;
-	
+
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	private EmailTemplateAppService _emailTemplateAppService;
-	
+
 	@Autowired
 	private EmailVariableAppService _emailVariableAppService;
-	
+
 	public SimpleMailMessage buildEmail(String email, String appUrl, String resetCode)
 	{
 		SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
@@ -67,11 +68,11 @@ public class EmailService implements IEmailService {
 		passwordResetEmail.setSubject("Password Reset Request");
 		passwordResetEmail.setText("To reset your password, click the link below:\n" + appUrl
 				+ "/reset?token=" + resetCode);
-		 System.out.println("App url " + passwordResetEmail.getText());
-		
+		System.out.println("App url " + passwordResetEmail.getText());
+
 		return passwordResetEmail;
 	}
-	
+
 	@Async
 	public void sendEmail(SimpleMailMessage email) {
 		emailSender.send(email);
@@ -146,51 +147,26 @@ public class EmailService implements IEmailService {
 			return "cid:" + name;
 		}
 	}
-	
-	
+
+
 	public void sendVisitEmail(FindEmailTemplateByNameOutput email,Map<String,String> emailVariableMap) throws IOException
 	{
 
 		if(email.getActive()!=null && email.getActive()) {
-
-			//String html = _emailTemplateAppService.convertJsonToHtml(replaceVisitVariableMap(email.getContentJson(),emailVariableMap));
-			
-			//email.setContentHtml(html);
-		//	sendMessage(email.getTo(), null, null, "Reminder", email.getContentHtml(), new ArrayList<File>(),new ArrayList<File>());
+			String html = _emailTemplateAppService.convertJsonToHtml(replaceVisitVariableMap(email.getContentJson(),emailVariableMap));		
+			email.setContentHtml(html);
+			sendMessage(email.getTo(), null, null, email.getSubject(), email.getContentHtml(), new ArrayList<File>(),new ArrayList<File>());
 		}
 	}
-	
+
 	private String replaceVisitVariableMap(String input, Map<String, String> emailVariableMap) {
-		//Sort sort = new Sort(Sort.Direction.fromString(env.getProperty("fastCode.sort.direction.default")), new String[]{env.getProperty("fastCode.sort.property.default")});
-
-		Pageable pageable = new OffsetBasedPageRequest(Integer.parseInt(env.getProperty("fastCode.offset.default")), Integer.parseInt(env.getProperty("fastCode.limit.default")));
 		HashMap<String, String> map = new HashMap<>();
+		Set<String> variables = emailVariableMap.keySet();
 
-		List<FindEmailVariableByIdOutput> tags ;
-		try
-		{
+		for (String variable: variables) {
+			System.out.println(" KEY EXISTS " );
+			map.put("{{" + variable + "}}",emailVariableMap.get(variable));
 
-			SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject("");
-			tags = _emailVariableAppService.find(searchCriteria, pageable);
-
-			for (FindEmailVariableByIdOutput tag: tags) {
-
-				if(emailVariableMap.containsKey(tag.getPropertyName()))
-				{
-
-					System.out.println(" KEY EXISTS " );
-					map.put("{{" + tag.getPropertyName() + "}}",emailVariableMap.get(tag.getPropertyName()));
-				}
-				else
-				{
-					System.out.println(" KEY Doesnot EXISTS " );
-					map.put("{{" + tag.getPropertyName() + "}}",tag.getDefaultValue());
-				}
-			}
-		}
-		catch(Exception ex ){
-			map.put("tag1","tag one");
-			map.put("{{tag2}}","tag two");
 		}
 
 		final String regex ="\\{\\{\\w+\\}\\}";// "\\{\\{\\w+}}"; //"{{\\w+}}";
