@@ -35,8 +35,7 @@ public class StartProcessService {
      //   invoice.setAmount(250L);
       //  invoice.setStatus(InvoiceStatus.Unpaid);
 
-        _invoicesAppService.create(invoice);
-
+        
         // Start the process and pass the invoice status as a variable
 
         Map<String, Object> variables = new HashMap<>();
@@ -44,15 +43,17 @@ public class StartProcessService {
         variables.put("invoiceStatus", invoice.getStatus());
 
        ProcessInstance processInstance =  runtimeService.startProcessInstanceByKey(instanceKey, variables);
-       
-    //   System.out.println("abc "+ processInstance.getProcessInstanceId());
-   //   System.out.println(" invoice status " + runtimeService.getVariable(processInstance.getProcessInstanceId(), "invoiceStatus"));
-    //    System.out.println(" invoice variables " + runtimeService.getVariableInstances(instanceKey));
-     
+       invoice.setProcessInstanceId(processInstance.getProcessInstanceId());
+       _invoicesAppService.create(invoice);
+
+//      System.out.println(" invoice status " + runtimeService.getVariable(processInstance.getProcessInstanceId(), "invoiceStatus"));
+//        System.out.println(" invoice variables " + runtimeService.getVariableInstances(instanceKey));
+//     
+      
     }
     
-    public void updateInvoiceStatus(String instanceKey) {
-    	
+    public void updateInvoiceStatus(String processInstanceId, String variableName, String variableValue) {
+    	runtimeService.setVariable(processInstanceId, variableName, variableValue);
     }
 
 

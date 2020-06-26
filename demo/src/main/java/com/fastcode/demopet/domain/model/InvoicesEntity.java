@@ -17,6 +17,10 @@ public class InvoicesEntity extends AbstractEntity {
   	@Basic
   	@Column(name = "amount", nullable = true)
 	private Long amount;
+  	
+  	@Basic
+  	@Column(name = "processInstanceId", nullable = true, length =256)
+	private String processInstanceId;
 	
   	@Id
   	@GeneratedValue(strategy = GenerationType.IDENTITY)

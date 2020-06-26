@@ -13,5 +13,6 @@ public class CreateInvoicesInput {
   private Long amount;
   private InvoiceStatus status;
   private Long visitId;
+  private String processInstanceId;
  
 }

@@ -1,5 +1,6 @@
 package com.fastcode.demopet.application.invoices;
 
+import com.fastcode.demopet.StartProcessService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.dto.*;
 import com.fastcode.demopet.application.visits.dto.FindVisitsByIdOutput;
@@ -55,6 +56,9 @@ public class InvoicesAppService implements IInvoicesAppService {
 
 	@Autowired
 	private LoggingHelper logHelper;
+	
+	@Autowired 
+	private StartProcessService _processService;
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public CreateInvoicesOutput create(CreateInvoicesInput input) {
@@ -108,6 +112,7 @@ public class InvoicesAppService implements IInvoicesAppService {
 		{
 			invoices.setStatus(InvoiceStatus.Paid);
 			InvoicesEntity updatedInvoices =_invoicesManager.update(invoices);
+			_processService.updateInvoiceStatus(invoices.getProcessInstanceId(), "invoiceStatus", InvoiceStatus.Paid.toString());
 			return mapper.invoicesEntityToUpdateInvoicesOutput(updatedInvoices);
 		}
 

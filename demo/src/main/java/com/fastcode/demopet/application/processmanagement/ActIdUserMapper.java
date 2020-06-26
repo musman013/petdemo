@@ -17,7 +17,7 @@ public class ActIdUserMapper {
 //		actIdUser.setFirst(user.getFirstName());
 //		actIdUser.setLast(user.getLastName());
 //		actIdUser.setEmail(user.getEmailAddress());
-		actIdUser.setPwd("test");
+//		actIdUser.setPwd(user.getPassword());
 		actIdUser.setRev(0L);
 		actIdUser.setDisplayName(null);
 		actIdUser.setPictureId(null);

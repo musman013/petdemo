@@ -240,7 +240,7 @@ public class VisitsController {
 				invoice.setVisitId(visit.getId());
 				invoice.setStatus(InvoiceStatus.Unpaid);
 			//	_invoicesAppService.create(invoice);
-				_processService.startProcess("demo" + visit.getId(), invoice);
+				_processService.startProcess("demo2", invoice);
 
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}
