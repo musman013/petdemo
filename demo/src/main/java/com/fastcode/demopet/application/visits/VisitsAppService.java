@@ -105,7 +105,7 @@ public class VisitsAppService implements IVisitsAppService {
 	  	}
 		
 		VisitsEntity createdVisits = _visitsManager.create(visits);
-	//	scheduleVisitConfirmationJob(createdVisits.getId());
+		scheduleVisitConfirmationJob(createdVisits.getId());
 		scheduleReminderJob(createdVisits.getId());
 		return mapper.visitsEntityToCreateVisitsOutput(createdVisits);
 	}

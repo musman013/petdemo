@@ -26,6 +26,7 @@ import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
 import com.fastcode.demopet.domain.model.OwnersEntity;
+import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.VisitsEntity;
 import com.fastcode.demopet.domain.owners.IOwnersManager;
@@ -70,7 +71,7 @@ public class visitReminderEmailJob implements Job {
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		System.out.println("Instance " + key );
 		
-		FindEmailTemplateByNameOutput emailTemplate = _emailAppservice.findByName("test");
+		FindEmailTemplateByNameOutput emailTemplate = _emailAppservice.findByName("Template_2");
 		Pageable pageable = new OffsetBasedPageRequest(Integer.parseInt(env.getProperty("fastCode.offset.default")), Integer.parseInt(env.getProperty("fastCode.limit.default")), Sort.by("id"));
 
 		Map<String,String> map = new HashMap<String,String>();
@@ -94,23 +95,23 @@ public class visitReminderEmailJob implements Job {
 		VisitsEntity visit = _visitManager.findById(Long.valueOf(visitId));
 		OwnersEntity owner = visit.getPets().getOwners();
 		UserEntity user = owner.getUser();
-	//	PetsEntity pet = _petsManager.findById(visit.get)
+		PetsEntity pet = visit.getPets();
+		UserEntity vet = visit.getVets().getUser();
 	//	emailTemplate.setTo(user.getEmailAddress());
-
-		map.put("Pet owner EmailAddress", user.getEmailAddress());
-		map.put("VisitDate",visit.getVisitDate().toString());
-		map.put("PetName",visit.getPets().getName());
 		
-		map.put("visit link","https://localhost:4200/visit/" + visitId);
-//		try {
-//			_mailAppservice.sendVisitEmail(emailTemplate,map);
-//
-//
-//		} catch (IOException e1) {
-//			System.out.println(" Error while sending email");
-//			e1.printStackTrace();
-//		
-//	}
+		map.put("petOwner_firstName", user.getFirstName());
+		map.put("petName", pet.getName());
+		map.put("visitDateTime",visit.getVisitDate().toString());
+		map.put("visitVetName", vet.getFirstName() + " " + vet.getLastName());
+		
+//		map.put("visit link","https://localhost:4200/visit/" + visitId);
+		try {
+			_mailAppservice.sendVisitEmail(emailTemplate,map);
+		} catch (IOException e1) {
+			System.out.println("Error while sending email");
+			e1.printStackTrace();
+		
+		}
 	}
 
 }
