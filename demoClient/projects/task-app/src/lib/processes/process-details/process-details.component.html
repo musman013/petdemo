@@ -1,0 +1,343 @@
+<section class="spinner-container" *ngIf="isLoadingResults">
+  <mat-spinner></mat-spinner>
+</section>
+<div class="list-container">
+
+  <div class="help-container fc-text-center" *ngIf="!processInstance">
+    <div>
+      <div class="help-text wide">
+        <p class="description">
+          {{'PROCESS.MESSAGE.NO-INSTANCES-HELP' | translate}}
+        </p>
+        <h3 class="toggle-create-task">
+          <span translate="PROCESS.MESSAGE.NO-INSTANCES-HELP-START"></span>
+        </h3>
+         <button mat-raised-button (click)="createProcessInstance()" color="primary"><mat-icon>assignment_turned_in</mat-icon>&nbsp;&nbsp; Create Processes</button>       
+      </div>
+    </div>
+  </div>
+
+  <div class="header task-processing" *ngIf="processInstance">
+    <div class="fc-row">
+      <div class="fc-col-lg-6 fc-col-xl-8">
+        <h2 class="title"> {{processInstance.name && processInstance.name ||
+          processInstance.processDefinitionName}} <span class="badge" [ngClass]="processInstance.ended == null?'open':'completed'">{{processInstance.ended == null?'Open':'Completed'}}</span> </h2>
+      </div>
+      <div class="fc-col-lg-6 fc-col-xl-4">
+        <ul class="detail">
+          <li>
+            <span class="detail-label" *ngIf="processInstance.startedBy">
+              <mat-icon>date_range</mat-icon>&nbsp;{{'PROCESS.FIELD.STARTED-BY' | translate}}:
+            </span>
+            <app-user-name [user]="processInstance.startedBy" *ngIf="processInstance.startedBy"></app-user-name>
+          </li>
+          <li>
+            <span class="detail-label">
+              <mat-icon>date_range</mat-icon>&nbsp;{{'PROCESS.FIELD.STARTED' | translate}}:
+            </span>
+            <span title="{{processInstance.started | date:'short'}}">{{processInstance.started |
+            date:'short'}}</span>
+          </li>
+          <li>
+            <span class="detail-label" *ngIf="processInstance.ended">
+              <mat-icon>date_range</mat-icon>&nbsp;{{'PROCESS.FIELD.ENDED' | translate}}:
+            </span>
+            <span *ngIf="processInstance.ended" title="{{processInstance.ended | date:'short'}}">{{processInstance.ended
+            | date:'short'}}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="fc-col-sm-12 fc-text-right">
+        <div class="button-wrapper"
+          *ngIf="processInstance.startedBy && processInstance.startedBy.id == ('' + account.id)">
+          <button *ngIf="!processInstance.ended" mat-flat-button color="primary" (click)="cancelProcess()">
+            {{'PROCESS.ACTION.CANCEL' | translate}}
+          </button>
+          <button *ngIf="processInstance.ended" mat-flat-button color="primary" (click)="deleteProcess()">
+            {{'PROCESS.ACTION.DELETE' | translate}}
+          </button>
+          <button mat-icon-button class="basic">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="btn-group pull-right" *ngIf="processInstance.graphicalNotationDefined">
+      <button class="btn" id="processDiagramTrigger" translate="PROCESS.ACTION.SHOW-DIAGRAM" (click)="showDiagram()"></button>
+    </div> -->
+
+  </div>
+  <br  *ngIf="processInstance">
+  <br  *ngIf="processInstance">
+  <mat-card class="full-width" *ngIf="processInstance">
+    <div>
+   
+      <mat-tab-group>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>list_alt</mat-icon>
+            {{'PROCESS.SECTION.ACTIVE-TASKS' | translate }}
+          </ng-template>
+          <ul class="generic-list checklist">
+            <li *ngFor="let task of processTasks" (click)="openTask(task)" class="cursor-pointer">
+              <div class="clearfix">
+                <div class="pull-right">
+                  <span class="badge" *ngIf="task.dueDate">
+                    {{'TASK.MESSAGE.DUE-ON' | translate}} {{(task.dueDate | date:'short')}}
+                  </span>
+                  <span class="badge" *ngIf="!task.dueDate">
+                    {{'TASK.MESSAGE.CREATED-ON' | translate}} {{(task.created | date:'short')}}
+                  </span>
+                </div>
+                <div>
+                  <app-user-picture *ngIf="task.assignee" [userId]="task.assignee.id"></app-user-picture>
+                  {{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}
+                </div>
+                <div class="subtle">
+                  <span *ngIf="task.assignee && task.assignee.id">
+                    {{'TASK.MESSAGE.ASSIGNEE' | translate}} {{task.assignee.firstName && task.assignee.firstName !=
+                  'null' ? task.assignee.firstName : ''}} {{task.assignee.lastName && task.assignee.lastName != 'null'
+                  ? task.assignee.lastName : ''}}
+                  </span>
+                  <span *ngIf="!task.assignee || !task.assignee.id" translate="TASK.MESSAGE.NO-ASSIGNEE">
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="nothing-to-see" *ngIf="!processTasks || processTasks.length == 0">
+            <span translate="PROCESS.MESSAGE.NO-TASKS"></span>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>list_alt</mat-icon>
+            {{'PROCESS.SECTION.START-FORM' | translate}}
+          </ng-template>
+          <ul class="generic-list checklist">
+            <li (click)="openStartForm()" class="complete">
+              <div class="clearfix">
+                <div>
+                  <div user-picture="processInstance.startedBy"></div>
+                  <span translate="PROCESS.SECTION.START-FORM"></span>
+                </div>
+                <div class="subtle">
+                  <span *ngIf="processInstance.startedBy.id">
+                    {{'TASK.MESSAGE.COMPLETED-BY' | translate}} {{processInstance.startedBy.firstName &&
+                  processInstance.startedBy.firstName != 'null' ? processInstance.startedBy.firstName :
+                  ''}} {{processInstance.startedBy.lastName && processInstance.startedBy.lastName != 'null'
+                  ? processInstance.startedBy.lastName : ''}}
+                    {{processInstance.started | date:'short'}}
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>list_alt</mat-icon>
+            {{'PROCESS.SECTION.COMPLETED-TASKS'  | translate}}
+          </ng-template>
+          <ul class="generic-list checklist">
+            <li *ngFor="let task of completedProcessTasks" (click)="openTask(task)" class="complete">
+              <div class="clearfix">
+                <div class="pull-right">
+                  <span class="badge">
+                    {{'TASK.MESSAGE.DURATION' | translate:task}}
+                  </span>
+                </div>
+                <div>
+                  <app-user-picture *ngIf="task.assignee" [userId]="task.assignee.id"></app-user-picture>
+                  {{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}
+                </div>
+                <div class="subtle">
+                  <span *ngIf="task.assignee && task.assignee.id">
+                    {{'TASK.MESSAGE.COMPLETED-BY' | translate}} {{task.assignee.firstName && task.assignee.firstName !=
+                  'null' ? task.assignee.firstName : ''}} {{task.assignee.lastName && task.assignee.lastName != 'null'
+                  ? task.assignee.lastName : ''}}
+                    {{task.endDate | date:'short'}}
+                  </span>
+                  <span *ngIf="!task.assignee || !task.assignee.id" translate="TASK.MESSAGE.NO-ASSIGNEE">
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="nothing-to-see" *ngIf="completedProcessTasks.length == 0">
+            <span translate="PROCESS.MESSAGE.NO-COMPLETED-TASKS"></span>
+          </div>
+        </mat-tab>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>list_alt</mat-icon>
+            {{'PROCESS.SECTION.COMMENTS' | translate}}
+          </ng-template>         
+          <ul class="generic-list comments selectable">            
+            <li *ngFor="let comment of comments.data; let i = index">
+
+              <div class="title">
+                <app-user-picture [userId]="comment.createdBy"></app-user-picture>
+                <b class="name">{{comment.createdBy | titlecase}}</b> <small
+                  class="time">{{(comment.created | date:'medium')}}</small>
+              </div>
+              <!-- <div class="message">{{comment.message | slice : 0:300 }}&nbsp; -->
+              <div class="message">{{comment.message}}&nbsp;
+                <!-- <a href="javascript:void(0)" *ngIf="comment.message.length > 300" (click)="(textLimit[i] == 300? textLimit[i] = 100000000000: textLimit[i]=300)">{{textLimit[i] == 300? 'Read more': 'Read less'}}</a> -->
+              </div>
+            </li>
+            <li class="add-new-comment" *ngIf="processInstance.ended == null">             
+              <form [formGroup]="commentForm" #commentNgForm="ngForm" (ngSubmit)="onSubmitComments()"
+                class="comment-form">
+                <div class="full-width">
+                  <mat-form-field class="full-width">
+                    <textarea formControlName="comment" matInput
+                      placeholder="{{ 'TASK.MESSAGE.NEW-COMMENT-PLACEHOLDER' | translate}}"
+                      class="comment-textarea"></textarea>
+                    <mat-error
+                      *ngIf="commentForm.get('comment').errors && commentForm.get('comment').errors['required'] && commentForm.get('comment').touched">
+                      Comment
+                      {{'GENERAL.ERROR.REQUIRED' | translate}}</mat-error>
+                    <mat-error
+                      *ngIf="commentForm.get('comment').errors && commentForm.get('comment').errors['maxlength']">
+                      Length
+                      cannot be greater than {{commentForm.get('comment').errors.maxlength.requiredLength}}
+                    </mat-error>
+                    <button mat-raised-button (click)="commentNgForm.ngSubmit.emit()" color="primary"
+                      [disabled]="!commentForm.valid || loading" class="full-width comment-save">
+                      {{'GENERAL.ACTION.SAVE' | translate}}
+                    </button>
+                  </mat-form-field>
+                </div>
+              </form>
+            </li>
+          </ul>
+        </mat-tab>
+      </mat-tab-group>
+      <!-- tasks -->
+      <!-- <div class="full-width col">
+
+      <mat-card class="details-section">
+        <mat-card-title translate="PROCESS.SECTION.ACTIVE-TASKS"></mat-card-title>
+        <mat-card-content>
+          <ul class="generic-list checklist">
+            <li *ngFor="let task of processTasks" (click)="openTask(task)" class="cursor-pointer">
+              <div class="clearfix">
+                <div class="pull-right">
+                  <span class="badge" *ngIf="task.dueDate">
+                    {{'TASK.MESSAGE.DUE-ON' | translate}} {{(task.dueDate | date:'short')}}
+                  </span>
+                  <span class="badge" *ngIf="!task.dueDate">
+                    {{'TASK.MESSAGE.CREATED-ON' | translate}} {{(task.created | date:'short')}}
+                  </span>
+                </div>
+                <div>
+                  <app-user-picture *ngIf="task.assignee" [userId]="task.assignee.id"></app-user-picture>
+                  {{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}
+                </div>
+                <div class="subtle">
+                  <span *ngIf="task.assignee && task.assignee.id">
+                    {{'TASK.MESSAGE.ASSIGNEE' | translate}} {{task.assignee.firstName && task.assignee.firstName !=
+                    'null' ? task.assignee.firstName : ''}} {{task.assignee.lastName && task.assignee.lastName != 'null'
+                    ? task.assignee.lastName : ''}}
+                  </span>
+                  <span *ngIf="!task.assignee || !task.assignee.id" translate="TASK.MESSAGE.NO-ASSIGNEE">
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="nothing-to-see" *ngIf="!processTasks || processTasks.length == 0">
+            <span translate="PROCESS.MESSAGE.NO-TASKS"></span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="details-section" *ngIf="processInstance.startFormDefined">
+        <mat-card-title translate="PROCESS.SECTION.START-FORM" id="startForm"></mat-card-title>
+        <mat-card-content>
+          <ul class="generic-list checklist">
+            <li (click)="openStartForm()" class="complete">
+              <div class="clearfix">
+                <div>
+                  <div user-picture="processInstance.startedBy"></div>
+                  <span translate="PROCESS.SECTION.START-FORM"></span>
+                </div>
+                <div class="subtle">
+                  <span *ngIf="processInstance.startedBy.id">
+                    {{'TASK.MESSAGE.COMPLETED-BY' | translate}} {{processInstance.startedBy.firstName &&
+                    processInstance.startedBy.firstName != 'null' ? processInstance.startedBy.firstName :
+                    ''}} {{processInstance.startedBy.lastName && processInstance.startedBy.lastName != 'null'
+                    ? processInstance.startedBy.lastName : ''}}
+                    {{processInstance.started | date:'short'}}
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="details-section">
+        <mat-card-title translate="PROCESS.SECTION.COMPLETED-TASKS" id="completedTasks"></mat-card-title>
+
+        <mat-card-content>
+          <ul class="generic-list checklist">
+            <li *ngFor="let task of completedProcessTasks" (click)="openTask(task)" class="complete">
+              <div class="clearfix">
+                <div class="pull-right">
+                  <span class="badge">
+                    {{'TASK.MESSAGE.DURATION' | translate:task}}
+                  </span>
+                </div>
+                <div>
+                  <app-user-picture *ngIf="task.assignee" [userId]="task.assignee.id"></app-user-picture>
+                  {{task.name && task.name || ('TASK.MESSAGE.NO-NAME' | translate)}}
+                </div>
+                <div class="subtle">
+                  <span *ngIf="task.assignee && task.assignee.id">
+                    {{'TASK.MESSAGE.COMPLETED-BY' | translate}} {{task.assignee.firstName && task.assignee.firstName !=
+                    'null' ? task.assignee.firstName : ''}} {{task.assignee.lastName && task.assignee.lastName != 'null'
+                    ? task.assignee.lastName : ''}}
+                    {{task.endDate | date:'short'}}
+                  </span>
+                  <span *ngIf="!task.assignee || !task.assignee.id" translate="TASK.MESSAGE.NO-ASSIGNEE">
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="nothing-to-see" *ngIf="completedProcessTasks.length == 0">
+            <span translate="PROCESS.MESSAGE.NO-COMPLETED-TASKS"></span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div> -->
+
+      <!-- comments -->
+      <!-- <div class="full-width col">
+      <mat-card class="details-section">
+        <mat-card-title>
+          {{'PROCESS.SECTION.COMMENTS' | translate}}
+          <span (click)="addComment()" title="{{'PROCESS.ACTION.ADD-COMMENT' | translate}}">
+            <mat-icon>add_circle</mat-icon>
+          </span>
+        </mat-card-title>
+
+        <mat-card-content>
+          <ul class="generic-list comments selectable" *ngIf="comments.data.length">
+            <li *ngFor="let comment of comments.data">
+              <div class="title">
+                <app-user-picture [userId]="comment.createdBy"></app-user-picture>
+                {{'PROCESS.MESSAGE.COMMENT-HEADER' | translate:comment}}
+              </div>
+              <div class="message">{{comment.message}}</div>
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    </div> -->
+
+    </div>
+  </mat-card>
+</div>

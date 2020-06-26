@@ -23,6 +23,7 @@ import { InvoicesListComponent, InvoicesDetailsComponent, InvoicesNewComponent }
 import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
 import { MainNavComponent } from './common/components/main-nav/main-nav.component';
 import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
+import { TaskAppRoutes } from 'projects/task-app/src/public_api';
 
 const routes: Routes = [
 	{ path: 'resourceView/:id', component: ResourceViewComponent },
@@ -72,8 +73,12 @@ const routes: Routes = [
 	{ path: 'invoices/:id', component: InvoicesDetailsComponent, canDeactivate: [CanDeactivateGuard], canActivate: [AuthGuard] },
 	{ path: 'scheduler', children: SchedulerRoutes, canActivate: [AuthGuard] },
 	{ path: 'email', children: EmailRoutes, canActivate: [AuthGuard] },
+	{ path: 'task-app', children: TaskAppRoutes, canActivate: [AuthGuard] },
 	{ path: '**', component: ErrorPageComponent },
 
 ];
 
-export const routingModule: ModuleWithProviders = RouterModule.forRoot(routes);
+export const routingModule: ModuleWithProviders = RouterModule.forRoot(routes, {
+	useHash: true,
+	enableTracing: true
+});

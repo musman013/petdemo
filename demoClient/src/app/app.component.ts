@@ -4,6 +4,8 @@ import { HttpClient } from "@angular/common/http";
 import { FastCodeCoreTranslateUiService } from 'projects/fast-code-core/src/public_api';
 import { SchedulerTranslateUiService } from 'projects/scheduler/src/public_api';
 import { EmailBuilderTranslateUiService } from 'projects/ip-email-builder/src/public_api';
+import { UpgradeModule } from "@angular/upgrade/static";
+import { TaskAppTranslateUiService } from 'projects/task-app/src/public_api';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,8 @@ export class AppComponent implements OnInit {
     private schedulerTranslateUiService: SchedulerTranslateUiService,
     private emailBuilderTranslateUiService: EmailBuilderTranslateUiService,
     private fastCodeCoreTranslateUiService: FastCodeCoreTranslateUiService,
+    private upgrade: UpgradeModule,
+    private taskAppTranslateUiService: TaskAppTranslateUiService,
   ) {
     let languages = ["en", "fr"];
     let defaultLang = languages[0];
@@ -52,9 +56,11 @@ export class AppComponent implements OnInit {
     this.fastCodeCoreTranslateUiService.init(lang);
     this.schedulerTranslateUiService.init(lang);
     this.emailBuilderTranslateUiService.init(lang);
+    this.taskAppTranslateUiService.init(lang);
   }
 
   ngOnInit(){
+    this.upgrade.bootstrap(document.body, ['flowableAdminApp']);
   }
   
   getFontFamily() {

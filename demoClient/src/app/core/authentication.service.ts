@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { ITokenDetail } from 'projects/fast-code-core/src/public_api';
+import { CookieService } from './cookie.service';
 
 const API_URL = environment.apiUrl;
 
@@ -19,9 +20,12 @@ export class AuthenticationService {
     withCredentials: true,
     headers: new HttpHeaders().set('Content-Type', 'application/json').append('Access-Control-Allow-Origin', '*')
   };
+  private cookieName = 'FLOWABLE_REMEMBER_ME';
+  private cookieValue = '';
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private cookieService: CookieService
   ) {
   }
 
@@ -32,14 +36,18 @@ export class AuthenticationService {
       localStorage.setItem("token", retval.token);
       this.decodedToken = null;
       this.decodeToken();
+      this.cookieValue = retval.FLOWABLE_REMEMBER_ME;
+      this.cookieService.set(this.cookieName, this.cookieValue);
+      this.cookieService.set(this.cookieName, this.cookieValue, null, null, environment.flowableUrl);
       return retval;
     }));
   }
 
-  logout(){
+  logout() {
     this.http.post<any>(this.apiUrl + '/auth/logout', null, this._reqOptionsArgs).subscribe(result => {
     })
     localStorage.removeItem('token');
+    this.cookieService.set(this.cookieName, 'UNKNOWN');
   }
 
   get token(): string {
@@ -86,16 +94,16 @@ export class AuthenticationService {
     }
     return !(date.valueOf() > new Date().valueOf());
   }
-  resetPassword(data){
+  resetPassword(data) {
     return this.http.post<any>(this.apiUrl + '/password/reset', data, this._reqOptionsArgs);
   }
 
-  updatePassword(data){
+  updatePassword(data) {
     return this.http.post<any>(this.apiUrl + '/password/update', data, this._reqOptionsArgs);
   }
 
 
-  forgotPassword(email: string){
+  forgotPassword(email: string) {
     return this.http.post<any>(this.apiUrl + '/password/forgot', email, this._reqOptionsArgs);
   }
   private handleError(err: HttpErrorResponse) {

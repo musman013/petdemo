@@ -1,0 +1,78 @@
+<section class="fb-popup">
+	<div class="modal-header-wrapper">
+		<div class="modal-header">
+			<div class="pull-right">
+				<a class="action" ng-click="cancel()">&times; {{'GENERAL.ACTION.CANCEL-AND-CLOSE' | translate}}</a>
+			</div>
+			<h2>{{'TASK.POPUP.EDIT.TITLE' | translate}} '{{task.name &amp;&amp; task.name || task.id}}'</h2>
+		</div>
+	</div>
+	<div class="modal-body no-overflow">
+		<form>
+			<div class="form-group">
+				<label class="form-inline" translate="TASK.POPUP.EDIT.NAME"></label>
+				<input type="text" class="form-control" value="" placeholder="Enter Name" ng-model="model.name"
+					auto-focus />
+
+			</div>
+			<div class="form-group">
+				<label class="form-inline" translate="TASK.POPUP.EDIT.DESCRIPTION"></label>
+				<div class="input-group input-group-sm full-width">
+					<textarea class="form-control" rows="2" ng-model="model.description"
+						style="min-height:60px;"></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-inline" translate="TASK.POPUP.EDIT.ASSIGNEE"></label>
+				<div class="input-group input-group-sm full-width type-ahead-scrollable">
+					<input type="text" ng-model="model.assignee" class="form-control">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-inline" translate="TASK.POPUP.EDIT.OWNER"></label>
+				<div class="input-group input-group-sm full-width type-ahead-scrollable">
+					<input type="text" ng-model="model.owner" class="form-control">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="from-inline" translate="TASK.POPUP.EDIT.DUE-DATE"></label>
+				<div class="input-group input-group-sm full-width">
+					<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+					<input id="filter-dueBefore" type="text" class="form-control" ng-model="model.dueDate"
+						datepicker-popup="dd/MM/yyyy" is-open="dueDatePicker.isOpen"
+						ng-click="dueDatePicker.isOpen=true" />
+				</div>
+
+			</div>
+			<div class="form-group">
+				<label class="form-inline" translate="TASK.POPUP.EDIT.PRIORITY"></label>
+				<div class="input-group input-group-sm full-width">
+					<input type="text" class="form-control" value="" ng-model="model.priority">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-inline" translate="TASK.POPUP.EDIT.CATEGORY"></label>
+
+				<div class="input-group input-group-sm full-width">
+					<input type="text" class="form-control" value="" ng-model="model.category">
+				</div>
+
+			</div>
+		</form>
+	</div>
+
+	<div class="modal-footer-wrapper">
+		<div class="modal-footer">
+			<div class="pull-right">
+				<button type="button" class="btn btn-sm btn-default" ng-click="cancel()" ng-disabled="status.loading"
+					translate="GENERAL.ACTION.CANCEL">
+				</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="ok()" ng-disabled="status.loading"
+					translate="TASK.POPUP.EDIT.CONFIRM">
+				</button>
+			</div>
+			<loading-indicator></loading-indicator>
+		</div>
+	</div>
+</section>

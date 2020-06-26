@@ -1,0 +1,28 @@
+article.media {
+    display: flex;
+    align-items: center;
+    .media-body{
+        width:100%
+    }
+    .media-right{
+        width:90px
+    }
+}
+
+figure.media-left.icon-gig .mat-icon {
+    width: 59px;
+    height: 56px;
+    line-height: 54px;
+    text-align: center;
+    font-size: 33px;
+    margin-right: 12px;
+    background: #e8edf1;
+    border-radius: 50%;
+    @media screen and (max-width:580px) {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 21px;
+        margin-right: 12px;
+    }
+}

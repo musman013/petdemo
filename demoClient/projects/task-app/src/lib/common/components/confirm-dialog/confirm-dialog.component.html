@@ -1,0 +1,15 @@
+<!-- <h1 mat-dialog-title>{{confirmTitle}}</h1>
+<div mat-dialog-content>{{confirmMessage}}</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="dialogRef.close(false)">{{'GENERAL.ACTION.CANCEL'| translate}}</button>
+  <button mat-raised-button (click)="dialogRef.close(true)">{{'GENERAL.ACTION.CONFIRM'| translate}}</button>
+</div>
+ -->
+ <h2 mat-dialog-title>{{confirmTitle}}</h2>
+ <mat-dialog-content class="mat-typography">
+    <p>{{confirmMessage}}</p>
+ </mat-dialog-content>
+ <mat-dialog-actions align="end">
+  <button mat-raised-button (click)="dialogRef.close(false)">{{'GENERAL.ACTION.CANCEL'| translate}}</button>
+  <button mat-raised-button color="primary" (click)="dialogRef.close(true)">{{'GENERAL.ACTION.CONFIRM'| translate}}</button>
+ </mat-dialog-actions>
