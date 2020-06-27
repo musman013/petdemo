@@ -79,6 +79,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .userDetailsService(userDetailsService)
                     .passwordEncoder(new BCryptPasswordEncoder());
         }
+        else (env.getProperty("fastCode.auth.method").equalsIgnoreCase("ldap")) {
+        	auth
+			.ldapAuthentication()
+			.contextSource()
+			.url(env.getProperty("fastCode.ldap.contextsourceurl"))
+			.managerDn(env.getProperty("fastCode.ldap.manager.dn"))
+			.managerPassword(env.getProperty("fastCode.ldap.manager.password"))
+			.and()
+			.userSearchBase(env.getProperty("fastCode.ldap.usersearchbase"))
+			.userSearchFilter(env.getProperty("fastCode.ldap.usersearchfilter"))
+			.groupSearchBase(env.getProperty("fastCode.ldap.groupsearchbase"))
+			.groupSearchFilter(env.getProperty("fastCode.ldap.groupsearchfilter"))
+			.rolePrefix(env.getProperty("fastCode.ldap.roleprefix"));
+        }
         else {
             throw new AuthenticationNotSupportedException();
         }

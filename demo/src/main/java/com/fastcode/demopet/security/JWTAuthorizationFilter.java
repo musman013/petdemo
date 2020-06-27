@@ -7,7 +7,6 @@ import com.fastcode.demopet.commons.error.ExceptionMessageConstants;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import io.jsonwebtoken.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,8 +19,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.stream.Collectors;
 import com.fastcode.demopet.domain.model.JwtEntity;
 import com.fastcode.demopet.domain.irepository.IJwtRepository;
-import java.net.URL;
-import org.springframework.security.core.authority.AuthorityUtils;
 import java.util.*;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -107,11 +104,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
          if(jwt == null) {
              throw new JwtException("Token Does Not Exist");
          }
+         
         Claims claims;
        
 		if (StringUtils.isNotEmpty(token) && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
         	String userName = null;
             List<GrantedAuthority> authorities = null;
+            
             claims = Jwts.parser()
                         .setSigningKey(SecurityConstants.SECRET.getBytes())
                         .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
