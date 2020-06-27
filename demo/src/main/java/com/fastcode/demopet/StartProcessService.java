@@ -67,14 +67,6 @@ public class StartProcessService {
     	runtimeService.setVariable(processInstanceId, variableName, variableValue);
     }
     
-    public void completeTask() {
-    	ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-        RuntimeService runtimeService = processEngine.getRuntimeService();
-        runtimeService.get
-        TaskService taskService = processEngine.getTaskService();
-        
-    }
-    
     public void userTaskListener (DelegateTask delegateTask) {
 
         logger.getLogger().info("Flowable FlowableTaskListener notify called, event name {}", delegateTask.getEventName());
@@ -89,10 +81,7 @@ public class StartProcessService {
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         RuntimeService runtimeService = processEngine.getRuntimeService();
         TaskService taskService = processEngine.getTaskService();
-//        ProcessService taskService = processEngine.getTaskService();
-        taskService.crea
-        taskService.complete(taskId, variables);
-//           Task task = taskService.createTaskQuery().singleResult();
+        //   Task task = taskService.createTaskQuery().singleResult();
 
         // Map<String, Object> localVariables = taskService.getVariables(task.getId());
 

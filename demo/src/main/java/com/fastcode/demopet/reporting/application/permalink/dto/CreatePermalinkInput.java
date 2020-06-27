@@ -29,5 +29,7 @@ public class CreatePermalinkInput {
   private Long resourceId;
   
   private Boolean toolbar;
+
+  private String password;
   
 }

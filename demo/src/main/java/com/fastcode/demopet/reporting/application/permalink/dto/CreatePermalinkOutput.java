@@ -19,5 +19,6 @@ public class CreatePermalinkOutput {
     private Long resourceId;
     private Boolean toolbar;
     private Long userId;
+	private String password;
   
 }

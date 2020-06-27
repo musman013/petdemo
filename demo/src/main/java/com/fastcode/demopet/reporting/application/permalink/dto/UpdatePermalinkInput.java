@@ -30,5 +30,6 @@ public class UpdatePermalinkInput {
   private Boolean toolbar;
   private Long userId;
   private Long version;
+  private String password;
 
 }
