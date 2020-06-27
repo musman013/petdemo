@@ -26,6 +26,7 @@ public class VisitsEntity extends AbstractEntity {
   	private String visitNotes;
   	
   	@Basic
+    @Enumerated(EnumType.STRING)
   	@Column(name = "status", nullable = false, length =20)
   	private Status status;
 

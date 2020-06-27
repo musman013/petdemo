@@ -10,7 +10,7 @@
 	<groupId>com.fastcode</groupId>
 	<artifactId>demopet</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>demopet</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -218,7 +218,7 @@
 		<dependency>
 			<groupId>org.flowable</groupId>
 			<artifactId>flowable-spring-boot-starter-rest</artifactId>
-			<version>6.4.2</version>
+			<version>6.4.1</version>
 		</dependency>
     </dependencies>
 

@@ -21,4 +21,6 @@ public interface IInvoicesManager {
    
     //Visits
     public VisitsEntity getVisits(Long invoicesId);
+    
+    InvoicesEntity findByProcessInstanceId(String value);
 }

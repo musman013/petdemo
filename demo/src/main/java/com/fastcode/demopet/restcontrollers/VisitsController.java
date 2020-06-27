@@ -204,10 +204,12 @@ public class VisitsController {
 
 		if(_userAppService.checkIsAdmin(user))
 		{
-			if(new Date().before(visit.getVisitDate()) && input.getStatus().equals(Status.CONFIRMED))
+//			if(new Date().before(visit.getVisitDate()) && input.getStatus().equals(Status.CONFIRMED))
+			if(input.getStatus().equals(Status.CONFIRMED))
 			{
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}
+//			else if(!visit.getStatus().equals(Status.COMPLETED) && input.getStatus().equals(Status.CANCELLED)) {
 			else if(!visit.getStatus().equals(Status.COMPLETED) && input.getStatus().equals(Status.CANCELLED)) {
 
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
@@ -216,13 +218,13 @@ public class VisitsController {
 		}
 
 		else if (owner !=null && user.getId() == owner.getId()) {
-			if(new Date().after(visit.getVisitDate()))
-			{
-				throw new EntityNotFoundException(
-						String.format("Visit time has been expired"));
-			}
+//			if(new Date().after(visit.getVisitDate()))
+//			{
+//				throw new EntityNotFoundException(
+//						String.format("Visit time has been expired"));
+//			}
 
-			else if(input.getStatus().equals(Status.CANCELLED) || input.getStatus().equals(Status.CONFIRMED))
+			if(input.getStatus().equals(Status.CANCELLED) || input.getStatus().equals(Status.CONFIRMED))
 			{
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}
@@ -231,7 +233,8 @@ public class VisitsController {
 
 		else if (vet != null ) {
 
-			if(new Date().after(visit.getVisitDate()) && visit.getStatus().equals(Status.CONFIRMED) && input.getStatus().equals(Status.COMPLETED))
+//			if(new Date().after(visit.getVisitDate()) && visit.getStatus().equals(Status.CONFIRMED) && input.getStatus().equals(Status.COMPLETED))
+			if(visit.getStatus().equals(Status.CONFIRMED) && input.getStatus().equals(Status.COMPLETED))
 			{
 				Optional.ofNullable(input.getInvoiceAmount()).orElseThrow(() -> new InvalidInputException("Invoice Amount should not be null"));
 
@@ -240,7 +243,7 @@ public class VisitsController {
 				invoice.setVisitId(visit.getId());
 				invoice.setStatus(InvoiceStatus.Unpaid);
 			//	_invoicesAppService.create(invoice);
-				_processService.startProcess("demo2", invoice);
+				_processService.startProcess("demo2", invoice, owner);
 
 				return new ResponseEntity(_visitsAppService.changeStatus(Long.valueOf(id), input), HttpStatus.OK);
 			}

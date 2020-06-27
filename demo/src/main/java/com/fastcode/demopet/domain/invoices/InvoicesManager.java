@@ -35,6 +35,11 @@ public class InvoicesManager implements IInvoicesManager {
 		return _invoicesRepository.save(invoices);
 	}
 
+	public InvoicesEntity findByProcessInstanceId(String value) {
+		
+		return _invoicesRepository.findByProcessInstanceId(value);
+	}
+
 	public InvoicesEntity findById(Long invoicesId) {
     	Optional<InvoicesEntity> dbInvoices= _invoicesRepository.findById(invoicesId);
 		if(dbInvoices.isPresent()) {

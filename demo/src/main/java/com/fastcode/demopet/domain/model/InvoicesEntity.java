@@ -28,6 +28,7 @@ public class InvoicesEntity extends AbstractEntity {
 	private Long id;
   	
   	@Basic
+    @Enumerated(EnumType.STRING)
   	@Column(name = "status", nullable = false, length =20)
   	private InvoiceStatus status;
 	

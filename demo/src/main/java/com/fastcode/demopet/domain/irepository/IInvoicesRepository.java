@@ -12,4 +12,6 @@ import org.javers.spring.annotation.JaversSpringDataAuditable;
 @Repository
 public interface IInvoicesRepository extends JpaRepository<InvoicesEntity, Long>,QuerydslPredicateExecutor<InvoicesEntity> {
 
+	@Query("select u from InvoicesEntity u where u.processInstanceId = ?1")
+	InvoicesEntity findByProcessInstanceId(String value);
 }

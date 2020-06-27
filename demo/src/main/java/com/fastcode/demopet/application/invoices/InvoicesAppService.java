@@ -118,7 +118,15 @@ public class InvoicesAppService implements IInvoicesAppService {
 
 		return null;
 	}
-
+	
+	public InvoicesEntity updateStatus(String instanceId, InvoiceStatus status) {
+		InvoicesEntity invoices = _invoicesManager.findByProcessInstanceId(instanceId);
+        invoices.setStatus(status);
+		InvoicesEntity updatedInvoices =_invoicesManager.update(invoices);
+		_processService.updateInvoiceStatus(invoices.getProcessInstanceId(), "invoiceStatus", status.toString());
+		return updatedInvoices;
+	}
+	
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void delete(Long invoicesId) {
 
