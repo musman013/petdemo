@@ -47,6 +47,7 @@ export class MainNavComponent {
 		...Entities,
 		...SchedulerEntities,
 		...EmailEntities,
+		"report"
 	];
 
 	constructor(

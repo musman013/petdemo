@@ -1,5 +1,5 @@
-cube(`Permission`, {
-  sql: `SELECT * FROM sample.permission`,
+cube(`Specialties`, {
+  sql: `SELECT * FROM sample.specialties`,
   
   joins: {
     
@@ -38,18 +38,6 @@ cube(`Permission`, {
 			sql: 'id',
 			type: 'countDistinctApprox'
 		},
-		count_display_name: {
-			sql: 'display_name',
-			type: 'count'
-		},
-		countDistinct_display_name: {
-			sql: 'display_name',
-			type: 'countDistinct'
-		},
-		countDistinctApprox_display_name: {
-			sql: 'display_name',
-			type: 'countDistinctApprox'
-		},
 		count_name: {
 			sql: 'name',
 			type: 'count'
@@ -70,11 +58,6 @@ cube(`Permission`, {
       sql: `id`,
       type: `number`,
       primaryKey: true
-    },
-    
-    displayName: {
-      sql: `display_name`,
-      type: `string`
     },
     
     name: {

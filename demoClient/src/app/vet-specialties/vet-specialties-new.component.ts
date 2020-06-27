@@ -90,7 +90,7 @@ export class VetSpecialtiesNewComponent extends BaseNewComponent<IVetSpecialties
 				type: 'ManyToOne',
 				service: this.vetsService,
 				descriptiveField: 'vetsDescriptiveField',
-				referencedDescriptiveField: 'id',
+				referencedDescriptiveField: 'userName',
 		    
 			},
 		];

@@ -56,6 +56,7 @@ import { VetSpecialtiesListComponent, VetSpecialtiesDetailsComponent, VetSpecial
 import { InvoicesListComponent, InvoicesDetailsComponent, InvoicesNewComponent } from './invoices/index';
 import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
 import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
+import { ReportPasswordComponent } from './reporting-module/pages/myreports/report-password/report-password.component';
 
 const cubejsOptions = {
 	token:
@@ -156,6 +157,7 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 	],
 	bootstrap: [AppComponent],
 	entryComponents: [
+		ReportPasswordComponent
 	]
 })
 export class AppModule {

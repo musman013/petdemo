@@ -205,6 +205,7 @@ export class ResourceViewComponent implements OnInit {
   passwordDialog() {
     this.passwordDialogRef = this.dialog.open(ReportPasswordComponent, {
       disableClose: true,
+      panelClass: 'fc-modal-dialog',
       data: {
         type: 'Password'
       }
@@ -213,8 +214,10 @@ export class ResourceViewComponent implements OnInit {
       if (action.confirm) {
         this.accessPassword = action.password;
         console.log('password set', this.accessPassword);
-        if (this.accessPassword == this.resource.password) {
+        if (this.accessPassword == this.resource.resourceInfo.password) {
           this.viewresource();
+        } else {
+          this.passwordDialog();
         }
       } else {
         this.accessPassword = '';

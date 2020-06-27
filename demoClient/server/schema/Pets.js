@@ -1,8 +1,15 @@
-cube(`Role`, {
-  sql: `SELECT * FROM sample.role`,
+cube(`Pets`, {
+  sql: `SELECT * FROM sample.pets`,
   
   joins: {
-    
+    Types: {
+      sql: `${CUBE}.type_id = ${Types}.id`,
+      relationship: `belongsTo`
+    },
+    Owners: {
+      sql: `${CUBE}.owner_id = ${Owners}.id`,
+      relationship: `belongsTo`
+    }
   },
   
   measures: {
@@ -38,18 +45,6 @@ cube(`Role`, {
 			sql: 'id',
 			type: 'countDistinctApprox'
 		},
-		count_display_name: {
-			sql: 'display_name',
-			type: 'count'
-		},
-		countDistinct_display_name: {
-			sql: 'display_name',
-			type: 'countDistinct'
-		},
-		countDistinctApprox_display_name: {
-			sql: 'display_name',
-			type: 'countDistinctApprox'
-		},
 		count_name: {
 			sql: 'name',
 			type: 'count'
@@ -62,6 +57,26 @@ cube(`Role`, {
 			sql: 'name',
 			type: 'countDistinctApprox'
 		},
+		min_birth_date: {
+			sql: 'birth_date',
+			type: 'min'
+		},
+		max_birth_date: {
+			sql: 'birth_date',
+			type: 'max'
+		},
+		count_birth_date: {
+			sql: 'birth_date',
+			type: 'count'
+		},
+		countDistinct_birth_date: {
+			sql: 'birth_date',
+			type: 'countDistinct'
+		},
+		countDistinctApprox_birth_date: {
+			sql: 'birth_date',
+			type: 'countDistinctApprox'
+		},
 
   },
   
@@ -72,14 +87,14 @@ cube(`Role`, {
       primaryKey: true
     },
     
-    displayName: {
-      sql: `display_name`,
-      type: `string`
-    },
-    
     name: {
       sql: `name`,
       type: `string`
+    },
+    
+    birthDate: {
+      sql: `birth_date`,
+      type: `time`
     }
   }
 });

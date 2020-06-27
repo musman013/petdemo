@@ -22,7 +22,7 @@ export class GlobalPermissionService implements IGlobalPermissionService {
   }
 
   hasPermission(permission: string) {
-    return true;
+    // return true;
     let tokenDetails: ITokenDetail = this.authService.decodeToken();
 		if (!tokenDetails) {
       return false;

@@ -17,19 +17,19 @@
         <span class="report-icon">
           <mat-icon>description</mat-icon>
         </span>
-        <div fxLayout="fc-row">
+        <div fxLayout="fc-row" style="width: calc(100% - 24px);">
           <div class="title" fxFlex>
             {{report.title || 'Untitled report'}}</div>
 
         </div>
-        <div class="content">
+        <div class="content" style="width: calc(100% - 24px);">
           <span>{{report.description || '--'}}</span>
         </div>
-        <div class="created">
+        <!-- <div class="created">
           <div fxFlex="nogrow" class="badge-time">
             Created {{(report.createdDate | date:'medium')}}
           </div>
-        </div>
+        </div> -->
 
         <div class="actions-menu">
           <button mat-icon-button (click)="$event.stopPropagation();" [matMenuTriggerFor]="actions">

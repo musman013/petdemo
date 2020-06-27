@@ -1,5 +1,5 @@
-cube(`Workspace`, {
-  sql: `SELECT * FROM sample.workspace`,
+cube(`Types`, {
+  sql: `SELECT * FROM sample.types`,
   
   joins: {
     
@@ -38,18 +38,6 @@ cube(`Workspace`, {
 			sql: 'id',
 			type: 'countDistinctApprox'
 		},
-		count_description: {
-			sql: 'description',
-			type: 'count'
-		},
-		countDistinct_description: {
-			sql: 'description',
-			type: 'countDistinct'
-		},
-		countDistinctApprox_description: {
-			sql: 'description',
-			type: 'countDistinctApprox'
-		},
 		count_name: {
 			sql: 'name',
 			type: 'count'
@@ -62,26 +50,6 @@ cube(`Workspace`, {
 			sql: 'name',
 			type: 'countDistinctApprox'
 		},
-		min_created_date: {
-			sql: 'created_date',
-			type: 'min'
-		},
-		max_created_date: {
-			sql: 'created_date',
-			type: 'max'
-		},
-		count_created_date: {
-			sql: 'created_date',
-			type: 'count'
-		},
-		countDistinct_created_date: {
-			sql: 'created_date',
-			type: 'countDistinct'
-		},
-		countDistinctApprox_created_date: {
-			sql: 'created_date',
-			type: 'countDistinctApprox'
-		},
 
   },
   
@@ -92,19 +60,9 @@ cube(`Workspace`, {
       primaryKey: true
     },
     
-    description: {
-      sql: `description`,
-      type: `string`
-    },
-    
     name: {
       sql: `name`,
       type: `string`
-    },
-    
-    createdDate: {
-      sql: `created_date`,
-      type: `time`
     }
   }
 });

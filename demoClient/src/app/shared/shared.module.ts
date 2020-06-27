@@ -10,12 +10,15 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ChartsModule } from 'ng2-charts';
 import { ChartComponent } from 'src/app/reporting-module/pages/chart/chart.component';
+import { ReportPasswordComponent } from '../reporting-module/pages/myreports/report-password/report-password.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
 @NgModule({
-  declarations: [ChartComponent],
+  declarations: [
+    ChartComponent,
+    ReportPasswordComponent],
   imports: [
     CommonModule,
     MaterialModule,
@@ -40,7 +43,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NgxMaterialTimepickerModule,
     ChartsModule,
     TranslateModule,
-    ChartComponent
+    ChartComponent,
+    ReportPasswordComponent
   ]
 })
 export class SharedModule { }

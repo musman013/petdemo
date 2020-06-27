@@ -138,8 +138,7 @@ body {
   
   .period-control__button,
   .ngx-timepicker-control__input {
-    font-size: 16px !important;
-    height: 45px;
+    font-size: 15px !important;
   }
   .ngx-timepicker-control::after,
   .period-control__button::after {
@@ -813,5 +812,9 @@ body {
       padding-left: 0;
     }
   }
+
+label {
+  font-weight: 400;
+}
 
 //}

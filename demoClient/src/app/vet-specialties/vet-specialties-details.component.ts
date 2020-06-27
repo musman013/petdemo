@@ -66,6 +66,40 @@ export class VetSpecialtiesDetailsComponent extends BaseDetailsComponent<IVetSpe
 	setAssociations(){
   	
 		this.associations = [
+			{
+				column: [
+					{
+						key: 'specialtyId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+					  
+				],
+				isParent: false,
+				table: 'specialties',
+				type: 'ManyToOne',
+				service: this.specialtiesService,
+				descriptiveField: 'specialtiesDescriptiveField',
+				referencedDescriptiveField: 'name',
+		    
+			},
+			{
+				column: [
+					{
+						key: 'vetId',
+						value: undefined,
+						referencedkey: 'id'
+					},
+					  
+				],
+				isParent: false,
+				table: 'vets',
+				type: 'ManyToOne',
+				service: this.vetsService,
+				descriptiveField: 'vetsDescriptiveField',
+				referencedDescriptiveField: 'userName',
+		    
+			},
 		];
 		
 		this.childAssociations = this.associations.filter(association => {

@@ -87,7 +87,7 @@
 
         <mat-nav-list class="subnav">
 
-          <mat-expansion-panel class="expansion-panel">
+          <mat-expansion-panel class="expansion-panel" *ngIf="permissions['report']">
             <mat-expansion-panel-header class="subnav-header">
               <!-- <i class="material-icons">description</i> -->
               &nbsp;{{'MainNav.AdhocReports' | translate }}

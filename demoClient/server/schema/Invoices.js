@@ -1,14 +1,46 @@
-cube(`Task`, {
-  sql: `SELECT * FROM sample.task`,
+cube(`Invoices`, {
+  sql: `SELECT * FROM sample.invoices`,
   
   joins: {
-    Apps: {
-      sql: `${CUBE}.app_id = ${Apps}.id`,
+    Visits: {
+      sql: `${CUBE}.visit_id = ${Visits}.id`,
       relationship: `belongsTo`
     }
   },
   
   measures: {
+		sum_amount: {
+			sql: `amount`,
+			type: `sum`
+		},
+		avg_amount: {
+			sql: 'amount',
+			type: 'avg'
+		},
+		min_amount: {
+			sql: 'amount',
+			type: 'min'
+		},
+		max_amount: {
+			sql: 'amount',
+			type: 'max'
+		},
+		runningTotal_amount: {
+			sql: 'amount',
+			type: 'runningTotal'
+		},
+		count_amount: {
+			sql: 'amount',
+			type: 'count'
+		},
+		countDistinct_amount: {
+			sql: 'amount',
+			type: 'countDistinct'
+		},
+		countDistinctApprox_amount: {
+			sql: 'amount',
+			type: 'countDistinctApprox'
+		},
 		sum_id: {
 			sql: 'id',
 			type: 'sum'
@@ -41,16 +73,16 @@ cube(`Task`, {
 			sql: 'id',
 			type: 'countDistinctApprox'
 		},
-		count_description: {
-			sql: 'description',
+		count_process_instance_id: {
+			sql: 'process_instance_id',
 			type: 'count'
 		},
-		countDistinct_description: {
-			sql: 'description',
+		countDistinct_process_instance_id: {
+			sql: 'process_instance_id',
 			type: 'countDistinct'
 		},
-		countDistinctApprox_description: {
-			sql: 'description',
+		countDistinctApprox_process_instance_id: {
+			sql: 'process_instance_id',
 			type: 'countDistinctApprox'
 		},
 		count_status: {
@@ -65,18 +97,6 @@ cube(`Task`, {
 			sql: 'status',
 			type: 'countDistinctApprox'
 		},
-		count_type: {
-			sql: 'type',
-			type: 'count'
-		},
-		countDistinct_type: {
-			sql: 'type',
-			type: 'countDistinct'
-		},
-		countDistinctApprox_type: {
-			sql: 'type',
-			type: 'countDistinctApprox'
-		},
 
   },
   
@@ -86,19 +106,17 @@ cube(`Task`, {
       type: `number`,
       primaryKey: true
     },
-    
-    description: {
-      sql: `description`,
+	amount: {
+      sql: `amount`,
+      type: `number`
+    },
+    processInstanceId: {
+      sql: `process_instance_id`,
       type: `string`
     },
     
     status: {
       sql: `status`,
-      type: `string`
-    },
-    
-    type: {
-      sql: `type`,
       type: `string`
     }
   }

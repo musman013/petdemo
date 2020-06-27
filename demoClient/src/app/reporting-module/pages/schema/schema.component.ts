@@ -81,7 +81,9 @@ export class SchemaComponent implements OnInit {
       tables:this.selectedSchemas
     };
     this.service.generateSchema(tablesList).subscribe(res => {
-      this.service.generateAggregatedMeasures();
+      this.service.generateAggregatedMeasures().subscribe(res2 => {
+        console.log("aggregations created");  
+      });
       for(let v of Object.values(res.files)){
         this.allFiles[v.fileName] = v;
       }

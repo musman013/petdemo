@@ -76,7 +76,7 @@ const cubejsOptions = {
     SaveReportsComponent,
     DashboardListComponent,
     ShareComponent,
-    ReportPasswordComponent,
+    // ReportPasswordComponent,
     SharePickerComponent,
     DashboardMainComponent,
     MyreportsMainComponent,
