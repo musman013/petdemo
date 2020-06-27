@@ -24,87 +24,87 @@ import java.util.Map;
 @Service
 public class StartProcessService {
 
-    @Autowired
-    private RuntimeService runtimeService;
+	@Autowired
+	private RuntimeService runtimeService;
 
-    @Autowired
-	private InvoicesAppService  _invoicesAppService;
-    
-    @Autowired
-    LoggingHelper logger;
+	@Autowired
+	private InvoicesAppService _invoicesAppService;
+
+	@Autowired
+	LoggingHelper logger;
 
 
-    public void startProcess(String instanceKey,CreateInvoicesInput invoice, FindOwnersByIdOutput owner) {
+	public void startProcess(String instanceKey,CreateInvoicesInput invoice, FindOwnersByIdOutput owner) {
 
-        // First create an invoice object
+		// First create an invoice object
 
-    //    InvoicesEntity invoice = new InvoicesEntity();
+		// InvoicesEntity invoice = new InvoicesEntity();
 
-        // We need to copy the Invoice amount from the Visit object's amount
-     //   invoice.setAmount(250L);
-      //  invoice.setStatus(InvoiceStatus.Unpaid);
+		// We need to copy the Invoice amount from the Visit object's amount
+		// invoice.setAmount(250L);
+		// invoice.setStatus(InvoiceStatus.Unpaid);
 
-        
-        // Start the process and pass the invoice status as a variable
 
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("invoiceAmount", invoice.getAmount());
-        variables.put("invoiceStatus", invoice.getStatus().toString());
-        variables.put("petOwner", owner.getFirstName());
-        variables.put("ownerEmail", owner.getEmailAddress());
+		// Start the process and pass the invoice status as a variable
 
-       ProcessInstance processInstance =  runtimeService.startProcessInstanceByKey(instanceKey, variables);
-       invoice.setProcessInstanceId(processInstance.getProcessInstanceId());
-       _invoicesAppService.create(invoice);
+		Map<String, Object> variables = new HashMap<>();
+		variables.put("invoiceAmount", invoice.getAmount());
+		variables.put("invoiceStatus", invoice.getStatus().toString());
+		variables.put("petOwner", owner.getFirstName());
+		variables.put("ownerEmail", owner.getEmailAddress());
 
-//      System.out.println(" invoice status " + runtimeService.getVariable(processInstance.getProcessInstanceId(), "invoiceStatus"));
-//        System.out.println(" invoice variables " + runtimeService.getVariableInstances(instanceKey));
-//     
-      
-    }
-    
-    public void updateInvoiceStatus(String processInstanceId, String variableName, String variableValue) {
-    	runtimeService.setVariable(processInstanceId, variableName, variableValue);
-    }
-    
-    public void userTaskListener (DelegateTask delegateTask) {
+		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(instanceKey, variables);
+		invoice.setProcessInstanceId(processInstance.getProcessInstanceId());
+		_invoicesAppService.create(invoice);
 
-        logger.getLogger().info("Flowable FlowableTaskListener notify called, event name {}", delegateTask.getEventName());
-        logger.getLogger().info("task name : "+delegateTask.getName());
+		// System.out.println(" invoice status " + runtimeService.getVariable(processInstance.getProcessInstanceId(), "invoiceStatus"));
+		// System.out.println(" invoice variables " + runtimeService.getVariableInstances(instanceKey));
+		//
 
-        String processInstanceId = (String) delegateTask.getProcessInstanceId();
+	}
 
-        logger.getLogger().info("processInstanceId {}", processInstanceId);
+	public void updateInvoiceStatus(String processInstanceId, String variableName, String variableValue) {
+		runtimeService.setVariable(processInstanceId, variableName, variableValue);
+	}
 
-        //String invoicePaid = (String) delegateTask.getVariable("form_invoicepayment_outcome");
+	public void userTaskListener (DelegateTask delegateTask) {
 
-        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-        RuntimeService runtimeService = processEngine.getRuntimeService();
-        TaskService taskService = processEngine.getTaskService();
-        //   Task task = taskService.createTaskQuery().singleResult();
+		logger.getLogger().info("Flowable FlowableTaskListener notify called, event name {}", delegateTask.getEventName());
+		logger.getLogger().info("task name : "+delegateTask.getName());
 
-        // Map<String, Object> localVariables = taskService.getVariables(task.getId());
+		String processInstanceId = (String) delegateTask.getProcessInstanceId();
 
-        String invoicePaid = null;
-        InvoiceStatus status;
+		logger.getLogger().info("processInstanceId {}", processInstanceId);
 
-        Map<String, Object> variables = runtimeService.getVariables(processInstanceId);
-        invoicePaid = variables.get("form_invoicepayment_outcome").toString();
-        
-        if (invoicePaid.equalsIgnoreCase("Paid"))
-            status = InvoiceStatus.Paid;
-        else
-        	status = InvoiceStatus.Unpaid;
+		//String invoicePaid = (String) delegateTask.getVariable("form_invoicepayment_outcome");
 
-        InvoicesEntity invoice = _invoicesAppService.updateStatus(processInstanceId, status);
+		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		TaskService taskService = processEngine.getTaskService();
+		// Task task = taskService.createTaskQuery().singleResult();
 
-       
+		// Map<String, Object> localVariables = taskService.getVariables(task.getId());
 
-//        _invoiceRepository.save(invoice);
+		String invoicePaid = null;
+		InvoiceStatus status;
 
-//        runtimeService.setVariable(processInstanceId, "invoiceStatus", invoice.getStatus());
+		Map<String, Object> variables = runtimeService.getVariables(processInstanceId);
+		invoicePaid = variables.get("form_invoicepayment_outcome").toString();
 
-    }
+		if (invoicePaid.equalsIgnoreCase("Paid"))
+			status = InvoiceStatus.Paid;
+		else
+			status = InvoiceStatus.Unpaid;
+
+		InvoicesEntity invoice = _invoicesAppService.updateStatus(processInstanceId, status);
+
+
+
+		// _invoiceRepository.save(invoice);
+
+		// runtimeService.setVariable(processInstanceId, "invoiceStatus", invoice.getStatus());
+
+	}
 
 
 }

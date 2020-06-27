@@ -16,7 +16,7 @@ public interface IVetSpecialtiesMapper {
    
    @Mappings({ 
    @Mapping(source = "specialties.name", target = "specialtiesDescriptiveField"),                    
-   @Mapping(source = "vets.user.firstName", target = "vetsDescriptiveField"),                    
+   @Mapping(source = "vets.user.userName", target = "vetsDescriptiveField"),                    
    }) 
    CreateVetSpecialtiesOutput vetSpecialtiesEntityToCreateVetSpecialtiesOutput(VetSpecialtiesEntity entity);
 
@@ -25,13 +25,13 @@ public interface IVetSpecialtiesMapper {
 
     @Mappings({ 
     @Mapping(source = "specialties.name", target = "specialtiesDescriptiveField"),                    
-    @Mapping(source = "vets.user.firstName", target = "vetsDescriptiveField"),                    
+    @Mapping(source = "vets.user.userName", target = "vetsDescriptiveField"),                    
    }) 
    UpdateVetSpecialtiesOutput vetSpecialtiesEntityToUpdateVetSpecialtiesOutput(VetSpecialtiesEntity entity);
 
    @Mappings({ 
    @Mapping(source = "specialties.name", target = "specialtiesDescriptiveField"),                    
-   @Mapping(source = "vets.user.firstName", target = "vetsDescriptiveField"),
+   @Mapping(source = "vets.user.userName", target = "vetsDescriptiveField"),
    
    }) 
    FindVetSpecialtiesByIdOutput vetSpecialtiesEntityToFindVetSpecialtiesByIdOutput(VetSpecialtiesEntity entity);
