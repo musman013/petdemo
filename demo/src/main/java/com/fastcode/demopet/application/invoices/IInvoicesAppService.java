@@ -5,6 +5,7 @@ import javax.validation.constraints.Positive;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.fastcode.demopet.commons.search.SearchCriteria;
+import com.fastcode.demopet.domain.model.InvoicesEntity;
 import com.fastcode.demopet.application.invoices.dto.*;
 
 @Service
@@ -23,4 +24,6 @@ public interface IInvoicesAppService {
     
     //Visits
     GetVisitsOutput getVisits(Long invoicesid);
+
+	InvoicesEntity updateStatus(String processInstanceId, InvoiceStatus status);
 }

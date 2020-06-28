@@ -1,5 +1,6 @@
 package com.fastcode.demopet.reporting.application.permalink;
 
+import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.fastcode.demopet.commons.search.SearchCriteria;
@@ -39,7 +40,7 @@ public class PermalinkAppService implements IPermalinkAppService {
 	private PermalinkMapper mapper;
 	
 	@Autowired
-	private UserAppService _userAppService;
+	private IUserAppService _userAppService;
 	
 	@Autowired
 	private LoggingHelper logHelper;

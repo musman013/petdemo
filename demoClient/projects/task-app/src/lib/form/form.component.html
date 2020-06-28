@@ -21,7 +21,7 @@
             <div class="pull-right" *ngIf="(hideButtons == undefined || hideButtons == null || hideButtons == false) && (disableForm == undefined || disableForm == null || disableForm == false)">
                 <button id="form_save_button" mat-flat-button color="accent" class="action-button"
                         [disabled]="!form.valid || loading"
-                        (click)="saveForm()" translate="FORM.ACTION.SAVE"></button>
+                        (click)="saveForm()">{{'FORM.ACTION.SAVE' | translate}}</button>
                 <button id="form_complete_button" mat-flat-button color="accent" class="action-button"
                         [disabled]="!form.valid || loading"
                         *ngFor="let outcome of formData.outcomes"

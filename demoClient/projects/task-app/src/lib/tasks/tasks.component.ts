@@ -127,13 +127,13 @@ ngOnDestroy(){
 setCurrentUser(){
   this.userService.getAccount().subscribe(account => {
     this.account = account;
-    if (this.account && this.account.groups && this.account.groups.length > 0) {
-      for (var i = 0; i < this.account.groups.length; i++) {
-        if (this.account.groups[i].type == 1) {
-          this.assignmentOptions.push({ id: 'group_' + this.account.groups[i].id, title: this.translate.instant('TASK.FILTER.ASSIGNMENT-GROUP', this.account.groups[i]) });
-        }
-      }
-    }
+    // if (this.account && this.account.groups && this.account.groups.length > 0) {
+    //   for (var i = 0; i < this.account.groups.length; i++) {
+    //     if (this.account.groups[i].type == 1) {
+    //       this.assignmentOptions.push({ id: 'group_' + this.account.groups[i].id, title: this.translate.instant('TASK.FILTER.ASSIGNMENT-GROUP', this.account.groups[i]) });
+    //     }
+    //   }
+    // }
   })
 }
 

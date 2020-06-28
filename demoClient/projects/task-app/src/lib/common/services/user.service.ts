@@ -1,9 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 
 import { IForRootConf } from '../../IForRootConf';
 import { IP_CONFIG } from '../../tokens';
+import { AuthenticationService } from 'src/app/core/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +14,19 @@ export class UserService {
 
   url = "";
   resp: any
-  constructor(private httpclient: HttpClient, @Inject(IP_CONFIG) private _config: IForRootConf) {
+  constructor(
+    private authenticationService: AuthenticationService,
+    private httpclient: HttpClient,
+    @Inject(IP_CONFIG) private _config: IForRootConf
+    
+  ) {
     this.url = _config.apiPath;
   }
 
   // Get logged in user info
   getAccount() {
-    return this.httpclient.get(this.url + '/app/rest/account');
+    return of({id: this.authenticationService.decodeToken().sub});
+    // return this.httpclient.get(this.url + '/app/rest/account');
   };
   
   // Get user info by id

@@ -1,9 +1,11 @@
 package com.fastcode.demopet.application.vets;
 
 import com.fastcode.demopet.application.authorization.role.dto.FindRoleByNameOutput;
+import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
+import com.fastcode.demopet.application.authorization.userrole.IUserroleAppService;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
 import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
@@ -53,10 +55,10 @@ public class VetsAppService implements IVetsAppService {
 	private IUserMapper _userMapper;
 	
 	@Autowired
-	private UserroleAppService _userroleAppService;
+	private IUserroleAppService _userroleAppService;
 	
 	@Autowired
-	private UserAppService _userAppService;
+	private IUserAppService _userAppService;
 	
 	@Autowired
  	private ActIdUserMapper actIdUserMapper;

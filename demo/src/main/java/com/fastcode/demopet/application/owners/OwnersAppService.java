@@ -1,5 +1,6 @@
 package com.fastcode.demopet.application.owners;
 
+import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
@@ -51,7 +52,7 @@ public class OwnersAppService implements IOwnersAppService {
 	private UserroleAppService _userroleAppService;
 	
 	@Autowired 
-	private UserAppService _userAppService;
+	private IUserAppService _userAppService;
 
 	@Autowired
 	private IUserMapper _userMapper;

@@ -1,9 +1,12 @@
 package com.fastcode.demopet.reporting.application.resourceviewer;
 
+import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.reporting.application.dashboard.DashboardAppService;
+import com.fastcode.demopet.reporting.application.dashboard.IDashboardAppService;
 import com.fastcode.demopet.reporting.application.dashboard.dto.FindDashboardByIdOutput;
 import com.fastcode.demopet.reporting.application.permalink.dto.FindPermalinkByIdOutput;
+import com.fastcode.demopet.reporting.application.report.IReportAppService;
 import com.fastcode.demopet.reporting.application.report.ReportAppService;
 import com.fastcode.demopet.reporting.application.report.dto.FindReportByIdOutput;
 import com.fastcode.demopet.reporting.application.resourceviewer.dto.ResourceOutput;
@@ -18,16 +21,16 @@ import org.springframework.stereotype.Service;
 public class ResourceViewerAppService implements IResourceViewerAppService {
 
 	@Autowired
-	private UserAppService _userAppService;
+	private IUserAppService _userAppService;
 
 	@Autowired
 	private PasswordEncoder pEncoder;
 
 	@Autowired
-	private ReportAppService _reportAppService;
+	private IReportAppService _reportAppService;
 
 	@Autowired
-	private DashboardAppService _dashboardAppService;
+	private IDashboardAppService _dashboardAppService;
 
 	public ResourceOutput getData(FindPermalinkByIdOutput permalink){
 		ResourceOutput data = new ResourceOutput();

@@ -114,6 +114,7 @@ export class FormComponent implements OnInit, OnChanges {
 
       this.form.addControl(field.id, ctrl)
     });
+    this.form.enable();
   }
 
   getDefaultCompleteButtonText() {

@@ -143,7 +143,7 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 		}),
 		UpgradeModule,
 		TaskAppModule.forRoot({
-			apiPath: environment.flowableUrl + "/flowable-task" // url where task backend app is running
+			apiPath: environment.apiUrl // url where task backend app is running
 		}),
 
 	],

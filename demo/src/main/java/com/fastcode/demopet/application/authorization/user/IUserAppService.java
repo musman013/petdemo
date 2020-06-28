@@ -4,6 +4,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fastcode.demopet.commons.search.SearchCriteria;
+import com.fastcode.demopet.domain.model.PermalinkEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.application.authorization.user.dto.*;
 
 import java.util.List;
@@ -24,5 +26,11 @@ public interface IUserAppService {
 	FindUserByNameOutput findByUserName(String userName);
 
 	FindUserByNameOutput findByEmailAddress(String emailAddress);
+
+	Boolean checkIsAdmin(UserEntity user);
+
+	FindUserWithAllFieldsByIdOutput findWithAllFieldsById(Long valueOf);
+
+	UserEntity getUser();
 
 }

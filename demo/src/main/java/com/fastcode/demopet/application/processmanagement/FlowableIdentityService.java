@@ -3,6 +3,7 @@ package com.fastcode.demopet.application.processmanagement;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.domain.processmanagement.users.IActIdUserManager;
+import com.fastcode.demopet.security.SecurityUtils;
 import com.fastcode.demopet.domain.processmanagement.groups.ActIdGroupEntity;
 import com.fastcode.demopet.domain.processmanagement.groups.IActIdGroupManager;
 import com.fastcode.demopet.domain.processmanagement.memberships.ActIdMembershipEntity;
@@ -20,6 +21,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.flowable.idm.engine.impl.persistence.entity.UserEntityImpl;
 
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.Cookie;
@@ -112,6 +115,21 @@ public class FlowableIdentityService {
     public void set_actIdPrivMappingManager(IActIdPrivMappingManager _actIdPrivMappingManager) {
         this._actIdPrivMappingManager = _actIdPrivMappingManager;
     }
+    
+    public UserEntityImpl getFlowableUser() {
+    	ActIdUserEntity existingUser = _actIdUserManager.findByUserId(SecurityUtils.getCurrentUserLogin().orElse(null));
+//		UserEntity existingUser = userAppService.getUser();
+		UserEntityImpl user = new UserEntityImpl();
+		user.setFirstName(existingUser.getFirst());
+		user.setLastName(existingUser.getLast());
+		user.setId(existingUser.getId());
+		user.setPassword(existingUser.getPwd());
+		user.setEmail(existingUser.getEmail());
+		
+		return user;
+    }
+    
+    
     public void createUser(UserEntity createdUser, ActIdUserEntity actIdUser) {
     //    if (StringUtils.isBlank(actIdUser.getId()) || StringUtils.isBlank(actIdUser.getFirst())) {
     //        //User not valid

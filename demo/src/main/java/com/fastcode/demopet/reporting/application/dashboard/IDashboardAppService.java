@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.reporting.application.dashboard.dto.*;
+import com.fastcode.demopet.reporting.application.report.dto.FindReportByIdOutput;
 
 @Service
 public interface IDashboardAppService {
@@ -23,4 +24,6 @@ public interface IDashboardAppService {
     
     //User
     GetUserOutput getUser(Long dashboardid);
+
+	List<FindReportByIdOutput> setReportsList(Long resourceId, Long userId);
 }

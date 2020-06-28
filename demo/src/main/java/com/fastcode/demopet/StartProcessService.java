@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fastcode.demopet.application.invoices.IInvoicesAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.CreateInvoicesInput;
 import com.fastcode.demopet.application.invoices.dto.InvoiceStatus;
@@ -28,7 +29,7 @@ public class StartProcessService {
 	private RuntimeService runtimeService;
 
 	@Autowired
-	private InvoicesAppService _invoicesAppService;
+	private IInvoicesAppService _invoicesAppService;
 
 	@Autowired
 	LoggingHelper logger;

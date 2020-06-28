@@ -1,6 +1,7 @@
 package com.fastcode.demopet.application.invoices;
 
 import com.fastcode.demopet.StartProcessService;
+import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.dto.*;
 import com.fastcode.demopet.application.visits.dto.FindVisitsByIdOutput;
@@ -37,7 +38,7 @@ public class InvoicesAppService implements IInvoicesAppService {
 	static final int case3=3;
 
 	@Autowired
-	private UserAppService _userAppService;
+	private IUserAppService _userAppService;
 
 	@Autowired
 	private IInvoicesManager _invoicesManager;

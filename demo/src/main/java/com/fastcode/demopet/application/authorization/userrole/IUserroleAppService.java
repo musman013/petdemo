@@ -28,4 +28,6 @@ public interface IUserroleAppService {
     
     //Role
     GetRoleOutput getRole(UserroleId userroleId);
+
+	void deleteByUserId(Long id);
 }

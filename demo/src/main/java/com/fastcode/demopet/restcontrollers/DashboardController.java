@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fastcode.demopet.application.authorization.role.RoleAppService;
 import com.fastcode.demopet.application.authorization.role.dto.FindRoleByIdOutput;
+import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
@@ -61,7 +62,7 @@ public class DashboardController {
 	private ReportAppService _reportAppService;
 
 	@Autowired
-	private UserAppService  _userAppService;
+	private IUserAppService  _userAppService;
 	
 	@Autowired
 	private RoleAppService  _roleAppService;
@@ -72,7 +73,7 @@ public class DashboardController {
 	@Autowired
 	private Environment env;
 
-	public DashboardController(DashboardAppService dashboardAppService, DashboardversionreportAppService reportdashboardAppService, UserAppService userAppService,
+	public DashboardController(DashboardAppService dashboardAppService, DashboardversionreportAppService reportdashboardAppService, IUserAppService userAppService,
 			LoggingHelper helper) {
 		super();
 		this._dashboardAppService = dashboardAppService;
