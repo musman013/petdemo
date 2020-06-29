@@ -10,9 +10,12 @@ public class CreateInvoicesOutput {
 
     private Long amount;
     private Long id;
+    private String processInstanceId;
+    private InvoiceStatus status;
+	private Long version;
+	
 	private Long visitId;
 	private Date visitsDescriptiveField;
-	private InvoiceStatus status;
 	private Long vetId;
 	private String vetsDescriptiveField;
 	private Long ownerId;

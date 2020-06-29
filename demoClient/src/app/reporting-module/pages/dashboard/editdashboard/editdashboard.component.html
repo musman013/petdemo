@@ -61,11 +61,11 @@
         <mat-menu #sharemenu="matMenu">
           <button mat-menu-item (click)="share()">
             <mat-icon class="menu-icon">group</mat-icon>
-            Share with Users/Roles
+            Share with app users
           </button>
-          <button mat-menu-item (click)="shareExternaly(dashboard)">
+          <button mat-menu-item (click)="shareExternally(dashboard)">
             <mat-icon class="menu-icon">link</mat-icon>
-            Permalink/Embed
+            Share externally
           </button>
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" (click)="manageSharing()">
             <mat-icon class="menu-icon">settings</mat-icon>

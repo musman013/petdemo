@@ -326,7 +326,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
     });
   }
 
-  shareExternaly(report: IReport) {
+  shareExternally(report: IReport) {
     // this.externalShareView = true;
 
     this.permalinkDialogRef = this.dialog.open(PermalinkComponent, {

@@ -77,11 +77,11 @@
           <mat-menu #sharemenu="matMenu">
             <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="share(report)">
               <mat-icon class="menu-icon">people</mat-icon>
-              Share with Users/Roles
+              Share with app users
             </button>
-            <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="shareExternaly(report)">
+            <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="shareExternally(report)">
               <mat-icon class="menu-icon">link</mat-icon>
-              Permalink/Embed
+              Share externally
             </button>
             <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="manageSharing(report)">
               <mat-icon class="menu-icon">settings</mat-icon>

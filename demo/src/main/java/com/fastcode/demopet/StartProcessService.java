@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fastcode.demopet.application.invoices.IInvoicesAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.CreateInvoicesInput;
+import com.fastcode.demopet.application.invoices.dto.CreateInvoicesOutput;
 import com.fastcode.demopet.application.invoices.dto.InvoiceStatus;
+import com.fastcode.demopet.application.invoices.dto.UpdateInvoicesInput;
 import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
 import com.fastcode.demopet.domain.irepository.IInvoicesRepository;
 import com.fastcode.demopet.domain.model.InvoicesEntity;
@@ -48,20 +50,35 @@ public class StartProcessService {
 
 		// Start the process and pass the invoice status as a variable
 
+		CreateInvoicesOutput createdInvoice = _invoicesAppService.create(invoice);
+		
 		Map<String, Object> variables = new HashMap<>();
-		variables.put("invoiceAmount", invoice.getAmount());
-		variables.put("invoiceStatus", invoice.getStatus().toString());
+		variables.put("invoiceAmount", createdInvoice.getAmount());
+		variables.put("invoiceStatus", createdInvoice.getStatus().toString());
 		variables.put("petOwner", owner.getFirstName());
 		variables.put("ownerEmail", owner.getEmailAddress());
-
+		variables.put("invoiceId", createdInvoice.getId());
+		
+		
 		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(instanceKey, variables);
-		invoice.setProcessInstanceId(processInstance.getProcessInstanceId());
-		_invoicesAppService.create(invoice);
+		updateInvoice(createdInvoice, processInstance.getProcessInstanceId());
+		
 
 		// System.out.println(" invoice status " + runtimeService.getVariable(processInstance.getProcessInstanceId(), "invoiceStatus"));
 		// System.out.println(" invoice variables " + runtimeService.getVariableInstances(instanceKey));
 		//
 
+	}
+	
+	private void updateInvoice(CreateInvoicesOutput invoice, String instanceId) {
+		UpdateInvoicesInput updateInput = new UpdateInvoicesInput();
+		updateInput.setAmount(invoice.getAmount());
+		updateInput.setId(invoice.getId());
+		updateInput.setVisitId(invoice.getVisitId());
+		updateInput.setStatus(invoice.getStatus());
+		updateInput.setProcessInstanceId(instanceId);
+		updateInput.setVersion(invoice.getVersion());
+		_invoicesAppService.update(invoice.getId(), updateInput);
 	}
 
 	public void updateInvoiceStatus(String processInstanceId, String variableName, String variableValue) {

@@ -73,7 +73,7 @@ export class EditDashboardComponent implements OnInit {
     });
   }
 
-  shareExternaly(dashboard: IDashboard) {
+  shareExternally(dashboard: IDashboard) {
     // this.externalShareView = true;
 
     this.permalinkDialogRef = this.dialog.open(PermalinkComponent, {

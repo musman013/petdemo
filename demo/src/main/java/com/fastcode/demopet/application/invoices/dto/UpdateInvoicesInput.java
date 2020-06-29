@@ -18,5 +18,6 @@ public class UpdateInvoicesInput {
   	private Long visitId;
   	private Long version;
   	private InvoiceStatus status;
+    private String processInstanceId;
   
 }
