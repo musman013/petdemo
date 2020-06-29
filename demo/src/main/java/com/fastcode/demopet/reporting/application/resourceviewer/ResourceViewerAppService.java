@@ -37,14 +37,14 @@ public class ResourceViewerAppService implements IResourceViewerAppService {
 		data.setResourceInfo(permalink);
 
 		if(permalink.getResource().equals("report")) {
-			FindReportByIdOutput report = _reportAppService.findById(permalink.getResourceId());
+			FindReportByIdOutput report = _reportAppService.findByReportIdAndUserId(permalink.getResourceId(), permalink.getUserId());
 			if(report == null) {
 				return null;
 			}
 			data.setData(report);
 		}
 		else if(permalink.getResource().equals("dashboard")) {
-			FindDashboardByIdOutput dashboard = _dashboardAppService.findById(permalink.getResourceId());
+			FindDashboardByIdOutput dashboard = _dashboardAppService.findByDashboardIdAndUserId(permalink.getResourceId(), permalink.getUserId());
 			if(dashboard == null) {
 				return null;
 			}

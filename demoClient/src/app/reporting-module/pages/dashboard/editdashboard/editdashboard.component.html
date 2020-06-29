@@ -45,10 +45,10 @@
             <mat-icon class="menu-icon">group_add</mat-icon>
             Share
           </button>
-          <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" (click)="manageSharing()">
+          <!-- <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" (click)="manageSharing()">
             <mat-icon class="menu-icon">group</mat-icon>
             Manage sharing
-          </button>
+          </button> -->
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe" (click)="deleteDashboard(dashboard)">
             <mat-icon class="menu-icon">delete</mat-icon>
             Delete
@@ -60,12 +60,16 @@
         </mat-menu>
         <mat-menu #sharemenu="matMenu">
           <button mat-menu-item (click)="share()">
-            <mat-icon class="menu-icon">group_add</mat-icon>
-            Share Internaly
+            <mat-icon class="menu-icon">group</mat-icon>
+            Share with Users/Roles
           </button>
           <button mat-menu-item (click)="shareExternaly(dashboard)">
-            <mat-icon class="menu-icon">group_add</mat-icon>
-            Share Externaly
+            <mat-icon class="menu-icon">link</mat-icon>
+            Permalink/Embed
+          </button>
+          <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" (click)="manageSharing()">
+            <mat-icon class="menu-icon">settings</mat-icon>
+            Manage sharing
           </button>
         </mat-menu>
         <!-- <button color="primary" (click)="share()" mat-stroked-button>

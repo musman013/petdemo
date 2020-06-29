@@ -218,6 +218,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.queryParam.dimensions = this.report.query.dimensions;
     this.queryParam.timeDimensions = this.report.query.timeDimensions;
     this.dashboard.description = this.report.description;
+    this.measuresChipArray = [];
     if (this.report.query.timeDimensions.length > 0) {
       this.timeFilter = this.report.query.timeDimensions[0].dimension;
       this.timeFilterFor = "All time";

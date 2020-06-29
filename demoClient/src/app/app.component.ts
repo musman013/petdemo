@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
     private upgrade: UpgradeModule,
     private taskAppTranslateUiService: TaskAppTranslateUiService,
   ) {
+    this.getFontFamily();
     let languages = ["en", "fr"];
     let defaultLang = languages[0];
     translate.addLangs(languages);

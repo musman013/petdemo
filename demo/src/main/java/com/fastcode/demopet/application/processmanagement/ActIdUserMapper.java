@@ -14,10 +14,10 @@ public class ActIdUserMapper {
 
 		ActIdUserEntity actIdUser = new ActIdUserEntity();
 		actIdUser.setId(user.getUserName());
-//		actIdUser.setFirst(user.getFirstName());
-//		actIdUser.setLast(user.getLastName());
-//		actIdUser.setEmail(user.getEmailAddress());
-//		actIdUser.setPwd(user.getPassword());
+		actIdUser.setFirst(user.getFirstName());
+		actIdUser.setLast(user.getLastName());
+		actIdUser.setEmail(user.getEmailAddress());
+		actIdUser.setPwd(user.getPassword());
 		actIdUser.setRev(0L);
 		actIdUser.setDisplayName(null);
 		actIdUser.setPictureId(null);

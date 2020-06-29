@@ -1,7 +1,13 @@
-@import './../app/common/components/main-nav/main-nav-mixin.component.scss';
-@import './../app/common/components/bottom-tab-nav/bottom-tab-nav-mixin.component.scss';
+@import 'src/app/common/components/main-nav/main-nav-mixin.component.scss';
+@import 'src/app/common/components/bottom-tab-nav/bottom-tab-nav-mixin.component.scss';
 @import './dynamic-styles.scss';
+@import 'projects/task-app/src/styles/base.mixin.scss';
+@import 'src/flowable_admin/styles/admin_style.mixin.scss';
+
 
 @include main-nav-mixin($fc-theme,$fontConfig);
 @include bottom-tab($fc-theme);
 @include main-style($fc-theme, $fontConfig);
+@include task_app_base($fc-theme);
+@include admin_style($fc-theme);
+

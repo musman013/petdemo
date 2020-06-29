@@ -26,4 +26,6 @@ public interface IDashboardAppService {
     GetUserOutput getUser(Long dashboardid);
 
 	List<FindReportByIdOutput> setReportsList(Long resourceId, Long userId);
+	
+	FindDashboardByIdOutput findByDashboardIdAndUserId(Long dashboardId, Long userId);
 }

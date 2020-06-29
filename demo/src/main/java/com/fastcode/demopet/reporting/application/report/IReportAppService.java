@@ -22,4 +22,6 @@ public interface IReportAppService {
     
     //User
     GetUserOutput getUser(Long reportid);
+    
+    FindReportByIdOutput findByReportIdAndUserId(Long reportId, Long userId);
 }

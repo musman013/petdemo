@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { Router, Event } from '@angular/router';
+import { Router, Event, NavigationEnd, RouterEvent } from '@angular/router';
 import { MatSidenav, MatSidenavContent } from '@angular/material';
 import {
 	Entities,
@@ -37,6 +37,8 @@ export class MainNavComponent {
 	isSmallDevice$: Observable<boolean>;
 	isMediumDevice$: Observable<boolean>;
 	isCurrentRootRoute: boolean = true;
+
+	isResourceViewer: boolean = false;
 
 	themes = ['default-theme', 'alt-theme'];
 
@@ -75,6 +77,16 @@ export class MainNavComponent {
 		});
 		this.setPermissions();
 		this.changeTheme(this.themes[0]);
+
+		this.router.events.subscribe((event: RouterEvent) => {
+			if(event instanceof NavigationEnd){
+				if(event.url.indexOf('resourceView') > -1 ){
+					this.isResourceViewer = true;
+				} else {
+					this.isResourceViewer = false;
+				}
+			}
+        });
 	}
 
 	switchLanguage(language: string) {
@@ -101,6 +113,44 @@ export class MainNavComponent {
 		ProcessPermissions.forEach(perm => {
 			this.permissions[perm] = this.globalPermissionService.hasPermission(perm);
 		})
+		this.permissions['showTools'] = false;
+		this.setEmailVisibility();
+		this.setSchedulerVisibility();
+		this.setReportsVisibility();
+		this.setAdminVisiblity();
+	}
+
+	setEmailVisibility(){
+		this.permissions['showEmail'] = false;
+		EmailEntities.forEach(entity => {
+			if(this.permissions[entity]){
+				this.permissions['showEmail'] = true;
+				this.permissions['showTools'] = true;
+			}
+		})
+	}
+
+	setSchedulerVisibility(){
+		this.permissions['showScheduler'] = false;
+		SchedulerEntities.forEach(entity => {
+			if(this.permissions[entity]){
+				this.permissions['showScheduler'] = true;
+				this.permissions['showTools'] = true;
+			}
+		})
+	}
+
+	setReportsVisibility(){
+		this.permissions['showReport'] = false;
+		if(this.permissions['report']){
+			this.permissions['showReport'] = true;
+			this.permissions['showTools'] = true;
+		}
+	}
+
+	setAdminVisiblity(){
+		this.permissions['showAdministration'] = this.authenticationService.decodeToken().role != "owner" &&
+		this.authenticationService.decodeToken().role != "vet";
 	}
 
 	login() {

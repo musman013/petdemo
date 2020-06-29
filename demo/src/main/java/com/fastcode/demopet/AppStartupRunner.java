@@ -122,7 +122,7 @@ public class AppStartupRunner implements ApplicationRunner {
 		assignEntityPermissions("pets", role1);
 		assignEntityReadPermission("invoices", role1);
 		assignEntityReadPermission("visits", role1);
-		assignEntityReadPermission("invoices", role2);
+//		assignEntityReadPermission("invoices", role2);
 		assignEntityReadPermission("visits", role2);
 		
 		addEntityHistoryPermissions("entityHistory", role.getId());
@@ -274,7 +274,9 @@ public class AppStartupRunner implements ApplicationRunner {
 		urole=userroleManager.create(urole);
 	
 		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(admin);
+		
  		idmIdentityService.createUser(admin, actIdUser);
+ 		actIdUser.setPwd("test");
  		idmIdentityService.addUserGroupMapping("admin", role.getName());
 	}
 }

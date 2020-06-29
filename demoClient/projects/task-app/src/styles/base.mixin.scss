@@ -1,0 +1,67 @@
+@import "~@angular/material/theming";
+
+@mixin  task_app_base($theme){
+    $fc-primary-color: map-get($theme, primary);
+    $fc-accent-color: map-get($theme, accent);
+    $fc-warn-color: map-get($theme, warn);
+    .details-container a{
+        color: mat-color($fc-accent-color);
+    }
+    
+  .details-section mat-card-title span {
+      float: right;
+      cursor: pointer;
+      color: mat-color($fc-primary-color);
+    }
+   .sub-task-list li .badge, .generic-list li .badge{
+       font-size: 12px;
+       line-height: 12px;
+       padding-right: 0;
+       background-color: #e8edf1;
+       color: mat-color($fc-accent-color);
+       background-color: transparent;
+       font-weight: normal;
+    }
+    .task-help-entry:hover > span, .task-help-entry:hover > mat-icon {
+        color: mat-color($fc-accent-color);
+    }
+    .user-picture {
+        text-align: center;
+        font-size: 15px;
+        height: 32px;
+        width: 32px;
+        line-height: 32px;
+        padding: 0;
+        margin: 0 8px 0 0;
+        overflow: hidden;
+        color: #ffffff;
+        background: mat-color($fc-accent-color) no-repeat center center;
+        background-size: 32px 32px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        border-radius:50%;
+    }
+    
+    .user-picture.no-picture {
+        border-color: mat-color($fc-accent-color);
+    }
+    .badge {
+        font-size: 12px;
+        line-height: 12px;
+        // padding-right: 0;
+        border-radius: 3px;
+        background-color: #e8edf1;
+        // color: mat-color($fc-accent-color);
+        background-color: transparent;
+        font-weight: normal;
+    }
+    .list-item.active {
+        border-left-color: mat-color($fc-accent-color);
+        background-color: #e8edf1;
+    }
+
+    .details-container a{
+        color: mat-color($fc-accent-color);
+    }
+
+}

@@ -28,8 +28,8 @@ export class PermalinkComponent implements OnInit {
   accessOption: string;
   accessOptionIcon: string;
   refreshrate: any = 120;
-  accessURL: string = "http://localhost:4400/resourceView/";
-  embedlink: string = '<iframe frameborder=0 width=`${width}` height=`${height}` src= "http://localhost:4400/resourceView/`${resource.data.id}`"'
+  accessURL: string = "http://localhost:4400/#/resourceView/";
+  embedlink: string = '<iframe frameborder=0 width=`${width}` height=`${height}` src= "http://localhost:4400/#/resourceView/`${resource.data.id}`"'
   accessOptionTitle: string;
   accessPassword: string;
   permalink: IPermalink;

@@ -1,0 +1,231 @@
+@import "~@angular/material/theming";
+@mixin admin_style($theme) { 
+    $fc-primary-color: map-get($theme, primary);
+    $fc-accent-color: map-get($theme, accent);
+    $fc-warn-color: map-get($theme, warn);  
+.navbar {
+    // background-color: #1f3245;
+    background-color: mat-color($fc-primary-color);
+	border: none;
+	min-height: 40px;
+	margin-bottom: 5px;
+}
+
+.nav.navbar-nav {
+//	background-color: #1f3245;
+    background-color: mat-color($fc-primary-color);
+	color: #eef1f1;
+	border: none;
+}
+.navbar-inverse .navbar-nav > .active-form > a, .navbar-inverse .navbar-nav > .active-form > a:hover, .navbar-inverse .navbar-nav > .active-form > a:focus {
+  //  background: rgb(0,102,153);
+    background: mat-color($fc-primary-color,darker);
+	color: #ffffff;
+}
+.navbar-inverse .navbar-nav > .active-dmn > a, .navbar-inverse .navbar-nav > .active-dmn > a:hover, .navbar-inverse .navbar-nav > .active-dmn > a:focus {
+    // background: rgb(227,154,33);
+    background: mat-color($fc-accent-color);
+	color: #ffffff;
+}
+
+.sub-navbar.active-form {
+  // background: rgb(0,102,153);
+    background: mat-color($fc-primary-color,darker);
+  //  background: linear-gradient(to right, rgba(0,102,153,1.0), rgba(0,102,153,1.0), rgba(0,102,153,1.0), rgba(0,102,153,0), rgba(0,102,153,0));
+    background: linear-gradient(to right, mat-color($fc-primary-color,darker), mat-color($fc-primary-color,darker),mat-color($fc-primary-color,darker), mat-color($fc-primary-color,darker), mat-color($fc-primary-color,darker), mat-color($fc-primary-color,darker));
+}
+
+.sub-navbar.active-dmn {
+   // background: rgb(227,154,33);
+    background: mat-color($fc-accent-color);
+    // background: linear-gradient(to right, rgba(227,154,33,1.0), rgba(227,154,33,1.0), rgba(227,154,33,1.0), rgba(227,154,33,0), rgba(227,154,33,0));
+    background: linear-gradient(to right,mat-color($fc-accent-color), mat-color($fc-accent-color), mat-color($fc-accent-color), mat-color($fc-accent-color), mat-color($fc-accent-color));
+}
+.component .title.form {
+    // color: rgb(0,102,153)
+    color:mat-color($fc-primary-color,darker);
+}
+.component .glyphicon-info-sign {
+    // color: #2674aa;
+    color:mat-color($fc-primary-color);
+	margin-right: 5px;
+}
+.grid-wrapper .ngRow.even.selected {
+    // background-color: #aad1ec;
+    background-color: mat-color($fc-primary-color,lighter);
+}
+
+.grid-wrapper .ngRow.odd.selected {
+    // background-color: #aad1ec;
+    background-color: mat-color($fc-primary-color,lighter);
+}
+
+.grid-wrapper .ngRow:hover {
+    // background-color: #aad1ec;
+    background-color: mat-color($fc-primary-color,lighter);
+}
+.grid-wrapper .ngRow.selected .ngVerticalBar.ngVerticalBarVisible {
+    // background-color: #aad1ec;
+       background-color: mat-color($fc-primary-color,lighter);
+}
+.grid-wrapper .grid-message .highlight, .grid-wrapper .grid-message .highlight i {
+    // color: #2674aa;
+    color: mat-color($fc-primary-color);
+	font-weight: bold;
+}
+.grid-wrapper .gridStyle-highlight {
+    // border: 1px solid #aad1ec;
+    border: 1px solid mat-color($fc-primary-color,lighter);
+}
+.loading > div {
+    width: 10px;
+    height: 10px;
+    // background-color: #9fd7e5;
+    background-color: mat-color($fc-primary-color,lighter);
+    margin: 1px;
+
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+    animation: bouncedelay 1.4s infinite ease-in-out;
+    /* Prevent first frame from flickering when animation starts */
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+.alert.error {
+    // background-color: #e9af9f;
+    background-color: mat-color($fc-accent-color,lighter);
+    // border-color: #e4593d;
+    border-color: mat-color($fc-accent-color);
+}
+.alert.error .glyphicon {
+    // color: #e4593d;
+    color: mat-color($fc-accent-color);
+}
+.alert.error .badge {
+    // background-color: #e4593d;
+    background-color: mat-color($fc-accent-color);
+	color: #ffffff;
+}
+.decision-table-grid .header-input-expression {
+	/* Fallback for web browsers that doesn't support RGBa */
+    // background: rgb(54, 167, 196);
+    background: mat-color($fc-primary-color);
+	/* RGBa with 0.6 opacity */
+    // background: rgba(54, 167, 196, 0.6);
+    background: mat-color($fc-primary-color);
+	/*background-color: #668b94;*/
+	color: #ffffff;
+	font-size: 14px;
+}
+.decision-table-grid .cell-input-expression {
+	/* Fallback for web browsers that doesn't support RGBa */
+	background: mat-color($fc-primary-color);
+	/* RGBa with 0.6 opacity */
+	background: mat-color($fc-primary-color);
+}
+.decision-table-output-expression-input:hover {
+    // background-color: #287d92;
+    background-color: mat-color($fc-primary-color);
+}
+.decision-table-grid .ui-grid-row:nth-child(odd) .ui-grid-cell.cell-input-expression,
+.decision-table-grid .ui-grid-row:nth-child(even) .ui-grid-cell.cell-input-expression {
+    // background: rgb(54, 167, 196);
+    background: mat-color($fc-primary-color);
+	/* RGBa with 0.6 opacity */
+    // background: rgba(54, 167, 196, 0.1);
+    background: mat-color($fc-primary-color);
+	border-bottom: 1px solid rgba(43, 37, 37, 0.22);
+}
+
+.decision-table-grid .ui-grid-row.ui-grid-row-selected:nth-child(odd) .ui-grid-cell.cell-input-expression,
+.decision-table-grid .ui-grid-row.ui-grid-row-selected:nth-child(even) .ui-grid-cell.cell-input-expression {
+    // background: rgba(54, 167, 196, 0.2);
+    background: mat-color($fc-primary-color);
+}
+
+.decision-table-grid .ui-grid-render-container-left .ui-grid-header-cell {
+	/* Fallback for web browsers that doesn't support RGBa */
+    // background: rgb(54, 167, 196);
+    background: mat-color($fc-primary-color);
+	/* RGBa with 0.6 opacity */
+    // background: rgba(54, 167, 196, 0.6);
+    background: mat-color($fc-primary-color);
+	/*background-color: #668b94;*/
+	color: #ffffff;
+	font-size: 14px;
+
+	border-bottom: 5px solid rgb(43, 37, 37);
+	border-bottom: 5px solid rgba(43, 37, 37, 0.22);
+
+}
+.activiti-table .decision-table-display-cell-match {
+    // border: 1px solid #2980b9;
+    border: 1px solid mat-color($fc-primary-color);
+}
+.activiti-table .decision-table-display-cell-nomatch,
+.activiti-table .decision-table-display-cell-exception {
+    // border: 1px solid #9C4337;
+    border: 1px solid mat-color($fc-accent-color,lighter);
+}
+
+.activiti-table .decision-table-display-cell-exception::before {
+	content: "!";
+    // background-color: #9C4337;
+    background-color: mat-color($fc-accent-color,lighter);
+	color: white;
+	border-radius: 10px;
+	position: absolute;
+	right: 0;
+	display: block;
+	width: 20px;
+	text-align: center;
+	height: 20px;
+	margin-right: 5px;
+	font-weight: bold;
+}
+.btn-default.upload-btn {
+    // background-color: #f99062;
+    background-color: mat-color($fc-accent-color);
+    color: #ffff;
+    border: 0;
+    padding: 0 20px;
+}
+.fb-admin .component .title .btn{ 
+    background:mat-color($fc-primary-color) ;
+    color: #fff;
+    border-color:mat-color($fc-primary-color,lighter);
+    font-size: 14px;
+    padding: 2px 12px;
+    line-height: 27px;
+    box-shadow: 0px 3px 2px 0px #e0e0e0;
+}
+.fb-admin .tabs .tab.active:after{
+    content:''; 
+    position: absolute; 
+    width:100%; 
+    height:2px; 
+    bottom:0; left:0; 
+    // background:#006064;
+    background:mat-color($fc-primary-color,darker);
+}
+.fb-popup .modal-footer .btn-primary{   
+    //  background-color: #006064; 
+    background-color: mat-color($fc-primary-color); 
+    }
+ div[ng-switch="datepickerMode"] table td button.active{ 
+    background-color: mat-color($fc-primary-color,darker);
+  }
+  .dropdown-menu.ng-valid.ng-valid-date-disabled .btn-success{ 
+      background-color: mat-color($fc-primary-color,darker);
+  }
+  .fb-admin .property td>a {
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0.8; 
+    // color: #006064;
+    color: mat-color($fc-primary-color,darker);
+    text-transform: uppercase;
+}
+}
+

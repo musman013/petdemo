@@ -65,10 +65,6 @@
               <mat-icon class="menu-icon">group_add</mat-icon>
               Share
             </button>
-            <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="manageSharing(report)">
-              <mat-icon class="menu-icon">group</mat-icon>
-              Manage sharing
-            </button>
             <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="deleteReport(report)">
               <mat-icon class="menu-icon">delete</mat-icon>
               Delete
@@ -80,12 +76,16 @@
           </mat-menu>
           <mat-menu #sharemenu="matMenu">
             <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="share(report)">
-              <mat-icon class="menu-icon">group_add</mat-icon>
-              Share Internaly
+              <mat-icon class="menu-icon">people</mat-icon>
+              Share with Users/Roles
             </button>
             <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="shareExternaly(report)">
-              <mat-icon class="menu-icon">group_add</mat-icon>
-              Share Externaly
+              <mat-icon class="menu-icon">link</mat-icon>
+              Permalink/Embed
+            </button>
+            <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="manageSharing(report)">
+              <mat-icon class="menu-icon">settings</mat-icon>
+              Manage sharing
             </button>
           </mat-menu>
         </div>

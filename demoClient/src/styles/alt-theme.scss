@@ -5,9 +5,10 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 //@include mat-core();
+//$fc-theme-primary: mat-palette($mat-light-green);
 //==========new content=============//
 // Light Theme Text
-$dark-text: #14207a;
+$dark-text: #000000;
 $dark-primary-text: rgba($dark-text, 0.87);
 $dark-accent-text: rgba($dark-primary-text, 0.54);
 $dark-disabled-text: rgba($dark-primary-text, 0.38);
@@ -65,32 +66,34 @@ $mat-light-theme-background: (
 );
 
 //==========new content=============//
+$mat-deep-green:#336a77;
+$mat-deep-orange:#e27e4b;
   //font Config
   @import 'https://fonts.googleapis.com/css?family=Material+Icons';
   @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
    $fontConfig: (
-    display-4: mat-typography-level(112px, 112px, 300, 'Roboto', -0.0134em),
-  display-3: mat-typography-level(56px, 56px, 400, 'Roboto', -0.0089em),
-  display-2: mat-typography-level(45px, 48px, 400, 'Roboto', 0.0000em),
-  display-1: mat-typography-level(34px, 40px, 400, 'Roboto', 0.0074em),
-  headline: mat-typography-level(24px, 32px, 400, 'Roboto', 0.0000em),
-  title: mat-typography-level(20px, 32px, 500, 'Roboto', 0.0075em),
-  subheading-2: mat-typography-level(16px, 28px, 400, 'Roboto', 0.0094em),
-  subheading-1: mat-typography-level(15px, 24px, 500, 'Roboto', 0.0067em),
-  body-2: mat-typography-level(14px, 24px, 500, 'Roboto', 0.0179em),
-  body-1: mat-typography-level(14px, 20px, 400, 'Roboto', 0.0179em),
-  button: mat-typography-level(14px, 14px, 500, 'Roboto', 0.0893em),
-  caption: mat-typography-level(12px, 20px, 400, 'Roboto', 0.0333em),
-  input: mat-typography-level(inherit, 1.125, 400, 'Roboto', 1.5px)
+    display-4: mat-typography-level(112px, 112px, 300, 'ABeeZee', -0.0134em),
+  display-3: mat-typography-level(56px, 56px, 400, 'ABeeZee', -0.0089em),
+  display-2: mat-typography-level(45px, 48px, 400, 'ABeeZee', 0.0000em),
+  display-1: mat-typography-level(34px, 40px, 400, 'ABeeZee', 0.0074em),
+  headline: mat-typography-level(24px, 32px, 400, 'ABeeZee', 0.0000em),
+  title: mat-typography-level(20px, 32px, 500, 'ABeeZee', 0.0075em),
+  subheading-2: mat-typography-level(16px, 28px, 400, 'ABeeZee', 0.0094em),
+  subheading-1: mat-typography-level(15px, 24px, 500, 'ABeeZee', 0.0067em),
+  body-2: mat-typography-level(14px, 24px, 500, 'ABeeZee', 0.0179em),
+  body-1: mat-typography-level(14px, 20px, 400, 'ABeeZee', 0.0179em),
+  button: mat-typography-level(14px, 14px, 500, 'ABeeZee', 0.0893em),
+  caption: mat-typography-level(12px, 20px, 400, 'ABeeZee', 0.0333em),
+  input: mat-typography-level(inherit, 1.125, 400, 'ABeeZee', 1.5px)
    );
    @include mat-core($fontConfig);
 // // Theme Config
  
 $mat-primary: (
-  main: #f70863,
-  lighter: #fdb5d0,
-  darker: #f30447,
-  200: #f70863, // For slide toggle,
+  main: #761875,
+  lighter: #d6bad6,
+  darker: #590e58,
+  200: #761875, // For slide toggle,
   contrast : (
     main: $light-primary-text,
     lighter: $dark-primary-text,
@@ -100,10 +103,10 @@ $mat-primary: (
 $fc-theme-primary: mat-palette($mat-primary, main, lighter, darker);
 
 $mat-accent: (
-  main: #77eb17,
-  lighter: #d6f9b9,
-  darker: #5ae20d,
-  200: #77eb17, // For slide toggle,
+  main: #24d0b5,
+  lighter: #bdf1e9,
+  darker: #16be9d,
+  200: #24d0b5, // For slide toggle,
   contrast : (
     main: $dark-primary-text,
     lighter: $dark-primary-text,
@@ -124,6 +127,16 @@ $mat-warn: (
   )
 );
 $fc-theme-warn: mat-palette($mat-warn, main, lighter, darker);;
+//$fc-theme-primary: mat-palette($mat-deep-purple,500);
+//$fc-theme-accent:  mat-palette($mat-teal, A200, A100, A400);
+
+//$fc-theme-accent: mat-palette(500);
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+//$candy-app-primary: mat-palette($mat-indigo);
+//$candy-app-primary: mat-palette(500);
+//$candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 

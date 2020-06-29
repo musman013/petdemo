@@ -148,7 +148,8 @@ export class VisitsListComponent extends BaseListComponent<IVisits> implements O
 
 	completeVisit(item: IVisits, index) {
 		this.completeVisitRef = this.dialog.open(CompleteVisitComponent, {
-			panelClass: "fc-modal-dialog"
+			panelClass: "fc-modal-dialog",
+			disableClose: true
 		});
 		this.completeVisitRef.afterClosed().subscribe(res => {
 			if (res) {

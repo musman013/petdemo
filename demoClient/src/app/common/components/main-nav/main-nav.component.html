@@ -1,7 +1,7 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #drawer class="sidenav" fixedInViewport="true"
     [attr.role]="(isSmallDevice$ | async) ? 'dialog' : 'navigation'" [mode]="(isSmallDevice$ | async) ? 'over' : 'side'"
-    [opened]="!(isSmallDevice$ | async) && !isCurrentRootRoute && authenticationService.token">
+    [opened]="!(isSmallDevice$ | async) && !isCurrentRootRoute && authenticationService.token && !isResourceViewer">
 
     <mat-toolbar color="primary">
       <figure class="loggo">
@@ -12,8 +12,6 @@
     <mat-nav-list class="nav-list">
       <a mat-list-item class="sidenav-list-item" routerLink="/dashboard"><i class="material-icons">home</i>
         &nbsp;{{'MainNav.Home' | translate }}</a>
-      <a mat-list-item class="sidenav-list-item" routerLink="/dashboard"><i class="material-icons">description</i>
-        &nbsp;{{'MainNav.AdhocReports' | translate }}</a>
 
       <mat-expansion-panel class="expansion-panel">
         <mat-expansion-panel-header class="subnav-header">
@@ -50,7 +48,7 @@
         </mat-nav-list>
       </mat-expansion-panel>
 
-      <mat-expansion-panel class="expansion-panel" *ngIf="permissions['access-task']">
+      <!-- <mat-expansion-panel class="expansion-panel" *ngIf="permissions['access-task']">
         <mat-expansion-panel-header class="subnav-header">
           <i class="material-icons">
             swap_horizontal_circle
@@ -62,9 +60,9 @@
           <a mat-list-item class="mat-sub-list-item" [routerLink]="['/task-app/processes','completed']">Completed</a>
           <a mat-list-item class="mat-sub-list-item" [routerLink]="['/task-app/processes','all']">For me</a>
         </mat-nav-list>
-      </mat-expansion-panel>
+      </mat-expansion-panel> -->
 
-      <mat-expansion-panel class="expansion-panel" *ngIf="permissions['access-task']">
+      <!-- <mat-expansion-panel class="expansion-panel" *ngIf="permissions['access-task']">
         <mat-expansion-panel-header class="subnav-header">
           <i class="material-icons">
             assignment
@@ -76,9 +74,9 @@
           <a mat-list-item class="mat-sub-list-item" [routerLink]="['/task-app/tasks','candidate']">Candidate</a>
           <a mat-list-item class="mat-sub-list-item" [routerLink]="['/task-app/tasks','assignee']">Assignee</a>
         </mat-nav-list>
-      </mat-expansion-panel>
+      </mat-expansion-panel> -->
 
-      <mat-expansion-panel class="expansion-panel">
+      <mat-expansion-panel class="expansion-panel" *ngIf="permissions['showTools']">
         <mat-expansion-panel-header class="subnav-header">
           <i class="material-icons">
             build
@@ -87,7 +85,7 @@
 
         <mat-nav-list class="subnav">
 
-          <mat-expansion-panel class="expansion-panel" *ngIf="permissions['report']">
+          <mat-expansion-panel class="expansion-panel" *ngIf="permissions['showReport']">
             <mat-expansion-panel-header class="subnav-header">
               <!-- <i class="material-icons">description</i> -->
               &nbsp;{{'MainNav.AdhocReports' | translate }}
@@ -104,7 +102,7 @@
             </mat-nav-list>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="expansion-panel">
+          <mat-expansion-panel class="expansion-panel" *ngIf="permissions['showEmail']">
             <mat-expansion-panel-header class="subnav-header">
               {{'MainNav.Email.Title' | translate }}
             </mat-expansion-panel-header>
@@ -121,7 +119,7 @@
             </mat-nav-list>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="expansion-panel">
+          <mat-expansion-panel class="expansion-panel" *ngIf="permissions['showScheduler']">
             <mat-expansion-panel-header class="subnav-header">
               {{'MainNav.JobScheduling.Title' | translate }}
             </mat-expansion-panel-header>
@@ -144,7 +142,7 @@
         </mat-nav-list>
       </mat-expansion-panel>
 
-      <mat-expansion-panel class="expansion-panel">
+      <mat-expansion-panel class="expansion-panel" *ngIf="permissions['showAdministration']">
         <mat-expansion-panel-header class="subnav-header">
           <i class="material-icons">
             account_box
@@ -239,14 +237,14 @@
 
         </mat-expansion-panel>
       </mat-expansion-panel>
-      <a mat-list-item class="sidenav-list-item" routerLink="swagger-ui">
+      <a mat-list-item class="sidenav-list-item" routerLink="swagger-ui" *ngIf="permissions['showAdministration']">
         <i class="material-icons">
           settings
         </i> &nbsp;{{'MainNav.API' | translate }}</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content #navContent class="fc-sidenav-content">
-    <mat-toolbar class="fc-tool-bar" color="primary" *ngIf="authenticationService.token">
+    <mat-toolbar class="fc-tool-bar" color="primary" *ngIf="authenticationService.token && !isResourceViewer">
       <figure class="loggo mob-logo">
         <img src="../../../../assets/images/logo.png" alt="logo" />
       </figure>
@@ -259,8 +257,6 @@
           <span>{{authenticationService.decodeToken().sub}}</span>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="logout()"><i class="material-icons"
-              style="position: relative;top: 7px;color: red;">power_settings_new</i>&nbsp; Logout</button>
           <button mat-menu-item routerLink="/update-password"><i class="material-icons"
               style="position: relative;top: 7px;">vpn_key</i>&nbsp; Update Password</button>
           <button mat-menu-item routerLink="/update-profile"><i class="material-icons"
@@ -268,6 +264,9 @@
           <span *ngFor="let theme of themes">
             <button mat-menu-item (click)="changeTheme(theme)">{{theme}}</button>
           </span>
+          <button mat-menu-item (click)="logout()"><i class="material-icons"
+              style="position: relative;top: 7px;color: red;">power_settings_new</i>&nbsp; Logout</button>
+
         </mat-menu>
       </span>
 

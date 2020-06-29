@@ -1,9 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 //@import '~@angular/material/theming'; //uncomment for prod
-@import './node_modules/@angular/material/_theming.scss'; //for testing purpose
+// @import './node_modules/@angular/material/_theming.scss'; //for testing purpose
 //@import 'lightgreen-amber.scss';
 //@import 'light-indigo.scss';
-@import 'theme1.scss';
+// @import 'theme1.scss';
 //@import 'green-lime.scss';
 //@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 $fc-margin:8px;
@@ -24,9 +24,9 @@ $fc-row-height9:72px;
 $fc-row-height10:80px;
 
 //colors
-$fc-primary-color: mat-color($fc-theme-primary);
-$fc-primary-color-light: mat-color($fc-theme-primary,300);
-$fc-accent-color: mat-color($fc-theme-accent);
+// $fc-primary-color: mat-color($fc-theme-primary);
+// $fc-primary-color-light: mat-color($fc-theme-primary,300);
+// $fc-accent-color: mat-color($fc-theme-accent);
 
 .mat-table {
     overflow: auto;
@@ -96,18 +96,8 @@ $fc-accent-color: mat-color($fc-theme-accent);
     }
 }
 
-.details-container a{
-    color: $fc-accent-color;
-}
-
 .details-section {
     margin: 10px !important;
-}
-
-.details-section mat-card-title span {
-    float: right;
-    cursor: pointer;
-    color: $fc-primary-color;
 }
 
 .details-section .user-details{
@@ -305,16 +295,16 @@ $fc-accent-color: mat-color($fc-theme-accent);
     padding: 2px 0px 2px 0px;
 }
 
-.sub-task-list li .badge, .generic-list li .badge{
-    font-size: 12px;
-    line-height: 12px;
-    padding-right: 0;
-    background-color: #e8edf1;
-    color: $fc-accent-color;
-    background-color: transparent;
-    font-weight: normal;
+// .sub-task-list li .badge, .generic-list li .badge{
+//     font-size: 12px;
+//     line-height: 12px;
+//     padding-right: 0;
+//     background-color: #e8edf1;
+//     color: $fc-accent-color;
+//     background-color: transparent;
+//     font-weight: normal;
 
-}
+// }
 
 .sub-task-list li.active {
     background-color: #fafafb;
@@ -436,9 +426,9 @@ $fc-accent-color: mat-color($fc-theme-accent);
     margin-left: 3px;
 }
 
-.task-help-entry:hover > span, .task-help-entry:hover > mat-icon {
-    color: $fc-accent-color;
-}
+// .task-help-entry:hover > span, .task-help-entry:hover > mat-icon {
+//     color: $fc-accent-color;
+// }
 
 .task-help-entry.active:hover > span {
     color: #636363;
