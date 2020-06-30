@@ -13,7 +13,12 @@ export class HomeComponent {
 	constructor(
 		public router: Router,
 		public authenticationService: AuthenticationService,
-  ) { }
+  ) {
+    if(!this.authenticationService.token){
+      this.router.navigate(['/login'], { queryParams: { returnUrl: 'dashboard' } });
+    }
+    this.router.navigate(['dashboard']);
+  }
  
   onSubmit() {
     this.router.navigate(['/login'], { queryParams: { returnUrl: 'dashboard' } });
