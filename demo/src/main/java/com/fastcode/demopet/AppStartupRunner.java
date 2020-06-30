@@ -274,9 +274,9 @@ public class AppStartupRunner implements ApplicationRunner {
 		urole=userroleManager.create(urole);
 	
 		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(admin);
-		
- 		idmIdentityService.createUser(admin, actIdUser);
+
  		actIdUser.setPwd("test");
+ 		idmIdentityService.createUser(admin, actIdUser);
  		idmIdentityService.addUserGroupMapping("admin", role.getName());
 	}
 }
