@@ -149,8 +149,10 @@ export class MainNavComponent {
 	}
 
 	setAdminVisiblity(){
-		this.permissions['showAdministration'] = this.authenticationService.decodeToken().role != "owner" &&
-		this.authenticationService.decodeToken().role != "vet";
+		if(this.authenticationService.decodeToken()){
+			this.permissions['showAdministration'] = this.authenticationService.decodeToken().role != "owner" &&
+			this.authenticationService.decodeToken().role != "vet";
+		}
 	}
 
 	login() {
