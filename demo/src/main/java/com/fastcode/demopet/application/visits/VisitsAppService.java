@@ -127,6 +127,18 @@ public class VisitsAppService implements IVisitsAppService {
 		else {
 			return null;
 		}
+	  	
+	  	if(input.getVetId() !=null)
+	  	{
+	  		VetsEntity foundVets = _vetsManager.findById(input.getVetId());
+			if(foundVets !=null) {
+				visits.setVets(foundVets);
+			}
+			else {
+				return null;
+			}
+	  	}
+		
 		
 		VisitsEntity updatedVisits = _visitsManager.update(visits);
 		
