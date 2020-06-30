@@ -119,9 +119,9 @@ public class AppStartupRunner implements ApplicationRunner {
 		}
 		
 		
-//		assignEntityPermissions("pets", role1);
+		assignEntityPermissions("visits", role1);
 		assignEntityReadPermission("invoices", role1);
-		assignEntityReadPermission("visits", role1);
+//		assignEntityReadPermission("visits", role1);
 //		assignEntityReadPermission("invoices", role2);
 		assignEntityReadPermission("visits", role2);
 		
