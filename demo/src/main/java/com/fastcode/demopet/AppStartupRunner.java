@@ -276,14 +276,7 @@ public class AppStartupRunner implements ApplicationRunner {
 		admin.setPassword(pEncoder.encode("secret"));
 		admin.setIsActive(true);
 		admin = userManager.create(admin);
-
-		//		UserpreferenceEntity userpreference = new UserpreferenceEntity();
-		//	    userpreference.setTheme("default-theme");
-		//	    userpreference.setLanguage("en");
-		//    	userpreference.setId(admin.getId());
-		//    	userpreference.setUser(admin);
-		//    	_userpreferenceManager.create(userpreference);
-
+		
 		createUserpreference(admin);
 
 		UserroleEntity urole = new UserroleEntity();
@@ -292,9 +285,10 @@ public class AppStartupRunner implements ApplicationRunner {
 		urole=userroleManager.create(urole);
 
 		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(admin);
-		idmIdentityService.createUser(admin, actIdUser);
-		actIdUser.setPwd("test");
-		idmIdentityService.addUserGroupMapping("admin", role.getName());
+ 		actIdUser.setPwd("test");
+ 		idmIdentityService.createUser(admin, actIdUser);
+ 		idmIdentityService.addUserGroupMapping("admin", role.getName());
+
 	}
 
 	private void createUserpreference(UserEntity user)
