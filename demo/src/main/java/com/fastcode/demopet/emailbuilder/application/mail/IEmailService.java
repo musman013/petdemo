@@ -10,10 +10,12 @@ import com.fastcode.demopet.emailbuilder.domain.model.File;
 @Service
 public interface IEmailService {
 
-	 void sendMessage(String to, String cc, String bcc, String subject, String htmlContent, List<File> inlineImages, List<File> attachments);
-	
-	 public void sendEmail(SimpleMailMessage email);
+//	 void sendMessage(String to, String cc, String bcc, String subject, String htmlContent, List<File> inlineImages, List<File> attachments);
+//	
+//	 public void sendEmail(SimpleMailMessage email);
 		
 	 public SimpleMailMessage buildEmail(String email, String appUrl, String resetCode);
+	 
+	 public SimpleMailMessage buildVerifyRegistrationEmail(String email, String appUrl, String verificationCode);
 	 
 }

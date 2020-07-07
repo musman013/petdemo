@@ -22,6 +22,8 @@ public class FindUserByIdOutput {
     private Boolean shouldChangePasswordOnNextLogin;
     private String lastName;
     private String userName;
-    private String authenticationSource;     
+    private String authenticationSource;
+    private String theme;
+    private String language;
    
 }

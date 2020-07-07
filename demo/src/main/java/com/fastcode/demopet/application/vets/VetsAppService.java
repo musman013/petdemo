@@ -1,12 +1,10 @@
 package com.fastcode.demopet.application.vets;
 
-import com.fastcode.demopet.application.authorization.role.dto.FindRoleByNameOutput;
 import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.authorization.userrole.IUserroleAppService;
-import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
 import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
 import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
@@ -17,6 +15,7 @@ import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.model.QVetsEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.commons.search.*;
@@ -58,7 +57,7 @@ public class VetsAppService implements IVetsAppService {
 	private IUserroleAppService _userroleAppService;
 	
 	@Autowired
-	private IUserAppService _userAppService;
+	private UserAppService _userAppService;
 	
 	@Autowired
  	private ActIdUserMapper actIdUserMapper;
@@ -78,7 +77,9 @@ public class VetsAppService implements IVetsAppService {
 		vets.setUser(user);
 
 		VetsEntity createdVets = _vetsManager.create(vets);
-		return mapper.vetsEntityAndUserEntityToCreateVetsOutput(createdVets, user);
+		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(user);
+		
+		return mapper.vetsEntityAndUserEntityToCreateVetsOutput(createdVets, user, userpreference);
 	}
 	
 	public void assignVetRole(Long userId)
@@ -115,7 +116,8 @@ public class VetsAppService implements IVetsAppService {
 		VetsEntity existing = _vetsManager.findById(vetsId) ; 
 		_vetsManager.delete(existing);
 		_userroleAppService.deleteByUserId(existing.getUser().getId());
-		_userManager.delete(existing.getUser());
+		_userAppService.delete(vetsId);
+//		_userManager.delete(existing.getUser());
 		
 		idmIdentityService.deleteUser(existing.getUser().getUserName());
 	}
@@ -127,7 +129,9 @@ public class VetsAppService implements IVetsAppService {
 		if (foundVets == null)  
 			return null ; 
 
-		FindVetsByIdOutput output=mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser()); 
+		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(foundVets.getUser());
+		FindVetsByIdOutput output=mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
+		
 		return output;
 	}
 
@@ -155,7 +159,8 @@ public class VetsAppService implements IVetsAppService {
 
 		while (vetsIterator.hasNext()) {
 			VetsEntity vet = vetsIterator.next();
-			output.add(mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(vet, vet.getUser()));
+			UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(vet.getUser());
+			output.add(mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(vet, vet.getUser(), userpreference));
 		}
 		return output;
 	}

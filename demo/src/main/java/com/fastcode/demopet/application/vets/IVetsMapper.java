@@ -7,6 +7,7 @@ import org.mapstruct.Mappings;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.vets.dto.*;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
 
 @Mapper(componentModel = "spring")
@@ -15,7 +16,7 @@ public interface IVetsMapper {
    VetsEntity createVetsInputToVetsEntity(CreateVetsInput vetsDto);
    
    @Mapping(source = "entity.id", target = "id")
-   CreateVetsOutput vetsEntityAndUserEntityToCreateVetsOutput(VetsEntity entity, UserEntity user);
+   CreateVetsOutput vetsEntityAndUserEntityToCreateVetsOutput(VetsEntity entity, UserEntity user, UserpreferenceEntity userpreference);
 
    VetsEntity updateVetsInputToVetsEntity(UpdateVetsInput vetsDto);
 
@@ -26,7 +27,7 @@ public interface IVetsMapper {
    @Mapping(source = "entity.id", target = "id"),
    @Mapping(source = "entity.version", target = "version")
    })
-   FindVetsByIdOutput vetsEntityAndUserEntityToFindVetsByIdOutput(VetsEntity entity, UserEntity user);
+   FindVetsByIdOutput vetsEntityAndUserEntityToFindVetsByIdOutput(VetsEntity entity, UserEntity user,UserpreferenceEntity userpreference);
 
    VetProfile findVetsByIdOutputToVetProfile(FindVetsByIdOutput vet);
    

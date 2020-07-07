@@ -14,6 +14,7 @@ import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 import com.fastcode.demopet.domain.model.QOwnersEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
@@ -52,7 +53,7 @@ public class OwnersAppService implements IOwnersAppService {
 	private UserroleAppService _userroleAppService;
 	
 	@Autowired 
-	private IUserAppService _userAppService;
+	private UserAppService _userAppService;
 
 	@Autowired
 	private IUserMapper _userMapper;
@@ -78,7 +79,10 @@ public class OwnersAppService implements IOwnersAppService {
 		
 		OwnersEntity createdOwners = _ownersManager.create(owners);
 		assignOwnerRole(owners.getId());
-		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners,user);
+		
+		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(user);
+		
+		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners,user, userpreference);
 	}
 	
 	public void assignOwnerRole(Long userId)
@@ -116,7 +120,8 @@ public class OwnersAppService implements IOwnersAppService {
 		OwnersEntity existing = _ownersManager.findById(ownersId); 
 		_ownersManager.delete(existing);
 		_userroleAppService.deleteByUserId(existing.getUser().getId());
-		_userManager.delete(existing.getUser());
+		_userAppService.delete(ownersId);
+//		_userManager.delete(existing.getUser());
 		
 		idmIdentityService.deleteUser(existing.getUser().getUserName());
 		
@@ -129,7 +134,9 @@ public class OwnersAppService implements IOwnersAppService {
 		if (foundOwners == null)  
 			return null ; 
 
-		FindOwnersByIdOutput output=mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(foundOwners,foundOwners.getUser()); 
+		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(foundOwners.getUser());
+		FindOwnersByIdOutput output=mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(foundOwners,foundOwners.getUser(),userpreference); 
+		
 		return output;
 	}
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -142,7 +149,9 @@ public class OwnersAppService implements IOwnersAppService {
 
 		while (ownersIterator.hasNext()) {
 			OwnersEntity owner = ownersIterator.next();
-			output.add(mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(owner, owner.getUser()));
+			UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(owner.getUser());
+			
+			output.add(mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(owner, owner.getUser(),userpreference));
 		}
 		return output;
 	}

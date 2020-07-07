@@ -1,6 +1,7 @@
 package com.fastcode.demopet.restcontrollers;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,10 +66,18 @@ public class PetsController {
 
     @PreAuthorize("hasAnyAuthority('PETSENTITY_CREATE')")
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<CreatePetsOutput> create(@RequestBody @Valid CreatePetsInput pets) {
-		CreatePetsOutput output=_petsAppService.create(pets);
-		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
+	public ResponseEntity<CreatePetsOutput> create(@RequestBody @Valid CreatePetsInput pets, HttpServletRequest request) {
 		
+    	UserEntity user = _userAppService.getUser();
+    	
+    	if(pets.getOwnerId() == null)
+    	{
+    		pets.setOwnerId(user.getId());
+    	}
+    	
+    	CreatePetsOutput output=_petsAppService.create(pets);
+		
+		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
 		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
 		
 		return new ResponseEntity(output, HttpStatus.OK);

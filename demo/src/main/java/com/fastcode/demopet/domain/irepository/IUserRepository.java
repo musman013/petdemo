@@ -16,7 +16,4 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long>,Queryds
     
     UserEntity findByEmailAddress(String emailAddress);
     
-    UserEntity findByPasswordResetCode(String passwordResetCode);
-    
-
 }

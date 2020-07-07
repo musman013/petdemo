@@ -27,6 +27,7 @@ import com.fastcode.demopet.emailbuilder.application.emailtemplate.EmailTemplate
 import com.fastcode.demopet.emailbuilder.application.emailtemplate.dto.CreateEmailInput;
 import com.fastcode.demopet.emailbuilder.application.emailvariable.EmailVariableAppService;
 import com.fastcode.demopet.emailbuilder.application.emailvariable.dto.FindEmailVariableByIdOutput;
+import com.fastcode.demopet.emailbuilder.application.mail.AsyncMailTrigger;
 import com.fastcode.demopet.emailbuilder.application.mail.EmailService;
 import com.fastcode.demopet.emailbuilder.domain.irepository.IFileRepository;
 import com.fastcode.demopet.emailbuilder.domain.model.File;
@@ -40,6 +41,9 @@ public class MailController {
 
 	@Autowired
 	private EmailTemplateAppService emailTemplateAppService;
+	
+	@Autowired
+	public AsyncMailTrigger _asyncEmailTrigger;
 
 	@Autowired
 	private EmailVariableAppService emailVariableAppService;
@@ -69,7 +73,7 @@ public class MailController {
 		lImages.addAll(filearr);
 		email.setEmailBody(emailTemplateAppService.convertJsonToHtml(contentjson));
 
-		emailService.sendMessage(email.getTo(), cc, bcc, subject, email.getEmailBody(), lImages, lAttachments);
+		_asyncEmailTrigger.sendMessage(email.getTo(), cc, bcc, subject, email.getEmailBody(), lImages, lAttachments);
 
 		return new ResponseEntity(HttpStatus.OK);
 	}

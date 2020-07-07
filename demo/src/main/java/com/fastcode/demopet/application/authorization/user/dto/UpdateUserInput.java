@@ -50,9 +50,6 @@ public class UpdateUserInput {
   	private Boolean isActive;
   
   	private String password;
-   
-  	@Length(max = 328, message = "passwordResetCode must be less than 328 characters")
-  	private String passwordResetCode;
   
   	@Length(max = 32, message = "phoneNumber must be less than 32 characters")
   	private String phoneNumber;

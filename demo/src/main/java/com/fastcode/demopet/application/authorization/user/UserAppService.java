@@ -8,7 +8,9 @@ import com.fastcode.demopet.application.authorization.user.dto.*;
 import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
 import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
+import com.fastcode.demopet.domain.authorization.userpreference.IUserpreferenceManager;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.domain.owners.IOwnersManager;
@@ -51,6 +53,9 @@ public class UserAppService implements IUserAppService {
 	private IUserManager _userManager;
 	
 	@Autowired
+	private IUserpreferenceManager _userpreferenceManager;
+	
+	@Autowired
 	private IOwnersManager _ownerManager;
 	
 	@Autowired
@@ -86,12 +91,42 @@ public class UserAppService implements IUserAppService {
 
 		UserEntity user = mapper.createUserInputToUserEntity(input);		
 		UserEntity createdUser = _userManager.create(user);
+		UserpreferenceEntity userPreference = createDefaultUserPreference(createdUser);
 		//Map and create flowable user
  		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(createdUser);
  		idmIdentityService.createUser(createdUser, actIdUser);
  		
-		return mapper.userEntityToCreateUserOutput(createdUser);
+		return mapper.userEntityToCreateUserOutput(createdUser, userPreference);
 	}
+    
+    @Transactional(propagation = Propagation.REQUIRED)
+   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) {
+    	
+    	UserpreferenceEntity userpreference = new UserpreferenceEntity();
+    	userpreference.setTheme("default-theme");
+    	userpreference.setLanguage("en");
+    	userpreference.setId(user.getId());
+    	userpreference.setUser(user);
+    	
+    	return _userpreferenceManager.create(userpreference);
+    }
+    
+    @Transactional(propagation = Propagation.REQUIRED)
+   	public UserpreferenceEntity updateTheme(UserEntity user, String theme) {
+    	UserpreferenceEntity userpreference = _userpreferenceManager.findById(user.getId());
+    	userpreference.setTheme(theme);
+    	
+    	return _userpreferenceManager.update(userpreference);
+
+    }
+    
+    @Transactional(propagation = Propagation.REQUIRED)
+   	public UserpreferenceEntity updateLanguage(UserEntity user, String language) {
+    	UserpreferenceEntity userpreference = _userpreferenceManager.findById(user.getId());
+    	userpreference.setTheme(language);
+    	
+    	return _userpreferenceManager.update(userpreference);
+    }
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public UpdateUserOutput update(Long userId, UpdateUserInput input) {
@@ -148,14 +183,24 @@ public class UserAppService implements IUserAppService {
 		   _reportversionManager.delete(rv);
 	   }
 	    
+	    UserpreferenceEntity userpreference = _userpreferenceManager.findById(userId);
+	    _userpreferenceManager.delete(userpreference);
 		_userManager.delete(existing);
 		idmIdentityService.deleteUser(existing.getUserName());
 	
 	}
+	
 	@Transactional(readOnly = true)
 	public UserEntity getUser() {
 	
 		return _userManager.findByUserName(SecurityUtils.getCurrentUserLogin().orElse(null));
+	}
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public void updateUserData(FindUserWithAllFieldsByIdOutput user)
+	{
+		UserEntity foundUser = mapper.findUserWithAllFieldsByIdOutputToUserEntity(user);
+		_userManager.update(foundUser);
 	}
 	
 	public Boolean checkIsAdmin(UserEntity user)
@@ -196,32 +241,32 @@ public class UserAppService implements IUserAppService {
 		return  mapper.userEntityToFindUserByNameOutput(foundUser);
 	}
 	
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public UserEntity savePasswordResetCode(String email)
-	{
-		UserEntity foundUser = _userManager.findByEmailAddress(email);
-		if (foundUser == null) {
-			return null;
-		}
-		
-		foundUser.setPasswordResetCode(UUID.randomUUID().toString());
-		foundUser.setPasswordTokenExpiration(new Date(System.currentTimeMillis() + PASSWORD_TOKEN_EXPIRATION_TIME));
-		foundUser = _userManager.update(foundUser);
-		
-		return foundUser;
-		
-	}
-	
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public UserEntity findByPasswordResetCode(String passwordResetCode) {
-
-		UserEntity foundUser = _userManager.findByPasswordResetCode(passwordResetCode);
-		if (foundUser == null) {
-			return null;
-		}
-	
-		return  foundUser;
-	}
+//	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+//	public UserEntity savePasswordResetCode(String email)
+//	{
+//		UserEntity foundUser = _userManager.findByEmailAddress(email);
+//		if (foundUser == null) {
+//			return null;
+//		}
+//		
+//		foundUser.setPasswordResetCode(UUID.randomUUID().toString());
+//		foundUser.setPasswordTokenExpiration(new Date(System.currentTimeMillis() + PASSWORD_TOKEN_EXPIRATION_TIME));
+//		foundUser = _userManager.update(foundUser);
+//		
+//		return foundUser;
+//		
+//	}
+//	
+//	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+//	public UserEntity findByPasswordResetCode(String passwordResetCode) {
+//
+//		UserEntity foundUser = _userManager.findByPasswordResetCode(passwordResetCode);
+//		if (foundUser == null) {
+//			return null;
+//		}
+//	
+//		return  foundUser;
+//	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public FindUserByIdOutput findById(Long userId) {
@@ -230,7 +275,8 @@ public class UserAppService implements IUserAppService {
 		if (foundUser == null)  
 			return null ; 
  	   
- 	   FindUserByIdOutput output=mapper.userEntityToFindUserByIdOutput(foundUser); 
+	    UserpreferenceEntity userPreference = _userpreferenceManager.findById(userId);
+ 	   FindUserByIdOutput output= mapper.userEntityToFindUserByIdOutput(foundUser, userPreference); 
 		return output;
 	}
 	
@@ -264,7 +310,9 @@ public class UserAppService implements IUserAppService {
 		List<FindUserByIdOutput> output = new ArrayList<>();
 
 		while (userIterator.hasNext()) {
-			output.add(mapper.userEntityToFindUserByIdOutput(userIterator.next()));
+			UserEntity user = userIterator.next();
+			UserpreferenceEntity userpreference = _userpreferenceManager.findById(user.getId());
+			output.add(mapper.userEntityToFindUserByIdOutput(user, userpreference));
 		}
 		return output;
 	}
@@ -304,7 +352,6 @@ public class UserAppService implements IUserAppService {
 		 list.get(i).replace("%20","").trim().equals("lockoutEndDateUtc") ||
 		 list.get(i).replace("%20","").trim().equals("isActive") ||
 		 list.get(i).replace("%20","").trim().equals("password") ||
-		 list.get(i).replace("%20","").trim().equals("passwordResetCode") ||
 		 list.get(i).replace("%20","").trim().equals("phoneNumber") ||
 		 list.get(i).replace("%20","").trim().equals("profilePictureId") ||
 		 list.get(i).replace("%20","").trim().equals("userrole") ||
@@ -447,14 +494,7 @@ public class UserAppService implements IUserAppService {
 				else if(details.getValue().getOperator().equals("notEqual"))
 					builder.and(user.password.ne(details.getValue().getSearchValue()));
 			}
-            if(details.getKey().replace("%20","").trim().equals("passwordResetCode")) {
-				if(details.getValue().getOperator().equals("contains"))
-					builder.and(user.passwordResetCode.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-				else if(details.getValue().getOperator().equals("equals"))
-					builder.and(user.passwordResetCode.eq(details.getValue().getSearchValue()));
-				else if(details.getValue().getOperator().equals("notEqual"))
-					builder.and(user.passwordResetCode.ne(details.getValue().getSearchValue()));
-			}
+           
             if(details.getKey().replace("%20","").trim().equals("phoneNumber")) {
 				if(details.getValue().getOperator().equals("contains"))
 					builder.and(user.phoneNumber.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));

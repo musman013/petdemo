@@ -1,6 +1,7 @@
 package com.fastcode.demopet.domain.model;
 
 import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -56,16 +57,8 @@ public class  UserEntity extends AbstractEntity {
     private String password;
     
     @Basic
-    @Column(name = "PasswordResetCode", nullable = true, length = 328)
-    private String passwordResetCode;
-    
-    @Basic
     @Column(name = "ShouldChangePasswordOnNextLogin", nullable = true)
     private Boolean shouldChangePasswordOnNextLogin;
-    
-    @Basic
-	@Column(name = "PasswordTokenExpiration", nullable = true)
-    private Date passwordTokenExpiration;
     
     @Basic
     @Column(name = "PhoneNumber", nullable = true, length = 32)
@@ -134,6 +127,22 @@ public class  UserEntity extends AbstractEntity {
   	
   	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
   	private Set<DashboarduserEntity> dashboarduserSet = new HashSet<DashboarduserEntity>(); 
+  	
+  	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL) 
+	private Set<TokenverificationEntity> tokenverificationSet = new HashSet<TokenverificationEntity>();
+  	
+  	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL) 
+	private UserpreferenceEntity userpreference;
+	
+	public void addTokenVerification(TokenverificationEntity tokenVerification) {
+		tokenverificationSet.add(tokenVerification);
+		tokenVerification.setUser(this);
+	}
+
+	public void removeTokenVerificationEntity(TokenverificationEntity tokenVerification) {
+		tokenverificationSet.remove(tokenVerification);
+		tokenVerification.setUser(null);
+	}
   	
   	public void addUserpermission(UserpermissionEntity userpermission) {
 		userpermissionSet.add(userpermission);
