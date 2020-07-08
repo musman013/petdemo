@@ -220,6 +220,8 @@ public class UserpermissionAppService implements IUserpermissionAppService {
     	list.get(i).replace("%20","").trim().equals("userId")||
 		 list.get(i).replace("%20","").trim().equals("permission") ||
 		 list.get(i).replace("%20","").trim().equals("permissionId") ||
+		 list.get(i).replace("%20","").trim().equals("userName")||
+	     list.get(i).replace("%20","").trim().equals("name")||
 		 list.get(i).replace("%20","").trim().equals("user")
 		)) 
 		{
@@ -232,14 +234,19 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
-        
         if(joinCol != null && joinCol.getKey().equals("userId")) {
 		    builder.and(userpermission.user.id.eq(Long.parseLong(joinCol.getValue())));
+		}
+        if(joinCol != null && joinCol.getKey().equals("userName")) {
+		    builder.and(userpermission.user.userName.eq(joinCol.getValue()));
 		}
         }
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
         if(joinCol != null && joinCol.getKey().equals("permissionId")) {
 		    builder.and(userpermission.permission.id.eq(Long.parseLong(joinCol.getValue())));
+		}
+        if(joinCol != null && joinCol.getKey().equals("name")) {
+		    builder.and(userpermission.permission.name.eq(joinCol.getValue()));
 		}
         }
 		return builder;

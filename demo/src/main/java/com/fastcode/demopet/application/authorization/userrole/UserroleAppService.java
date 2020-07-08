@@ -214,6 +214,8 @@ public class UserroleAppService implements IUserroleAppService {
 		for (int i = 0; i < list.size(); i++) {
 		if(!(
     	list.get(i).replace("%20","").trim().equals("userId")||
+    	list.get(i).replace("%20","").trim().equals("userName")||
+    	list.get(i).replace("%20","").trim().equals("name")||
 		list.get(i).replace("%20","").trim().equals("role") ||
 		list.get(i).replace("%20","").trim().equals("roleId") ||
 		list.get(i).replace("%20","").trim().equals("user"))) 
@@ -230,10 +232,18 @@ public class UserroleAppService implements IUserroleAppService {
         if(joinCol != null && joinCol.getKey().equals("userId")) {
 		    builder.and(userrole.user.id.eq(Long.parseLong(joinCol.getValue())));
 		}
+        
+        if(joinCol != null && joinCol.getKey().equals("userName")) {
+		    builder.and(userrole.user.userName.eq(joinCol.getValue()));
+		}
         }
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
         if(joinCol != null && joinCol.getKey().equals("roleId")) {
 		    builder.and(userrole.role.id.eq(Long.parseLong(joinCol.getValue())));
+		}
+        
+        if(joinCol != null && joinCol.getKey().equals("name")) {
+		    builder.and(userrole.role.name.eq(joinCol.getValue()));
 		}
         }
 		return builder;

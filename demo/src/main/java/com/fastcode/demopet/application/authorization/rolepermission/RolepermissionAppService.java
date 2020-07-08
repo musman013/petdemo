@@ -215,6 +215,7 @@ public class RolepermissionAppService implements IRolepermissionAppService {
 		 list.get(i).replace("%20","").trim().equals("permission") ||
 		 list.get(i).replace("%20","").trim().equals("permissionId") ||
 		 list.get(i).replace("%20","").trim().equals("role") ||
+		 list.get(i).replace("%20","").trim().equals("name") ||
 		 list.get(i).replace("%20","").trim().equals("roleId")
 		)) 
 		{
@@ -226,16 +227,22 @@ public class RolepermissionAppService implements IRolepermissionAppService {
 	public BooleanBuilder searchKeyValuePair(QRolepermissionEntity rolepermission, Map<String,SearchFields> map,Map<String,String> joinColumns) {
 		BooleanBuilder builder = new BooleanBuilder();
 
-		for (Map.Entry<String, SearchFields> details : map.entrySet()) {
-		}
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
         if(joinCol != null && joinCol.getKey().equals("permissionId")) {
 		    builder.and(rolepermission.permission.id.eq(Long.parseLong(joinCol.getValue())));
 		}
+        
+        if(joinCol != null && joinCol.getKey().equals("name")) {
+		    builder.and(rolepermission.permission.name.eq(joinCol.getValue()));
+		}
         }
+		
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
         if(joinCol != null && joinCol.getKey().equals("roleId")) {
 		    builder.and(rolepermission.role.id.eq(Long.parseLong(joinCol.getValue())));
+		}
+        if(joinCol != null && joinCol.getKey().equals("name")) {
+		    builder.and(rolepermission.role.name.eq(joinCol.getValue()));
 		}
         }
 		return builder;
