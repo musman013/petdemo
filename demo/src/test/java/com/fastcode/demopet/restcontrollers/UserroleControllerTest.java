@@ -40,7 +40,8 @@ import com.fastcode.demopet.application.authorization.userrole.UserroleAppServic
 import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
 import com.fastcode.demopet.application.authorization.userrole.dto.FindUserroleByIdOutput;
 import com.fastcode.demopet.application.authorization.userrole.dto.UpdateUserroleInput;
-
+import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByIdOutput;
 import com.fastcode.demopet.domain.irepository.IRoleRepository;
@@ -50,6 +51,7 @@ import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.UserroleId;
+import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -87,8 +89,16 @@ public class UserroleControllerTest {
 	private JWTAppService jwtAppService;
     
 	private UserroleEntity userrole;
+	private UserEntity user;
+	private RoleEntity role;
 
 	private MockMvc mvc;
+	
+	@Autowired
+ 	private ActIdUserMapper actIdUserMapper;
+ 	
+ 	@Autowired
+ 	private FlowableIdentityService idmIdentityService;
 	
 	@Autowired
 	EntityManagerFactory emf;
@@ -109,6 +119,8 @@ public class UserroleControllerTest {
 		  em.createNativeQuery("truncate table sample.userrole").executeUpdate();
 		  em.createNativeQuery("truncate table sample.role").executeUpdate();
 		  em.createNativeQuery("truncate table sample.f_user").executeUpdate();
+		  em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+			
 		  em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		  em.getTransaction().commit();
 		} catch(Exception ex) {
@@ -118,16 +130,14 @@ public class UserroleControllerTest {
 	}
 	
 	public UserroleEntity createEntity() {
-		UserEntity user=createUserEntity();
-		RoleEntity role =createRoleEntity();
+		user=createUserEntity();
+		role =createRoleEntity();
 		
-		if(!userRepository.findAll().contains(user))
-		{
+		if(!userRepository.findAll().stream().anyMatch(item -> user.getUserName().equals(item.getUserName()))) {
 			user=userRepository.save(user);
 		}
 
-		if(!roleRepository.findAll().contains(role))
-		{
+		if(!roleRepository.findAll().stream().anyMatch(item -> role.getName().equals(item.getName()))) {
 			role=roleRepository.save(role);
 		}
 		
@@ -243,7 +253,6 @@ public class UserroleControllerTest {
 		when(logHelper.getLogger()).thenReturn(loggerMock);
 		doNothing().when(loggerMock).error(anyString());
 
-
 		this.mvc = MockMvcBuilders.standaloneSetup(userroleController)
 				.setCustomArgumentResolvers(sortArgumentResolver)
 				.setControllerAdvice()
@@ -258,8 +267,7 @@ public class UserroleControllerTest {
 
 		List<UserroleEntity> list= userroleRepository.findAll();
 		System.out.println(list);
-		if(!list.contains(userrole))
-		{
+		if(!list.stream().anyMatch(item -> userrole.getRole().getName().equals(item.getRole().getName()))) {
 			userrole=userroleRepository.save(userrole);
 		}
 
@@ -276,9 +284,13 @@ public class UserroleControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/userrole/roleId:32,userId:32")
+//		mvc.perform(get("/userrole/roleId:32,userId:32")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/userrole/roleId:32,userId:32")
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
 
@@ -311,12 +323,18 @@ public class UserroleControllerTest {
 	    user.setPassword("secret");
 
 		user=userRepository.save(user);
+		
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(user);
+ 		idmIdentityService.createUser(user, actIdUser);
+ 		
 
 		RoleEntity role = new RoleEntity();
 		role.setDisplayName("D3");
 		role.setId(3L);
 		role.setName("R3");
 		role=roleRepository.save(role);
+		
+		idmIdentityService.createGroup(role.getName());
 	
 		CreateUserroleInput userrole = createUserroleInput();
 		userrole.setRoleId(role.getId());
@@ -353,16 +371,21 @@ public class UserroleControllerTest {
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
 
 		UserroleEntity up = userroleRepository.save(createNewEntityForDelete());
+		
 		FindUserroleByIdOutput output= new FindUserroleByIdOutput();
 	    output.setUserId(up.getUserId());
 		output.setRoleId(up.getRoleId());
 
 		doReturn(output).when(userroleAppService).findById(new UserroleId(up.getRoleId(),up.getUserId()));
 	
-		Mockito.when(userAppService.findById(up.getUserId()
-		)).thenReturn(createUserByIdOuput());
+		Mockito.when(userAppService.findById(up.getUserId())).thenReturn(createUserByIdOuput());
 		doNothing().when(jwtAppService).deleteAllUserTokens(anyString());
 
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(up.getUser());
+ 		idmIdentityService.createUser(user, actIdUser);		
+ 		idmIdentityService.createGroup(up.getRole().getName());
+ 		idmIdentityService.addUserGroupMapping(actIdUser.getId(), up.getRole().getName());
+ 		
 		mvc.perform(delete("/userrole/roleId:"+up.getRoleId() +",userId:" + up.getUserId())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNoContent());
@@ -395,9 +418,14 @@ public class UserroleControllerTest {
 		String json = ow.writeValueAsString(userrole);
 		doReturn(null).when(userroleAppService).findById(new UserroleId(32L,32L));
 		
-		mvc.perform(put("/userrole/roleId:32,userId:32")
-     			 .contentType(MediaType.APPLICATION_JSON).content(json))
-		  .andExpect(status().isNotFound());
+//		mvc.perform(put("/userrole/roleId:32,userId:32")
+//     			 .contentType(MediaType.APPLICATION_JSON).content(json))
+//		  .andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/userrole/roleId:32,userId:32")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Userrole with id=roleId:32,userId:32 not found."));
+
 	}
 
 	@Test
@@ -418,7 +446,12 @@ public class UserroleControllerTest {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(userrole);
       
-
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(up.getUser());
+ 		idmIdentityService.createUser(user, actIdUser);		
+ 		idmIdentityService.createGroup(up.getRole().getName());
+ 		idmIdentityService.addUserGroupMapping(actIdUser.getId(), up.getRole().getName());
+ 
+ 		
 		mvc.perform(put("/userrole/roleId:"+up.getRoleId() + ",userId:" + up.getUserId())
 		.contentType(MediaType.APPLICATION_JSON).content(json))
 		.andExpect(status().isOk());
@@ -427,8 +460,8 @@ public class UserroleControllerTest {
 		entity.setUserId(up.getUserId());
 		entity.setRoleId(up.getRoleId());
 		userroleRepository.delete(entity);
-		userRepository.delete(up.getUser());
-		roleRepository.delete(up.getRole());
+//		userRepository.delete(up.getUser());
+//		roleRepository.delete(up.getRole());
 	}    
 
 	@Test
@@ -460,9 +493,13 @@ public class UserroleControllerTest {
 	@Test
 	public void GetUser_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
 
-		mvc.perform(get("/userrole/roleId:99,userId:99/user")
+//		mvc.perform(get("/userrole/roleId:99,userId:99/user")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/userrole/roleId:99,userId:99/user")
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
 
@@ -486,10 +523,13 @@ public class UserroleControllerTest {
 	@Test
 	public void GetRole_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
 
-		mvc.perform(get("/userrole/roleId:99,userId:99/role")
-				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+//		mvc.perform(get("/userrole/roleId:99,userId:99/role")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
 
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/userrole/roleId:99,userId:99/role")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	}    
 
 	@Test

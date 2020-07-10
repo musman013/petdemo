@@ -37,6 +37,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -46,7 +48,9 @@ import com.fastcode.demopet.application.vetspecialties.dto.*;
 import com.fastcode.demopet.domain.irepository.IVetSpecialtiesRepository;
 import com.fastcode.demopet.domain.model.VetSpecialtiesEntity;
 import com.fastcode.demopet.domain.irepository.ISpecialtiesRepository;
+import com.fastcode.demopet.domain.irepository.IUserRepository;
 import com.fastcode.demopet.domain.model.SpecialtiesEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.irepository.IVetsRepository;
 import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.application.specialties.SpecialtiesAppService;    
@@ -69,6 +73,9 @@ public class VetSpecialtiesControllerTest {
 	@Autowired 
 	private IVetsRepository vetsRepository;
 	
+	@Autowired 
+	private IUserRepository userRepository;
+	
 	@SpyBean
 	private VetSpecialtiesAppService vetSpecialtiesAppService;
     
@@ -85,6 +92,10 @@ public class VetSpecialtiesControllerTest {
 	private Logger loggerMock;
 
 	private VetSpecialtiesEntity vetSpecialties;
+	
+	private UserEntity user;
+	
+	private SpecialtiesEntity specialties;
 
 	private MockMvc mvc;
 	
@@ -105,38 +116,54 @@ public class VetSpecialtiesControllerTest {
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.vet_specialties").executeUpdate();
 		em.createNativeQuery("truncate table sample.specialties").executeUpdate();
+		em.createNativeQuery("truncate table sample.f_user").executeUpdate();
 		em.createNativeQuery("truncate table sample.vets").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
 
-
+//	@Transactional(propagation = Propagation.REQUIRED)
 	public VetSpecialtiesEntity createEntity() {
-		SpecialtiesEntity specialties = createSpecialtiesEntity();
-		if(!specialtiesRepository.findAll().contains(specialties))
+		specialties = createSpecialtiesEntity();
+		
+		if(!specialtiesRepository.findAll().stream().anyMatch(item -> specialties.getName().equals(item.getName())))
 		{
-			specialties=specialtiesRepository.save(specialties);
+			specialties =specialtiesRepository.save(specialties);
+			System.out.println("Spec Id" + specialties.getId());
 		}
 		VetsEntity vets = createVetsEntity();
-		if(!vetsRepository.findAll().contains(vets))
-		{
+		user = createUserEntity();
+		vets.setUser(user);
+		if(!userRepository.findAll().stream().anyMatch(item -> user.getUserName().equals(item.getUserName()))) {
+		
+//		if(!userRepository.findAll().contains(user))
+//		{
+			user = userRepository.save(user);
+			System.out.println("User Id" + user.getId());
+			vets.setId(user.getId());
+			vets.setUser(user);
 			vets=vetsRepository.save(vets);
 		}
 	
+		
 		VetSpecialtiesEntity vetSpecialties = new VetSpecialtiesEntity();
-		vetSpecialties.setSpecialtyId(1);
-		vetSpecialties.setVetId(1);
+		vetSpecialties.setSpecialtyId(specialties.getId());
+		vetSpecialties.setVetId(vets.getId());
 		vetSpecialties.setSpecialties(specialties);
 		vetSpecialties.setVets(vets);
+		
 		
 		return vetSpecialties;
 	}
 
+//	@Transactional(propagation = Propagation.REQUIRED)
 	public CreateVetSpecialtiesInput createVetSpecialtiesInput() {
 	
 	    CreateVetSpecialtiesInput vetSpecialties = new CreateVetSpecialtiesInput();
-		vetSpecialties.setSpecialtyId(2);
-		vetSpecialties.setVetId(2);
+		vetSpecialties.setSpecialtyId(2L);
+		vetSpecialties.setVetId(2L);
 	    
 		SpecialtiesEntity specialties = new SpecialtiesEntity();
 		specialties.setId(2L);
@@ -145,20 +172,35 @@ public class VetSpecialtiesControllerTest {
 		vetSpecialties.setSpecialtyId(specialties.getId());
 		
 		VetsEntity vets = new VetsEntity();
-  		vets.setFirstName("2");
-		vets.setId(2L);
-  		vets.setLastName("2");
+		UserEntity user = createUserEntity();
+		user.setUserName("u2");
+		user = userRepository.save(user);
+		vets.setId(user.getId());
+		vets.setUser(user);
 		vets=vetsRepository.save(vets);
 		vetSpecialties.setVetId(vets.getId());
 		
 		
 		return vetSpecialties;
 	}
+	
+	public static UserEntity createUserEntity() {
+		UserEntity user = new UserEntity();
+		user.setUserName("u1");
+		user.setId(1L);
+		user.setIsActive(true);
+		user.setPassword("secret");
+		user.setFirstName("U1");
+		user.setLastName("11");
+		user.setEmailAddress("u11@g.com");
+		
+		return user;
+	}
 
 	public VetSpecialtiesEntity createNewEntity() {
 		VetSpecialtiesEntity vetSpecialties = new VetSpecialtiesEntity();
-		vetSpecialties.setSpecialtyId(3);
-		vetSpecialties.setVetId(3);
+		vetSpecialties.setSpecialtyId(3L);
+		vetSpecialties.setVetId(3L);
 		return vetSpecialties;
 	}
 	
@@ -169,11 +211,10 @@ public class VetSpecialtiesControllerTest {
 		return specialties;
 		 
 	}
+	
 	public VetsEntity createVetsEntity() {
 		VetsEntity vets = new VetsEntity();
-  		vets.setFirstName("1");
 		vets.setId(1L);
-  		vets.setLastName("1");
 		return vets;
 		 
 	}
@@ -197,7 +238,7 @@ public class VetSpecialtiesControllerTest {
 
 		vetSpecialties= createEntity();
 		List<VetSpecialtiesEntity> list= vetSpecialties_repository.findAll();
-		if(!list.contains(vetSpecialties)) {
+		if(!list.stream().anyMatch(item -> vetSpecialties.getSpecialties().getName().equals(item.getSpecialties().getName()))) {
 			vetSpecialties=vetSpecialties_repository.save(vetSpecialties);
 		}
 
@@ -214,13 +255,17 @@ public class VetSpecialtiesControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111")
+//		mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111")
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+	    		  .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
 	@Test
 	public void CreateVetSpecialties_VetSpecialtiesDoesNotExist_ReturnStatusOk() throws Exception {
+		
 		CreateVetSpecialtiesInput vetSpecialties = createVetSpecialtiesInput();
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(vetSpecialties);
@@ -233,7 +278,7 @@ public class VetSpecialtiesControllerTest {
 	@Test
 	public void DeleteVetSpecialties_IdIsNotValid_ThrowEntityNotFoundException() throws Exception {
 
-        doReturn(null).when(vetSpecialtiesAppService).findById(new VetSpecialtiesId(111, 111));
+        doReturn(null).when(vetSpecialtiesAppService).findById(new VetSpecialtiesId(111L, 111L));
         org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(delete("/vetSpecialties/specialtyId:111,vetId:111")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("There does not exist a vetSpecialties with a id=specialtyId:111,vetId:111"));
@@ -243,7 +288,7 @@ public class VetSpecialtiesControllerTest {
 	@Test
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
 	
-	 VetSpecialtiesEntity entity =  createNewEntity();
+	    VetSpecialtiesEntity entity =  createNewEntity();
 		SpecialtiesEntity specialties = new SpecialtiesEntity();
 		specialties.setId(3L);
   		specialties.setName("3");
@@ -251,10 +296,13 @@ public class VetSpecialtiesControllerTest {
 		
 		entity.setSpecialtyId(specialties.getId());
 		entity.setSpecialties(specialties);
+		
 		VetsEntity vets = new VetsEntity();
-  		vets.setFirstName("3");
-		vets.setId(3L);
-  		vets.setLastName("3");
+		UserEntity user = createUserEntity();
+		user.setUserName("U3");
+		user = userRepository.save(user);
+		vets.setUser(user);
+		vets.setId(user.getId());
 		vets=vetsRepository.save(vets);
 		
 		entity.setVetId(vets.getId());
@@ -276,21 +324,26 @@ public class VetSpecialtiesControllerTest {
 	@Test
 	public void UpdateVetSpecialties_VetSpecialtiesDoesNotExist_ReturnStatusNotFound() throws Exception {
 
-        doReturn(null).when(vetSpecialtiesAppService).findById(new VetSpecialtiesId(111, 111));
+        doReturn(null).when(vetSpecialtiesAppService).findById(new VetSpecialtiesId(111L, 111L));
 
 		UpdateVetSpecialtiesInput vetSpecialties = new UpdateVetSpecialtiesInput();
-		vetSpecialties.setSpecialtyId(111);
-		vetSpecialties.setVetId(111);
+		vetSpecialties.setSpecialtyId(111L);
+		vetSpecialties.setVetId(111L);
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(vetSpecialties);
-		mvc.perform(put("/vetSpecialties/specialtyId:111,vetId:111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
+//		mvc.perform(put("/vetSpecialties/specialtyId:111,vetId:111").contentType(MediaType.APPLICATION_JSON).content(json))
+//		.andExpect(status().isNotFound());
+//		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/vetSpecialties/specialtyId:111,vetId:111")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+	    		  .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. VetSpecialties with id=specialtyId:111,vetId:111 not found."));
 
 	}    
 
 	@Test
 	public void UpdateVetSpecialties_VetSpecialtiesExists_ReturnStatusOk() throws Exception {
+		
 		VetSpecialtiesEntity entity =  createNewEntity();
 		SpecialtiesEntity specialties = new SpecialtiesEntity();
 		specialties.setId(5L);
@@ -298,14 +351,14 @@ public class VetSpecialtiesControllerTest {
 		specialties=specialtiesRepository.save(specialties);
 		entity.setSpecialtyId(specialties.getId());
 		entity.setSpecialties(specialties);
+		
 		VetsEntity vets = new VetsEntity();
-  		vets.setFirstName("5");
 		vets.setId(5L);
-  		vets.setLastName("5");
 		vets=vetsRepository.save(vets);
 		entity.setVetId(vets.getId());
 		entity.setVets(vets);
 		entity = vetSpecialties_repository.save(entity);
+		
 		FindVetSpecialtiesByIdOutput output= new FindVetSpecialtiesByIdOutput();
   		output.setSpecialtyId(entity.getSpecialtyId());
   		output.setVetId(entity.getVetId());
@@ -355,9 +408,12 @@ public class VetSpecialtiesControllerTest {
 	@Test
 	public void GetSpecialties_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
 	
-	    mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111/specialties")
+//	    mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111/specialties")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+	    org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111/specialties")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+	    		  .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	
@@ -379,9 +435,14 @@ public class VetSpecialtiesControllerTest {
 	@Test
 	public void GetVets_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
 	
-	    mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111/vets")
+//	    mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111/vets")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+	    
+	    
+	    org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vetSpecialties/specialtyId:111,vetId:111/vets")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+	    		  .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	

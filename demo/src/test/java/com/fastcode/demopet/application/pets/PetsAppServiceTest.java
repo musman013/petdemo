@@ -64,7 +64,7 @@ public class PetsAppServiceTest {
 	private OwnersManager  _ownersManager;
 	
 	@Mock
-	private PetsMapper _mapper;
+	private IPetsMapper _mapper;
 
 	@Mock
 	private Logger loggerMock;
@@ -179,7 +179,11 @@ public class PetsAppServiceTest {
 	@Test
 	public void deletePets_PetsIsNotNullAndPetsExists_PetsRemoved() {
 
-		PetsEntity pets= mock(PetsEntity.class);
+		PetsEntity pets= new PetsEntity();
+		OwnersEntity owners = mock(OwnersEntity.class);
+		TypesEntity types = mock(TypesEntity.class);
+		pets.setOwners(owners);
+		pets.setTypes(types);
 		Mockito.when(_petsManager.findById(anyLong())).thenReturn(pets);
 		
 		_appService.delete(ID); 

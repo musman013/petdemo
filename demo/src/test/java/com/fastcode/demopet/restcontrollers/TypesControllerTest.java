@@ -89,6 +89,8 @@ public class TypesControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.types").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -108,8 +110,6 @@ public class TypesControllerTest {
 	    CreateTypesInput types = new CreateTypesInput();
   		types.setName("2");
 	    
-		
-		
 		return types;
 	}
 
@@ -157,11 +157,13 @@ public class TypesControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/types/111")
-				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
-
-	}    
+//		mvc.perform(get("/types/111")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/types/111")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+	}       
 	@Test
 	public void CreateTypes_TypesDoesNotExist_ReturnStatusOk() throws Exception {
 		CreateTypesInput types = createTypesInput();
@@ -211,9 +213,13 @@ public class TypesControllerTest {
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(types);
-		mvc.perform(put("/types/111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
-
+		
+//		mvc.perform(put("/types/111").contentType(MediaType.APPLICATION_JSON).content(json))
+//		.andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/types/111")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Types with id=111 not found."));
 	}    
 
 	@Test
@@ -285,9 +291,13 @@ public class TypesControllerTest {
 	public void GetPets_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(typesAppService.parsePetsJoinColumn(anyString())).thenReturn(null);
-		mvc.perform(get("/types/1/pets?search=typeid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/types/1/pets?search=typeid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/types/1/pets?search=typeid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
 	}    
     
 

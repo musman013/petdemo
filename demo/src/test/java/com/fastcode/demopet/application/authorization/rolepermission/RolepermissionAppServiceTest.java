@@ -112,7 +112,7 @@ public class RolepermissionAppServiceTest {
 		Mockito.when(_permissionManager.findById(anyLong())).thenReturn(permissionEntity);
 		Mockito.when(_rolepermissionManager.create(any(RolepermissionEntity.class))).thenReturn(rolepermissionEntity); 
 		
-		Assertions.assertThat(_appService.create(rolepermission)).isEqualTo(_mapper.rolepermissionEntityToCreateRolepermissionOutput(rolepermissionEntity)); 
+		Assertions.assertThat(_appService.create(rolepermission)).isEqualTo(_mapper.roleAndPermissionEntityToCreateRolepermissionOutput(roleEntity, permissionEntity)); 
 	} 
 
 	@Test
@@ -178,6 +178,11 @@ public class RolepermissionAppServiceTest {
 		RolepermissionEntity rolepermission= mock(RolepermissionEntity.class);
 		Mockito.when(_rolepermissionManager.findById(any(RolepermissionId.class))).thenReturn(rolepermission);
 		
+		RoleEntity roleEntity= mock(RoleEntity.class);
+		PermissionEntity permissionEntity= mock(PermissionEntity.class);
+ 		
+		Mockito.when(_permissionManager.findById(any(Long.class))).thenReturn(permissionEntity);
+ 		Mockito.when(_roleManager.findById(anyLong())).thenReturn(roleEntity); 
 		_appService.delete(rolePermissionId); 
 		verify(_rolepermissionManager).delete(rolepermission);
 	}

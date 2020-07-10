@@ -105,7 +105,7 @@ public class UserAppService implements IUserAppService {
     	UserpreferenceEntity userpreference = new UserpreferenceEntity();
     	userpreference.setTheme("default-theme");
     	userpreference.setLanguage("en");
-    	userpreference.setId(user.getId());
+    	userpreference.setUserId(user.getId());
     	userpreference.setUser(user);
     	
     	return _userpreferenceManager.create(userpreference);
@@ -184,7 +184,9 @@ public class UserAppService implements IUserAppService {
 	   }
 	    
 	    UserpreferenceEntity userpreference = _userpreferenceManager.findById(userId);
+	    if(userpreference !=null) {
 	    _userpreferenceManager.delete(userpreference);
+	    }
 		_userManager.delete(existing);
 		idmIdentityService.deleteUser(existing.getUserName());
 	
@@ -275,7 +277,7 @@ public class UserAppService implements IUserAppService {
 		if (foundUser == null)  
 			return null ; 
  	   
-	    UserpreferenceEntity userPreference = _userpreferenceManager.findById(userId);
+	   UserpreferenceEntity userPreference = _userpreferenceManager.findById(userId);
  	   FindUserByIdOutput output= mapper.userEntityToFindUserByIdOutput(foundUser, userPreference); 
 		return output;
 	}
@@ -533,6 +535,8 @@ public class UserAppService implements IUserAppService {
 					builder.and(user.userName.ne(details.getValue().getSearchValue()));
 			}
 		}
+		
+		
 	
 		return builder;
 	}

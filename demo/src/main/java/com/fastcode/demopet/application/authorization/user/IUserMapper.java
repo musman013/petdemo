@@ -22,8 +22,7 @@ public interface IUserMapper {
      */
 
     UserEntity createUserInputToUserEntity(CreateUserInput userDto);
-   
-    @Mapping(source = "entity.id", target = "id")
+
     CreateUserOutput userEntityToCreateUserOutput(UserEntity entity, UserpreferenceEntity userPreference);
     
     @Mappings({
@@ -45,7 +44,6 @@ public interface IUserMapper {
     
     UserEntity findUserWithAllFieldsByIdOutputToUserEntity(FindUserWithAllFieldsByIdOutput user);
 
-    @Mapping(source = "entity.id", target = "id")
     FindUserByIdOutput userEntityToFindUserByIdOutput(UserEntity entity, UserpreferenceEntity userPreference);
      
     FindUserByNameOutput userEntityToFindUserByNameOutput(UserEntity entity);

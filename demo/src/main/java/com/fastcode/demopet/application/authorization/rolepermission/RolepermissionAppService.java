@@ -137,6 +137,8 @@ public class RolepermissionAppService implements IRolepermissionAppService {
 		
 		foundRole.removeRolepermission(existing);
 		foundPermission.removeRolepermission(existing);
+		
+		_rolepermissionManager.delete(existing);
 	}
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

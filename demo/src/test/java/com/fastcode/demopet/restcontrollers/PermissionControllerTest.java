@@ -104,6 +104,8 @@ public class PermissionControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.permission").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -142,7 +144,6 @@ public class PermissionControllerTest {
         when(logHelper.getLogger()).thenReturn(loggerMock);
 		doNothing().when(loggerMock).error(anyString());
 		
-		
         this.mvc = MockMvcBuilders.standaloneSetup(permissionController)
         		.setCustomArgumentResolvers(sortArgumentResolver)
         		.setControllerAdvice()
@@ -155,7 +156,7 @@ public class PermissionControllerTest {
 	
 		permission= createEntity();
 		List<PermissionEntity> list= permission_repository.findAll();
-	    if(!list.contains(permission))
+	    if(!list.stream().anyMatch(item -> permission.getName().equals(item.getName())))
 		   permission=permission_repository.save(permission);
 
 	}
@@ -170,9 +171,13 @@ public class PermissionControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-	      mvc.perform(get("/permission/15")
-	    		  .contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+//	      mvc.perform(get("/permission/15")
+//	    		  .contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+	      
+	      org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/permission/111")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 
@@ -251,9 +256,13 @@ public class PermissionControllerTest {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(permission);
 		
-        mvc.perform(put("/permission/21").contentType(MediaType.APPLICATION_JSON).content(json))
-		  .andExpect(status().isNotFound());
-     
+//        mvc.perform(put("/permission/21").contentType(MediaType.APPLICATION_JSON).content(json))
+//		  .andExpect(status().isNotFound());
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/permission/21")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Permission with id=21 not found."));
+
 	}    
 	
 	@Test
@@ -325,9 +334,14 @@ public class PermissionControllerTest {
 	public void GetUserpermission_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(permissionAppService.parseUserpermissionJoinColumn(any(String.class))).thenReturn(null);
-		mvc.perform(get("/permission/2/userpermission?search=permissionid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/permission/2/userpermission?search=permissionid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+//		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/permission/2/userpermission?search=permissionid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
+
 	}    
 	
 	@Test
@@ -358,9 +372,13 @@ public class PermissionControllerTest {
 	public void GetRolepermission_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(permissionAppService.parseRolepermissionJoinColumn(any(String.class))).thenReturn(null);
-		mvc.perform(get("/permission/2/rolepermission?search=permissionid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/permission/2/rolepermission?search=permissionid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/permission/2/rolepermission?search=permissionid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
 	}    
 	
 }

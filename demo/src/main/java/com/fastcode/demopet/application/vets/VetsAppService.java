@@ -12,6 +12,7 @@ import com.fastcode.demopet.application.vets.dto.*;
 import com.fastcode.demopet.domain.vets.IVetsManager;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
+import com.fastcode.demopet.domain.authorization.userpreference.IUserpreferenceManager;
 import com.fastcode.demopet.domain.model.QVetsEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
@@ -40,6 +41,9 @@ public class VetsAppService implements IVetsAppService {
 
 	@Autowired
 	private IVetsManager _vetsManager;
+	
+	@Autowired
+	private IUserpreferenceManager _userpreferenceManager;
 
 	@Autowired
 	private IVetsMapper mapper;
@@ -74,6 +78,7 @@ public class VetsAppService implements IVetsAppService {
  		idmIdentityService.createUser(user, actIdUser);
 		assignVetRole(user.getId());
 		
+		vets.setId(user.getId());
 		vets.setUser(user);
 
 		VetsEntity createdVets = _vetsManager.create(vets);
@@ -129,7 +134,7 @@ public class VetsAppService implements IVetsAppService {
 		if (foundVets == null)  
 			return null ; 
 
-		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(foundVets.getUser());
+		UserpreferenceEntity userpreference = _userpreferenceManager.findById(vetsId);
 		FindVetsByIdOutput output=mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
 		
 		return output;
@@ -159,7 +164,7 @@ public class VetsAppService implements IVetsAppService {
 
 		while (vetsIterator.hasNext()) {
 			VetsEntity vet = vetsIterator.next();
-			UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(vet.getUser());
+			UserpreferenceEntity userpreference = _userpreferenceManager.findById(vet.getId());
 			output.add(mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(vet, vet.getUser(), userpreference));
 		}
 		return output;

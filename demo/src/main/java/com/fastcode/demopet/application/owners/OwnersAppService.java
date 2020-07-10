@@ -1,6 +1,5 @@
 package com.fastcode.demopet.application.owners;
 
-import com.fastcode.demopet.application.authorization.user.IUserAppService;
 import com.fastcode.demopet.application.authorization.user.IUserMapper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
@@ -15,9 +14,9 @@ import com.fastcode.demopet.domain.model.QOwnersEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.UserpreferenceEntity;
-import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
+import com.fastcode.demopet.domain.authorization.userpreference.IUserpreferenceManager;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.commons.search.*;
 import com.querydsl.core.BooleanBuilder;
@@ -45,6 +44,9 @@ public class OwnersAppService implements IOwnersAppService {
 
 	@Autowired
 	private IUserManager _userManager;
+	
+	@Autowired 
+	private IUserpreferenceManager _userpreferenceManager;
 	
 	@Autowired
 	private IRoleManager _roleManager;
@@ -75,14 +77,14 @@ public class OwnersAppService implements IOwnersAppService {
  		idmIdentityService.createUser(user, actIdUser);
  		
 		OwnersEntity owners = mapper.createOwnersInputToOwnersEntity(input);
+		owners.setId(user.getId());
 		owners.setUser(user);
 		
 		OwnersEntity createdOwners = _ownersManager.create(owners);
 		assignOwnerRole(owners.getId());
 		
 		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(user);
-		
-		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners,user, userpreference);
+		return mapper.ownersEntityAndUserEntityToCreateOwnersOutput(createdOwners, user, userpreference);
 	}
 	
 	public void assignOwnerRole(Long userId)
@@ -134,7 +136,7 @@ public class OwnersAppService implements IOwnersAppService {
 		if (foundOwners == null)  
 			return null ; 
 
-		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(foundOwners.getUser());
+		UserpreferenceEntity userpreference = _userpreferenceManager.findById(ownersId);
 		FindOwnersByIdOutput output=mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(foundOwners,foundOwners.getUser(),userpreference); 
 		
 		return output;
@@ -149,8 +151,7 @@ public class OwnersAppService implements IOwnersAppService {
 
 		while (ownersIterator.hasNext()) {
 			OwnersEntity owner = ownersIterator.next();
-			UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(owner.getUser());
-			
+			UserpreferenceEntity userpreference = _userpreferenceManager.findById(owner.getId());
 			output.add(mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(owner, owner.getUser(),userpreference));
 		}
 		return output;
@@ -232,31 +233,7 @@ public class OwnersAppService implements IOwnersAppService {
 				else if(details.getValue().getOperator().equals("notEqual"))
 					builder.and(owners.user.userName.ne(details.getValue().getSearchValue()));
 			}
-			//            if(details.getKey().replace("%20","").trim().equals("firstName")) {
-			//				if(details.getValue().getOperator().equals("contains"))
-			//					builder.and(owners.firstName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-			//				else if(details.getValue().getOperator().equals("equals"))
-			//					builder.and(owners.firstName.eq(details.getValue().getSearchValue()));
-			//				else if(details.getValue().getOperator().equals("notEqual"))
-			//					builder.and(owners.firstName.ne(details.getValue().getSearchValue()));
-			//			}
-			//            if(details.getKey().replace("%20","").trim().equals("lastName")) {
-			//				if(details.getValue().getOperator().equals("contains"))
-			//					builder.and(owners.lastName.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-			//				else if(details.getValue().getOperator().equals("equals"))
-			//					builder.and(owners.lastName.eq(details.getValue().getSearchValue()));
-			//				else if(details.getValue().getOperator().equals("notEqual"))
-			//					builder.and(owners.lastName.ne(details.getValue().getSearchValue()));
-			//			}
-			//            if(details.getKey().replace("%20","").trim().equals("telephone")) {
-			//				if(details.getValue().getOperator().equals("contains"))
-			//					builder.and(owners.telephone.likeIgnoreCase("%"+ details.getValue().getSearchValue() + "%"));
-			//				else if(details.getValue().getOperator().equals("equals"))
-			//					builder.and(owners.telephone.eq(details.getValue().getSearchValue()));
-			//				else if(details.getValue().getOperator().equals("notEqual"))
-			//					builder.and(owners.telephone.ne(details.getValue().getSearchValue()));
-			//			}
-
+		
 			for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
 				if(joinCol != null && joinCol.getKey().equals("userId")) {
 					builder.and(owners.user.id.eq(Long.parseLong(joinCol.getValue())));

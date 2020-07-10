@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
-import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -99,6 +98,9 @@ public class UserpermissionControllerTest {
 	
 	private UserpermissionEntity userpermission;
 	
+	private PermissionEntity permission;
+	private UserEntity user;
+	
 	private MockMvc mvc;
 	
     
@@ -120,21 +122,20 @@ public class UserpermissionControllerTest {
 		em.createNativeQuery("truncate table sample.userpermission").executeUpdate();
 		em.createNativeQuery("truncate table sample.permission").executeUpdate();
 		em.createNativeQuery("truncate table sample.f_user").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
     
 	public UserpermissionEntity createEntity() {
-		UserEntity user=createUserEntity();
-		PermissionEntity permission =createPermissionEntity();
+		user=createUserEntity();
+		permission =createPermissionEntity();
 		
-		if(!userRepository.findAll().contains(user))
-		{
+		if(!userRepository.findAll().stream().anyMatch(item -> user.getUserName().equals(item.getUserName()))) {
 		user=userRepository.save(user);
 		}
 
-		if(!permissionRepository.findAll().contains(permission))
-		{
+		if(!permissionRepository.findAll().stream().anyMatch(item -> permission.getName().equals(item.getName()))) {
 			permission=permissionRepository.save(permission);
 		}
 		
@@ -267,7 +268,8 @@ public class UserpermissionControllerTest {
 		
 		List<UserpermissionEntity> list= userpermissionRepository.findAll();
 		System.out.println(list);
-	    if(!list.contains(userpermission)){
+	//    if(!list.contains(userpermission)){
+	    if(!list.stream().anyMatch(item -> userpermission.getPermission().getName().equals(item.getPermission().getName()))) {
 	    	userpermission=userpermissionRepository.save(userpermission);
 		}
 	}
@@ -283,9 +285,13 @@ public class UserpermissionControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-	      mvc.perform(get("/userpermission/permissionId:32,userId:32")
-	    		  .contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+//	      mvc.perform(get("/userpermission/permissionId:32,userId:32")
+//	    		  .contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+//	      
+	      org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/userpermission/permissionId:32,userId:32")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	}    
 	
 	@Test
@@ -402,9 +408,13 @@ public class UserpermissionControllerTest {
 		String json = ow.writeValueAsString(userpermission);
 		doReturn(null).when(userpermissionAppService).findById(new UserpermissionId(32L,32L));
 		 
-     	mvc.perform(put("/userpermission/permissionId:32,userId:32")
-     			 .contentType(MediaType.APPLICATION_JSON).content(json))
-		  .andExpect(status().isNotFound());
+//     	mvc.perform(put("/userpermission/permissionId:32,userId:32")
+//     			 .contentType(MediaType.APPLICATION_JSON).content(json))
+//		  .andExpect(status().isNotFound());
+     	
+     	org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/userpermission/permissionId:32,userId:32")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Userpermission with id=permissionId:32,userId:32 not found."));
 
 	}
 	
@@ -435,9 +445,12 @@ public class UserpermissionControllerTest {
         UserpermissionEntity entity= new UserpermissionEntity();
 		entity.setUserId(up.getUserId());
         entity.setPermissionId(up.getPermissionId());
+        entity.setUser(up.getUser());
+        entity.setPermission(up.getPermission());
         userpermissionRepository.delete(entity);
-        userRepository.delete(up.getUser());
-		permissionRepository.delete(up.getPermission());
+   
+//        userRepository.delete(up.getUser());
+//		permissionRepository.delete(up.getPermission());
 	}    
 	
 	@Test
@@ -468,10 +481,10 @@ public class UserpermissionControllerTest {
 	
 	@Test
 	public void GetUser_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
-	
-	    mvc.perform(get("/userpermission/permissionId:99,userId:99/user")
+
+	    org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/userpermission/permissionId:99,userId:99/user")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	
@@ -495,9 +508,12 @@ public class UserpermissionControllerTest {
 	@Test
 	public void GetPermission_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
 	
-	    mvc.perform(get("/userpermission/permissionId:99,userId:99/permission")
+//	    mvc.perform(get("/userpermission/permissionId:99,userId:99/permission")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+	    org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/userpermission/permissionId:99,userId:99/permission")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	

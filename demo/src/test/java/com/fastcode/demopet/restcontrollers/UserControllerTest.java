@@ -52,9 +52,12 @@ import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFi
 import com.fastcode.demopet.application.authorization.user.dto.UpdateUserInput;
 import com.fastcode.demopet.application.authorization.userpermission.UserpermissionAppService;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
-
+import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
+import com.fastcode.demopet.domain.irepository.IActIdUserRepository;
 import com.fastcode.demopet.domain.irepository.IUserRepository;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.processmanagement.users.ActIdUserEntity;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -83,6 +86,15 @@ public class UserControllerTest {
 	
 	@SpyBean
 	private PasswordEncoder pEncoder;
+	
+	@SpyBean
+    private FlowableIdentityService idmIdentityService;
+ 
+	@SpyBean
+    private ActIdUserMapper actIdUserMapper;
+     
+	@Autowired
+ 	private IActIdUserRepository actIdUserRepo;
 	 
 	@SpyBean
 	private JWTAppService jwtAppService;
@@ -111,6 +123,9 @@ public class UserControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.f_user").executeUpdate();
+		em.createNativeQuery("truncate table sample.act_id_user").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -173,28 +188,44 @@ public class UserControllerTest {
 	@Before
 	public void initTest() {
 	
-		user= createEntity();
+		user = createEntity();
 	
 		List<UserEntity> list= user_repository.findAll();
-	    if(!list.contains(user)) {
+
+	    if(!list.stream().anyMatch(item -> user.getUserName().equals(item.getUserName()))) {
 		   user=user_repository.save(user);
-	    }
+		   ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(user);
+		   List<ActIdUserEntity> actUserList = actIdUserRepo.findAll();
+		  
+		   if(!actUserList.stream().anyMatch(item -> actIdUser.getId().equals(item.getId()))) {
+ 			 idmIdentityService.createUser(user, actIdUser);
+ 			}
+
+		}
 	
 	}
 	
 	@Test
 	public void FindById_IdIsValid_ReturnStatusOk() throws Exception {
+	//	UserEntity user = user_repository.save(createEntity());
 		 mvc.perform(get("/user/" + user.getId())
 				 .contentType(MediaType.APPLICATION_JSON))
 	    		  .andExpect(status().isOk());
+		 
+		 user_repository.delete(user);
+		 
 	}  
 
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-	      mvc.perform(get("/user/21")
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/user/21")
 	    		  .contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+	      .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+	
+//	      mvc.perform(get("/user/21")
+//	    		  .contentType(MediaType.APPLICATION_JSON))
+//	      .andExpect(status().isOk()).hasCause(new EntityNotFoundException("There does not exist a user with a id=21"));
 	
 	}    
 	@Test
@@ -209,7 +240,8 @@ public class UserControllerTest {
 		 mvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON).content(json))
 		  .andExpect(status().isOk());
 		 
-		 user_repository.delete(createNewEntity());
+	//	 user_repository.delete(createNewEntity());
+	//	 idmIdentityService.deleteUser(createNewEntity().getUserName());
 
 	}  
 
@@ -249,20 +281,27 @@ public class UserControllerTest {
 	@Test
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
 		
-		Long id = user_repository.save(createNewEntity()).getId();
+		UserEntity user = user_repository.save(createNewEntity());
+		Long id = user.getId();
 		
 		FindUserByIdOutput output= new FindUserByIdOutput();
 	    output.setId(id.longValue());
-	    output.setUserName("U33");
+	    output.setUserName("abc");
 	    output.setFirstName("U33");
 	    output.setLastName("133");
 	    output.setEmailAddress("u133@g.com");
 	    output.setIsActive(true);
 	    
 	    Mockito.when(userAppService.findById(anyLong())).thenReturn(output);
+	    
+	    ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(createNewEntity());
+ 		idmIdentityService.createUser(createNewEntity(), actIdUser);
+ 		
      	 mvc.perform(delete("/user/"+id.toString())
      			 .contentType(MediaType.APPLICATION_JSON))
 		  .andExpect(status().isNoContent());
+     	 
+     	
 	}  
 	
 	
@@ -280,19 +319,22 @@ public class UserControllerTest {
 		
  		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(user);
-      
-        mvc.perform(put("/user/1").contentType(MediaType.APPLICATION_JSON).content(json))
-		  .andExpect(status().isNotFound());
+     
+//        mvc.perform(put("/user/1").contentType(MediaType.APPLICATION_JSON).content(json))
+//		  .andExpect(status().isNotFound());
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/user/99")
+	    		  .contentType(MediaType.APPLICATION_JSON).content(json))
+	      .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. User with id=99 not found."));
      
 	}    
 	
 	@Test
 	public void UpdateUser_UserExists_ReturnStatusOk() throws Exception {
-		UserEntity ue=user_repository.save(createNewEntity());
+		UserEntity ue= user_repository.save(createNewEntity());
 		Long id = ue.getId();
 		FindUserWithAllFieldsByIdOutput output= new FindUserWithAllFieldsByIdOutput();
 	    output.setId(id.longValue());
-	    output.setUserName(ue.getUserName());
+	    output.setUserName("us1");
 	    output.setFirstName(ue.getFirstName());
 	    output.setLastName(ue.getLastName());
 	    output.setEmailAddress(ue.getEmailAddress());
@@ -304,7 +346,7 @@ public class UserControllerTest {
 	    
         UpdateUserInput user = new UpdateUserInput();
         user.setId(id.longValue());
-		user.setUserName(ue.getUserName());
+		user.setUserName("us1");
 		user.setFirstName("U1");
 		user.setLastName("16");
 		user.setEmailAddress("u16@g.com");
@@ -312,11 +354,15 @@ public class UserControllerTest {
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(user);
       
+		ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity(ue);
+ 		idmIdentityService.createUser(ue, actIdUser);
+ 		
         mvc.perform(put("/user/"+id).contentType(MediaType.APPLICATION_JSON).content(json))
 	    .andExpect(status().isOk());
 
         UserEntity de= createEntity();
         de.setId(id);
+        idmIdentityService.deleteUser(de.getUserName());
         user_repository.delete(de);
      
 	}    
@@ -365,9 +411,13 @@ public class UserControllerTest {
 	public void GetUserrole_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(userAppService.parseUserroleJoinColumn(any(String.class))).thenReturn(null);
-		mvc.perform(get("/user/2/userrole?search=roleid[equals]=1&limit=10&offset=1")
-				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+//		mvc.perform(get("/user/2/userrole?search=roleid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/user/2/userrole?search=roleid[equals]=1&limit=10&offset=1")
+	    		  .contentType(MediaType.APPLICATION_JSON))
+	      .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
+    
 	}    
 	
 	@Test
@@ -398,9 +448,12 @@ public class UserControllerTest {
 	public void GetUserpermission_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(userAppService.parseUserpermissionJoinColumn(any(String.class))).thenReturn(null);
-		mvc.perform(get("/user/2/userpermission?search=userid[equals]=1&limit=10&offset=1")
-				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+//		mvc.perform(get("/user/2/userpermission?search=userid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/user/2/userpermission?search=userid[equals]=1&limit=10&offset=1")
+	    		  .contentType(MediaType.APPLICATION_JSON))
+	      .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
 	}    
 	
 	

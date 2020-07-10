@@ -12,7 +12,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "act_id_membership")
+@Table(name = "act_id_membership", schema = "sample")
 @IdClass(MembershipId.class)
 @Getter @Setter
 @NoArgsConstructor

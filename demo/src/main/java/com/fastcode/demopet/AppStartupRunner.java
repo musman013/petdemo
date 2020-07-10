@@ -296,7 +296,7 @@ public class AppStartupRunner implements ApplicationRunner {
 		UserpreferenceEntity userpreference = new UserpreferenceEntity();
 		userpreference.setTheme("default-theme");
 		userpreference.setLanguage("en");
-		userpreference.setId(user.getId());
+		userpreference.setUserId(user.getId());
 		userpreference.setUser(user);
 
 		_userpreferenceManager.create(userpreference);

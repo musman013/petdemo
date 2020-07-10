@@ -195,6 +195,7 @@ public class UserController {
 		
     return new ResponseEntity(_userAppService.update(Long.valueOf(id),user), HttpStatus.OK);
 	}
+		
 	// ------------ Retrieve a user ------------
 	@PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

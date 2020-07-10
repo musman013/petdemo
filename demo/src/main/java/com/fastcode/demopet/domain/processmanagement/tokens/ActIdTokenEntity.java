@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "act_id_token")
+@Table(name = "act_id_token", schema = "sample")
 @Getter @Setter
 @NoArgsConstructor
 public class ActIdTokenEntity implements Serializable {
