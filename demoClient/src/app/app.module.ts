@@ -1,6 +1,7 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +12,13 @@ import { CubejsClientModule } from '@cubejs-client/ngx';
 import { UpgradeModule } from "@angular/upgrade/static";
 import { UrlHandlingStrategy } from '@angular/router';
 import { TaskAppModule } from 'projects/task-app/src/public_api';
+
+
+import { FlatpickrModule } from 'angularx-flatpickr';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -55,6 +63,7 @@ import { OwnersListComponent, OwnersDetailsComponent, OwnersNewComponent } from 
 import { VetSpecialtiesListComponent, VetSpecialtiesDetailsComponent, VetSpecialtiesNewComponent } from './vet-specialties/index';
 import { InvoicesListComponent, InvoicesDetailsComponent, InvoicesNewComponent } from './invoices/index';
 import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
+import { VisitPlannerComponent } from './visits/visit-planner/visit-planner.component';
 import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
 import { ReportPasswordComponent } from './reporting-module/pages/myreports/report-password/report-password.component';
 
@@ -113,11 +122,12 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 		InvoicesListComponent,
 		InvoicesDetailsComponent,
 		InvoicesNewComponent,
-		ResourceViewComponent
+    ResourceViewComponent,
+    VisitPlannerComponent
 	],
 	imports: [
 		BrowserModule,
-		routingModule,
+    routingModule,
 		HttpClientModule,
 		BrowserAnimationsModule,
 		LayoutModule,
@@ -144,7 +154,13 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 		UpgradeModule,
 		TaskAppModule.forRoot({
 			apiPath: environment.apiUrl // url where task backend app is running
-		}),
+    }),
+    NgbModalModule,
+    FlatpickrModule.forRoot(),
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory,
+    }),
 
 	],
 	providers: [
@@ -158,7 +174,8 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 	bootstrap: [AppComponent],
 	entryComponents: [
 		ReportPasswordComponent
-	]
+  ],
+  exports: [VisitPlannerComponent]
 })
 export class AppModule {
 }

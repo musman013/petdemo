@@ -7,6 +7,7 @@
 @import url("../assets/font.css");
 @import './dynamic-styles.scss';
 @import "reporting.scss";
+@import "../../node_modules/angular-calendar/css/angular-calendar.css";
 html,
 body {
   height: 100%;
@@ -31,16 +32,16 @@ body {
     width: 0.7em;
     height: 0.6em;
   }
-  
+
   ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px rgb(162, 162, 162);
   }
-  
+
   ::-webkit-scrollbar-thumb {
    // background-color: #006064;
   //  background-color: mat-color($fc-primary-color);
     outline: 1px solid #000000;
-  } 
+  }
   .list-container {
     height: calc(100vh - 70px);
     padding: 24px;
@@ -57,7 +58,7 @@ body {
   .table-container {
     overflow: auto;
   }
-  
+
   .list-container .table-container .mat-table {
     box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0),
       0px 8px 10px 1px rgba(0, 0, 0, 0), 0px 3px 14px 2px rgba(0, 0, 0, 0.04);
@@ -65,7 +66,7 @@ body {
   .delete-dialog-box {
     min-width: 400px;
   }
-    
+
   .mat-expansion-panel-body .mat-expansion-panel-body {
     padding: 0 0 16px 3px !important;
   }
@@ -74,7 +75,7 @@ body {
   }
   .mat-expansion-panel-content {
     position: relative;
-  } 
+  }
   .mat-expansion-panel-content:after {
     content: "";
     position: absolute;
@@ -86,11 +87,11 @@ body {
     left: 25px;
     opacity: 0.5;
   }
-  
+
   .mat-expansion-panel-content .mat-expansion-panel-content:after {
     display: none;
   }
-  
+
   .spinner-container {
     margin: auto;
     position: fixed;
@@ -105,7 +106,7 @@ body {
   //  background: rgba(255, 255, 255, 0.78);
   //  background: mat-color($background,background);
   }
-  
+
   .list-container .list-container {
     overflow: initial !important;
   }
@@ -124,18 +125,18 @@ body {
   .full-height{
     height: 100%;
   }
-  
+
   * {
     box-sizing: border-box;
   }
   /* custom grid css Ends */
-  
+
   .mat-dialog-container mat-card-content.mat-card-content {
     overflow: auto;
     max-height: calc(100vh - 145px);
     overflow-x: hidden;
   }
-  
+
   .period-control__button,
   .ngx-timepicker-control__input {
     font-size: 15px !important;
@@ -149,7 +150,7 @@ body {
     width: 44px !important;
     margin: 27px auto 0;
   }
-  
+
   section.small-spinner-container svg {
     width: 44px !important;
     height: 44px !important;
@@ -167,7 +168,7 @@ body {
     padding-right: 0;
     padding-left: 0;
   }
-  
+
   .fc-col,
   .fc-col-1,
   .fc-col-10,
@@ -244,7 +245,7 @@ body {
     padding-right: 15px;
     padding-left: 15px;
   }
-  
+
   .col {
     -ms-flex-preferred-size: 0;
     flex-basis: 0;
@@ -253,7 +254,7 @@ body {
     flex-grow: 1;
     max-width: 100%;
   }
-  
+
   .fc-col-auto {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 auto;
@@ -261,91 +262,91 @@ body {
     width: auto;
     max-width: none;
   }
-  
+
   .fc-col-1 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 8.333333%;
     flex: 0 0 8.333333%;
     max-width: 8.333333%;
   }
-  
+
   .fc-col-2 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 16.666667%;
     flex: 0 0 16.666667%;
     max-width: 16.666667%;
   }
-  
+
   .fc-col-3 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 25%;
     flex: 0 0 25%;
     max-width: 25%;
   }
-  
+
   .fc-col-4 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 33.333333%;
     flex: 0 0 33.333333%;
     max-width: 33.333333%;
   }
-  
+
   .fc-col-5 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 41.666667%;
     flex: 0 0 41.666667%;
     max-width: 41.666667%;
   }
-  
+
   .fc-col-6 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 50%;
     flex: 0 0 50%;
     max-width: 50%;
   }
-  
+
   .fc-col-7 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 58.333333%;
     flex: 0 0 58.333333%;
     max-width: 58.333333%;
   }
-  
+
   .fc-col-8 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 66.666667%;
     flex: 0 0 66.666667%;
     max-width: 66.666667%;
   }
-  
+
   .fc-col-9 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 75%;
     flex: 0 0 75%;
     max-width: 75%;
   }
-  
+
   .fc-col-10 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 83.333333%;
     flex: 0 0 83.333333%;
     max-width: 83.333333%;
   }
-  
+
   .fc-col-11 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 91.666667%;
     flex: 0 0 91.666667%;
     max-width: 91.666667%;
   }
-  
+
   .fc-col-12 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 100%;
     flex: 0 0 100%;
     max-width: 100%;
   }
-  
+
   @media (min-width: 576px) {
     .fc-col-sm {
       -ms-flex-preferred-size: 0;
@@ -435,7 +436,7 @@ body {
       max-width: 100%;
     }
   }
-  
+
   @media (min-width: 768px) {
     .fc-col-md {
       -ms-flex-preferred-size: 0;
@@ -525,7 +526,7 @@ body {
       max-width: 100%;
     }
   }
-  
+
   @media (min-width: 992px) {
     .fc-col-lg {
       -ms-flex-preferred-size: 0;
@@ -615,7 +616,7 @@ body {
       max-width: 100%;
     }
   }
-  
+
   @media (min-width: 1200px) {
     .fc-col-xl {
       -ms-flex-preferred-size: 0;
@@ -705,7 +706,7 @@ body {
       max-width: 100%;
     }
   }
-  
+
   @media (max-width: 1024px) {
     .fc-col-sm-12 {
       -ms-flex: none;
@@ -714,15 +715,15 @@ body {
       width: 100%;
     }
   }
-  
+
   //  Grid css fc End
-  
+
   @media (max-width: 1440px) {
     .sort-value .toggle-2 {
       margin-bottom: 9px;
     }
   }
-  
+
   @media (max-width: 1024px) {
     .mat-sidenav-content .container {
       min-width: 100%;
@@ -737,7 +738,7 @@ body {
     .list-container .list-container {
       padding: 0 !important;
     }
-  
+
     .list-container > div > .fc-col-sm-12 {
       padding: 0 !important;
     }
@@ -764,7 +765,7 @@ body {
       flex-direction: column;
     }
   }
-  
+
   @media (max-width: 580px) {
     .cdk-overlay-pane.fc-modal-dialog {
       min-width: 90%;
@@ -778,7 +779,7 @@ body {
       text-align: left;
     }
   }
-  
+
   @media screen and (min-height: 676px) and (max-width: 1200px) {
     // .mat-dialog-container mat-card-content.mat-card-content {
     // 	max-height: 600px;
@@ -786,7 +787,7 @@ body {
     // 	overflow-x: hidden;
     // }
   }
-  
+
   @media (max-height: 600px) {
     // .mat-dialog-container mat-card-content.mat-card-content {
     // 	max-height: 400px;
@@ -794,7 +795,7 @@ body {
     // 	overflow-x: hidden;
     // }
   }
-  
+
   @media (max-width: 474px) {
     .time-container .lable-inline {
       opacity: 0.7;

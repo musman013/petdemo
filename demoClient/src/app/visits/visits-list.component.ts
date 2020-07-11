@@ -11,6 +11,7 @@ import { PetsService } from '../pets/pets.service';
 import { VetsService } from '../vets/vets.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
 import { CompleteVisitComponent } from './complete-visit/complete-visit.component';
+import { VisitPlannerComponent } from './visit-planner/visit-planner.component';
 import { AuthenticationService } from '../core/authentication.service';
 
 @Component({

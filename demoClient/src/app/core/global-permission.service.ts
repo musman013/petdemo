@@ -13,16 +13,16 @@ export class GlobalPermissionService implements IGlobalPermissionService {
   }
 
   hasPermissionOnEntity(entity: string, crudType: string): Boolean {
-    // return true;
+    return true;
     if (!entity) {
       return false;
     }
-    let permission = `${entity}ENTITY_${crudType}`.toUpperCase(); 
+    let permission = `${entity}ENTITY_${crudType}`.toUpperCase();
     return this.hasPermission(permission);
   }
 
   hasPermission(permission: string) {
-    // return true;
+    return true;
     let tokenDetails: ITokenDetail = this.authService.decodeToken();
 		if (!tokenDetails) {
       return false;

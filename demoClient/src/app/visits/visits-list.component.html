@@ -67,20 +67,20 @@
           <mat-header-cell *matHeaderCellDef> {{getFieldLabel("Actions")}}</mat-header-cell>
           <mat-cell *matCellDef="let item; let i=index" (click)="$event.stopPropagation()" style="flex-wrap: wrap-reverse;">
             <button name="complete" *ngIf="
-              role == ITokenRole.vet && 
+              role == ITokenRole.vet &&
               item.status == VisitStatus.Confirmed" color="primary" mat-flat-button aria-label="complete visit action with a heart icon"
               (click)="completeVisit(item, i)">
               <mat-label>Complete</mat-label>
             </button>
             <button name="cancel" *ngIf="
-              role != ITokenRole.vet && 
+              role != ITokenRole.vet &&
 				      item.status != VisitStatus.Completed &&
 				      item.status != VisitStatus.Cancelled" color="primary" mat-flat-button aria-label="cancel visit action"
               (click)="changeStatus(item, i, 'CANCELLED')">
               <mat-label>Cancel</mat-label>
             </button>
             <button name="confirm" *ngIf="
-              role != ITokenRole.vet && 
+              role != ITokenRole.vet &&
               item.status == VisitStatus.Created" color="primary" mat-flat-button aria-label="confirm visit action"
               (click)="changeStatus(item, i, 'CONFIRMED')">
               <mat-label>Confirm</mat-label>
@@ -105,4 +105,8 @@
       <mat-spinner></mat-spinner>
     </section>
   </mat-card>
+<mat-card>
+  <visit-planner-component></visit-planner-component>
+</mat-card>
+
 </div>
