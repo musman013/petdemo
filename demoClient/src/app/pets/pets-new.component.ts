@@ -2,8 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { PetsService } from './pets.service';
 import { IPets } from './ipets';
 
-import { ActivatedRoute,Router} from "@angular/router";
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { ActivatedRoute, Router } from "@angular/router";
+import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { Globals, BaseNewComponent, PickerDialogService, ErrorService } from 'projects/fast-code-core/src/public_api';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -11,15 +11,17 @@ import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dial
 import { TypesService } from '../types/types.service';
 import { OwnersService } from '../owners/owners.service';
 import { GlobalPermissionService } from '../core/global-permission.service';
+import { AuthenticationService } from '../core/authentication.service';
 
 @Component({
-  selector: 'app-pets-new',
-  templateUrl: './pets-new.component.html',
-  styleUrls: ['./pets-new.component.scss']
+	selector: 'app-pets-new',
+	templateUrl: './pets-new.component.html',
+	styleUrls: ['./pets-new.component.scss']
 })
 export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit {
-  
-    title:string = "New Pets";
+
+	title: string = "New Pets";
+	role: string = "";
 	constructor(
 		public formBuilder: FormBuilder,
 		public router: Router,
@@ -34,32 +36,37 @@ export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit 
 		public typesService: TypesService,
 		public ownersService: OwnersService,
 		public globalPermissionService: GlobalPermissionService,
+		public authenticationService: AuthenticationService,
 	) {
 		super(formBuilder, router, route, dialog, dialogRef, data, global, pickerDialogService, dataService, errorService);
 	}
- 
+
 	ngOnInit() {
 		this.entityName = 'Pets';
 		this.setAssociations();
 		super.ngOnInit();
-    this.setForm();
+		this.setForm();
 		this.checkPassedData();
 		this.setPickerSearchListener();
-  }
- 		
-	setForm(){
- 		this.itemForm = this.formBuilder.group({
-      birthDate: [''],
-      name: [''],
-      typeId: ['', Validators.required],
-      typesDescriptiveField : [''],
-      ownerId: ['', Validators.required],
-      ownersDescriptiveField : [''],
-    });
 	}
-	 
-	setAssociations(){
-  	
+
+	setForm() {
+		this.itemForm = this.formBuilder.group({
+			birthDate: [''],
+			name: [''],
+			typeId: ['', Validators.required],
+			typesDescriptiveField: ['']
+		});
+
+		this.role = this.authenticationService.decodeToken().role;
+		if(this.role != "owner"){
+			this.itemForm.addControl("ownerId", new FormControl(['', Validators.required]));
+			this.itemForm.addControl("ownersDescriptiveField", new FormControl(['']));
+		}
+	}
+
+	setAssociations() {
+
 		this.associations = [
 			{
 				column: [
@@ -68,7 +75,7 @@ export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit 
 						value: undefined,
 						referencedkey: 'id'
 					},
-					  
+
 				],
 				isParent: false,
 				table: 'types',
@@ -76,7 +83,7 @@ export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit 
 				service: this.typesService,
 				descriptiveField: 'typesDescriptiveField',
 				referencedDescriptiveField: 'name',
-		    
+
 			},
 			{
 				column: [
@@ -85,7 +92,7 @@ export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit 
 						value: undefined,
 						referencedkey: 'id'
 					},
-					  
+
 				],
 				isParent: false,
 				table: 'owners',
@@ -93,13 +100,13 @@ export class PetsNewComponent extends BaseNewComponent<IPets> implements OnInit 
 				service: this.ownersService,
 				descriptiveField: 'ownersDescriptiveField',
 				referencedDescriptiveField: 'userName',
-		    
+
 			},
 		];
 		this.parentAssociations = this.associations.filter(association => {
 			return (!association.isParent);
 		});
 
-	}  
-    
+	}
+
 }

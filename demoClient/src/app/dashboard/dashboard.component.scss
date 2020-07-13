@@ -107,6 +107,7 @@ h4.sub-heading {
 .list-container {
   display: flex;
   justify-content: center;
+  height: calc(100% - 120px);
 }
 .welcome-dasboard {
   display: flex;

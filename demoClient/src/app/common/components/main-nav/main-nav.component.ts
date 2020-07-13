@@ -79,14 +79,14 @@ export class MainNavComponent {
 		this.changeTheme(this.themes[0]);
 
 		this.router.events.subscribe((event: RouterEvent) => {
-			if(event instanceof NavigationEnd){
-				if(event.url.indexOf('resourceView') > -1 ){
+			if (event instanceof NavigationEnd) {
+				if (event.url.indexOf('resourceView') > -1) {
 					this.isResourceViewer = true;
 				} else {
 					this.isResourceViewer = false;
 				}
 			}
-        });
+		});
 	}
 
 	switchLanguage(language: string) {
@@ -114,44 +114,64 @@ export class MainNavComponent {
 			this.permissions[perm] = this.globalPermissionService.hasPermission(perm);
 		})
 		this.permissions['showTools'] = false;
-		this.setEmailVisibility();
-		this.setSchedulerVisibility();
-		this.setReportsVisibility();
+		// this.setEmailVisibility();
+		// this.setSchedulerVisibility();
+		// this.setReportsVisibility();
+		this.setModulesVisibility();
 		this.setAdminVisiblity();
 	}
 
-	setEmailVisibility(){
+	modules = {
+		email: EmailEntities,
+		scheduler: SchedulerEntities,
+		report: ["report"]
+	}
+
+	setModulesVisibility() {
+		Object.keys(this.modules).forEach(module => {
+			let modulePermission = `show${module[0].toUpperCase() + module.slice(1)}`
+			this.permissions[modulePermission] = false;
+			this.modules[module].forEach(entity => {
+				if (this.permissions[entity]) {
+					this.permissions[modulePermission] = true;
+					this.permissions['showTools'] = true;
+				}
+			});
+		});
+	}
+
+	setEmailVisibility() {
 		this.permissions['showEmail'] = false;
 		EmailEntities.forEach(entity => {
-			if(this.permissions[entity]){
+			if (this.permissions[entity]) {
 				this.permissions['showEmail'] = true;
 				this.permissions['showTools'] = true;
 			}
 		})
 	}
 
-	setSchedulerVisibility(){
+	setSchedulerVisibility() {
 		this.permissions['showScheduler'] = false;
 		SchedulerEntities.forEach(entity => {
-			if(this.permissions[entity]){
+			if (this.permissions[entity]) {
 				this.permissions['showScheduler'] = true;
 				this.permissions['showTools'] = true;
 			}
 		})
 	}
 
-	setReportsVisibility(){
+	setReportsVisibility() {
 		this.permissions['showReport'] = false;
-		if(this.permissions['report']){
+		if (this.permissions['report']) {
 			this.permissions['showReport'] = true;
 			this.permissions['showTools'] = true;
 		}
 	}
 
-	setAdminVisiblity(){
-		if(this.authenticationService.decodeToken()){
+	setAdminVisiblity() {
+		if (this.authenticationService.decodeToken()) {
 			this.permissions['showAdministration'] = this.authenticationService.decodeToken().role != "owner" &&
-			this.authenticationService.decodeToken().role != "vet";
+				this.authenticationService.decodeToken().role != "vet";
 		}
 	}
 
