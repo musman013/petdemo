@@ -28,7 +28,7 @@ public class RoleEntity extends AbstractEntity {
     private String name;
     
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true) 
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) 
     private Set<RolepermissionEntity> rolepermissionSet = new HashSet<RolepermissionEntity>(); 
     
     public void addRolepermission(RolepermissionEntity rolepermission) {
@@ -41,7 +41,7 @@ public class RoleEntity extends AbstractEntity {
         rolepermission.setRole(null);
     }
   
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true) 
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL) 
     private Set<UserroleEntity> userroleSet = new HashSet<UserroleEntity>();
     
     public void addUserrole(UserroleEntity userrole) {

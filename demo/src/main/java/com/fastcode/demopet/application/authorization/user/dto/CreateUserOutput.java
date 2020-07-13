@@ -18,7 +18,6 @@ public class CreateUserOutput {
     private Date lockoutEndDateUtc;
     private String firstName;
     private Boolean isActive;
-    private String passwordResetCode;
     private Boolean shouldChangePasswordOnNextLogin;
     private String phoneNumber;
     private Long profilePictureId;
@@ -26,5 +25,6 @@ public class CreateUserOutput {
     private Date signInTokenExpireTimeUtc;
     private String lastName;
     private String userName;
-    
+    private String theme;
+    private String language;
 }

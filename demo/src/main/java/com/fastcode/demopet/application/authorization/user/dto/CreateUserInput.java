@@ -1,6 +1,5 @@
 package com.fastcode.demopet.application.authorization.user.dto;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
@@ -50,9 +49,6 @@ public class CreateUserInput {
   @NotNull(message = "password Should not be null")
   @Length(max = 128, message = "password must be less than 128 characters")
   private String password;
-  
-  @Length(max = 328, message = "passwordResetCode must be less than 328 characters")
-  private String passwordResetCode;
   
   @Length(max = 32, message = "phoneNumber must be less than 32 characters")
   private String phoneNumber;

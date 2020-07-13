@@ -102,6 +102,8 @@ public class RoleControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.role").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -153,7 +155,7 @@ public class RoleControllerTest {
 	
 		role= createEntity();
 		List<RoleEntity> list= role_repository.findAll();
-	    if(!list.contains(role))
+	    if(!list.stream().anyMatch(item -> role.getName().equals(item.getName())))
 		   role=role_repository.save(role);
 
 	}
@@ -168,9 +170,13 @@ public class RoleControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-	      mvc.perform(get("/role/15")
-	    		  .contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+//	      mvc.perform(get("/role/15")
+//	    		  .contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/role/111")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	@Test
@@ -246,8 +252,13 @@ public class RoleControllerTest {
  		role.setDisplayName("D299");
  		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(role);
-        mvc.perform(put("/role/21").contentType(MediaType.APPLICATION_JSON).content(json))
-		  .andExpect(status().isNotFound());
+//        mvc.perform(put("/role/21").contentType(MediaType.APPLICATION_JSON).content(json))
+//		  .andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/role/21")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Role with id=21 not found."));
+
      
 	}    
 	
@@ -318,9 +329,14 @@ public class RoleControllerTest {
 	public void GetUserrole_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(roleAppService.parseUserroleJoinColumn(any(String.class))).thenReturn(null);
-		mvc.perform(get("/role/2/userrole?search=roleid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/role/2/userrole?search=roleid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+//		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/role/2/userrole?search=roleid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid Join Column"));
+
 	}    
 	
 	@Test
@@ -351,9 +367,14 @@ public class RoleControllerTest {
 	public void GetRolepermission_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(roleAppService.parseRolepermissionJoinColumn(any(String.class))).thenReturn(null);
-		mvc.perform(get("/role/2/rolepermission?search=roleid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/role/2/rolepermission?search=roleid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/role/2/rolepermission?search=roleid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid Join Column"));
+
 	}    
 
 }

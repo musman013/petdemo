@@ -16,9 +16,9 @@ public interface IUserManager {
     UserEntity findById(Long id);
     
     UserEntity findByUserName(String userName);
+    
     UserEntity findByEmailAddress(String emailAddress);
     
-    UserEntity findByPasswordResetCode(String passwordResetCode);
     Page<UserEntity> findAll(Predicate predicate, Pageable pageable);
   
 }

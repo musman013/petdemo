@@ -54,7 +54,7 @@ public class TypesAppServiceTest {
 	private PetsManager  _petsManager;
 	
 	@Mock
-	private TypesMapper _mapper;
+	private ITypesMapper _mapper;
 
 	@Mock
 	private Logger loggerMock;

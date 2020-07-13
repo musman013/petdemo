@@ -2,6 +2,7 @@ package com.fastcode.demopet.application.authorization.user;
 
 import com.fastcode.demopet.application.authorization.user.dto.*;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,8 +22,8 @@ public interface IUserMapper {
      */
 
     UserEntity createUserInputToUserEntity(CreateUserInput userDto);
-   
-    CreateUserOutput userEntityToCreateUserOutput(UserEntity entity);
+
+    CreateUserOutput userEntityToCreateUserOutput(UserEntity entity, UserpreferenceEntity userPreference);
     
     @Mappings({
     	@Mapping(source = "userProfile.userName", target = "userName"),
@@ -36,11 +37,14 @@ public interface IUserMapper {
     UserProfile updateUserOutputToUserProfile(UpdateUserOutput userDto);
     
     UserProfile findUserByIdOutputToUserProfile(FindUserByIdOutput user);
+    
     UserEntity updateUserInputToUserEntity(UpdateUserInput userDto);
 
     UpdateUserOutput userEntityToUpdateUserOutput(UserEntity entity);
+    
+    UserEntity findUserWithAllFieldsByIdOutputToUserEntity(FindUserWithAllFieldsByIdOutput user);
 
-    FindUserByIdOutput userEntityToFindUserByIdOutput(UserEntity entity);
+    FindUserByIdOutput userEntityToFindUserByIdOutput(UserEntity entity, UserpreferenceEntity userPreference);
      
     FindUserByNameOutput userEntityToFindUserByNameOutput(UserEntity entity);
 

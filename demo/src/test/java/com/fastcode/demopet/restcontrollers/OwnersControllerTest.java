@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,26 +42,47 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.owners.OwnersAppService;
 import com.fastcode.demopet.application.owners.dto.*;
 import com.fastcode.demopet.domain.irepository.IOwnersRepository;
+import com.fastcode.demopet.domain.irepository.IRoleRepository;
+import com.fastcode.demopet.domain.irepository.IUserRepository;
 import com.fastcode.demopet.domain.model.OwnersEntity;
-import com.fastcode.demopet.application.pets.PetsAppService;    
+import com.fastcode.demopet.domain.model.RoleEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.application.pets.PetsAppService;
+import com.fastcode.demopet.application.vets.dto.CreateVetsInput;
+import com.fastcode.demopet.application.vets.dto.FindVetsByIdOutput;
+import com.fastcode.demopet.application.vets.dto.UpdateVetsInput;    
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-				properties = "spring.profiles.active=test")
+properties = "spring.profiles.active=test")
 public class OwnersControllerTest {
 	@Autowired
 	private SortHandlerMethodArgumentResolver sortArgumentResolver;
 
 	@Autowired 
 	private IOwnersRepository owners_repository;
-	
+
+	@Autowired
+	private IRoleRepository roleRepository;
+
+	@Autowired
+	private IUserRepository userRepository;
+
 	@SpyBean
 	private OwnersAppService ownersAppService;
-    
-    @SpyBean
+
+	@SpyBean
+	private PasswordEncoder pEncoder;
+
+	@SpyBean
+	private UserAppService userAppService;
+
+	@SpyBean
 	private PetsAppService petsAppService;
 
 	@SpyBean
@@ -72,15 +94,15 @@ public class OwnersControllerTest {
 	private OwnersEntity owners;
 
 	private MockMvc mvc;
-	
+
 	@Autowired
 	EntityManagerFactory emf;
-	
-    static EntityManagerFactory emfs;
-	
+
+	static EntityManagerFactory emfs;
+
 	@PostConstruct
 	public void init() {
-	this.emfs = emf;
+		this.emfs = emf;
 	}
 
 	@AfterClass
@@ -89,55 +111,76 @@ public class OwnersControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.owners").executeUpdate();
+		em.createNativeQuery("truncate table sample.role").executeUpdate();
+		em.createNativeQuery("truncate table sample.f_user").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
 
+	public static UserEntity createUserEntity() {
+		UserEntity user = new UserEntity();
+		user.setUserName("u1");
+		user.setId(1L);
+		user.setIsActive(true);
+		user.setPassword("secret");
+		user.setFirstName("U1");
+		user.setLastName("11");
+		user.setEmailAddress("u11@g.com");
+
+		return user;
+	}
 
 	public OwnersEntity createEntity() {
-	
+
 		OwnersEntity owners = new OwnersEntity();
-  		owners.setAddress("1");
-  		owners.setCity("1");
-  		owners.setFirstName("1");
+		owners.setAddress("1");
+		owners.setCity("1");
 		owners.setId(1L);
-  		owners.setLastName("1");
-  		owners.setTelephone("1");
-		
+		owners.setUser(createUserEntity());
+
 		return owners;
+	}
+
+	public RoleEntity createOwnerRole() {
+
+		RoleEntity role = new RoleEntity();
+		role.setName("ROLE_Owner");
+		role.setDisplayName("r1");
+
+		return roleRepository.save(role);
 	}
 
 	public CreateOwnersInput createOwnersInput() {
-	
-	    CreateOwnersInput owners = new CreateOwnersInput();
-  		owners.setAddress("2");
-  		owners.setCity("2");
-  		owners.setFirstName("2");
-  		owners.setLastName("2");
-  		owners.setTelephone("2");
-	    
-		
-		
+
+		CreateOwnersInput owners = new CreateOwnersInput();
+		owners.setAddress("2");
+		owners.setCity("2");
+		owners.setFirstName("2");
+		owners.setLastName("2");
+  		owners.setUserName("u2");
+		owners.setIsActive(true);
+		owners.setPassword("secret");
+		owners.setEmailAddress("u12@g.com");
+
 		return owners;
 	}
 
-	public OwnersEntity createNewEntity() {
-		OwnersEntity owners = new OwnersEntity();
-  		owners.setAddress("3");
-  		owners.setCity("3");
-  		owners.setFirstName("3");
-		owners.setId(3L);
-  		owners.setLastName("3");
-  		owners.setTelephone("3");
-		return owners;
-	}
-	
+	//	public OwnersEntity createNewEntity() {
+	//		OwnersEntity owners = new OwnersEntity();
+	//  		owners.setAddress("3");
+	//  		owners.setCity("3");
+	//		owners.setId(3L);
+	//		return owners;
+	//	}
+	//	
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		final OwnersController ownersController = new OwnersController(ownersAppService,petsAppService,
-	logHelper);
+		final OwnersController ownersController = new OwnersController(ownersAppService, petsAppService,
+				logHelper, userAppService, pEncoder);
 		when(logHelper.getLogger()).thenReturn(loggerMock);
 		doNothing().when(loggerMock).error(anyString());
 
@@ -152,7 +195,11 @@ public class OwnersControllerTest {
 
 		owners= createEntity();
 		List<OwnersEntity> list= owners_repository.findAll();
-		if(!list.contains(owners)) {
+
+		if(!list.stream().anyMatch(item -> owners.getUser().getUserName().equals(item.getUser().getUserName()))) {
+			UserEntity user = userRepository.save(createUserEntity());
+			owners.setUser(user);
+			owners.setId(user.getId());
 			owners=owners_repository.save(owners);
 		}
 
@@ -160,7 +207,7 @@ public class OwnersControllerTest {
 
 	@Test
 	public void FindById_IdIsValid_ReturnStatusOk() throws Exception {
-	
+
 		mvc.perform(get("/owners/" + owners.getId())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk());
@@ -169,14 +216,25 @@ public class OwnersControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/owners/111")
+		//		mvc.perform(get("/owners/111")
+		//				.contentType(MediaType.APPLICATION_JSON))
+		//		.andExpect(status().isNotFound());
+
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/owners/111")
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
+	
 	@Test
 	public void CreateOwners_OwnersDoesNotExist_ReturnStatusOk() throws Exception {
+
+		Mockito.doReturn(null).when(userAppService).findByUserName(anyString());
+		Mockito.doReturn(null).when(userAppService).findByEmailAddress(anyString());
+
 		CreateOwnersInput owners = createOwnersInput();
+		createOwnerRole();
+		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(owners);
 
@@ -188,8 +246,8 @@ public class OwnersControllerTest {
 	@Test
 	public void DeleteOwners_IdIsNotValid_ThrowEntityNotFoundException() throws Exception {
 
-        doReturn(null).when(ownersAppService).findById(111L);
-        org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(delete("/owners/111")
+		doReturn(null).when(ownersAppService).findById(111L);
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(delete("/owners/111")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("There does not exist a owners with a id=111"));
 
@@ -197,15 +255,19 @@ public class OwnersControllerTest {
 
 	@Test
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
-	
-	 OwnersEntity entity =  createNewEntity();
-		
+
+		OwnersEntity entity =  new OwnersEntity();
+		UserEntity user = createUserEntity();
+		user.setUserName("kl");
+		user= userRepository.save(user);
+		entity.setId(user.getId());
+		entity.setUser(user);
 		entity = owners_repository.save(entity);
 
 		FindOwnersByIdOutput output= new FindOwnersByIdOutput();
-  		output.setId(entity.getId());
-        Mockito.when(ownersAppService.findById(entity.getId())).thenReturn(output);
-        
+		output.setId(entity.getId());
+		Mockito.when(ownersAppService.findById(entity.getId())).thenReturn(output);
+
 		mvc.perform(delete("/owners/" + entity.getId())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNoContent());
@@ -215,47 +277,65 @@ public class OwnersControllerTest {
 	@Test
 	public void UpdateOwners_OwnersDoesNotExist_ReturnStatusNotFound() throws Exception {
 
-        doReturn(null).when(ownersAppService).findById(111L);
+		doReturn(null).when(ownersAppService).findById(111L);
 
 		UpdateOwnersInput owners = new UpdateOwnersInput();
-  		owners.setAddress("111");
-  		owners.setCity("111");
-  		owners.setFirstName("111");
-		owners.setId(111L);
-  		owners.setLastName("111");
-  		owners.setTelephone("111");
+		owners.setAddress("111");
+		owners.setCity("111");
+		owners.setFirstName("111");
+		owners.setId(99L);
+		owners.setLastName("111");
+		owners.setUserName("U116");
+		owners.setEmailAddress("u116@g.com");
+		owners.setIsActive(false);
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(owners);
-		mvc.perform(put("/owners/111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
+		//		mvc.perform(put("/owners/111").contentType(MediaType.APPLICATION_JSON).content(json))
+		//		.andExpect(status().isNotFound());
+		//		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/owners/99")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Owners with id=99 not found."));
+
 
 	}    
 
 	@Test
 	public void UpdateOwners_OwnersExists_ReturnStatusOk() throws Exception {
-		OwnersEntity entity =  createNewEntity();
-		entity = owners_repository.save(entity);
+		
+		UserEntity user = createUserEntity();
+		user.setUserName("u7");
+		user= userRepository.save(user);
+		Long id = user.getId();
+	
 		FindOwnersByIdOutput output= new FindOwnersByIdOutput();
-  		output.setAddress(entity.getAddress());
-  		output.setCity(entity.getCity());
-  		output.setFirstName(entity.getFirstName());
-  		output.setId(entity.getId());
-  		output.setLastName(entity.getLastName());
-  		output.setTelephone(entity.getTelephone());
-        Mockito.when(ownersAppService.findById(entity.getId())).thenReturn(output);
+  		output.setId(id);
+	    output.setUserName(user.getUserName());
+	    output.setFirstName(user.getFirstName());
+	    output.setLastName(user.getLastName());
+	    output.setEmailAddress(user.getEmailAddress());
+	    output.setIsActive(user.getIsActive());
+	    Mockito.when(ownersAppService.findById(id)).thenReturn(output);
         
 		UpdateOwnersInput owners = new UpdateOwnersInput();
-  		owners.setId(entity.getId());
-		
+		owners.setId(id);
+		owners.setUserName("us1");
+		owners.setFirstName("U1");
+		owners.setLastName("16");
+		owners.setEmailAddress("u16@g.com");
+		owners.setIsActive(true);
+		output.setAddress("abc");
+		output.setCity("abc");
+
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(owners);
-	
-		mvc.perform(put("/owners/" + entity.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
+
+		mvc.perform(put("/owners/" + id).contentType(MediaType.APPLICATION_JSON).content(json))
 		.andExpect(status().isOk());
 
 		OwnersEntity de = createEntity();
-		de.setId(entity.getId());
+		de.setId(id);
 		owners_repository.delete(de);
 
 	}    
@@ -275,40 +355,46 @@ public class OwnersControllerTest {
 				.andExpect(status().isOk())).hasCause(new Exception("Wrong URL Format: Property ownersid not found!"));
 
 	} 
-	
+
 	@Test
 	public void GetPets_searchIsNotEmptyAndPropertyIsNotValid_ThrowException() throws Exception {
-	
+
 		Map<String,String> joinCol = new HashMap<String,String>();
 		joinCol.put("ownerId", "1");
 
 		Mockito.when(ownersAppService.parsePetsJoinColumn("ownerId")).thenReturn(joinCol);
 		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/owners/1/pets?search=abc[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isOk())).hasCause(new Exception("Wrong URL Format: Property abc not found!"));
-	
+				.andExpect(status().isOk())).hasCause(new Exception("Wrong URL Format: Property abc not found!"));
+
 	}    
-	
+
 	@Test
 	public void GetPets_searchIsNotEmptyAndPropertyIsValid_ReturnList() throws Exception {
-	
+
 		Map<String,String> joinCol = new HashMap<String,String>();
 		joinCol.put("ownerId", "1");
+
+		Mockito.when(ownersAppService.parsePetsJoinColumn("ownerId")).thenReturn(joinCol);
 		
-        Mockito.when(ownersAppService.parsePetsJoinColumn("ownerId")).thenReturn(joinCol);
 		mvc.perform(get("/owners/1/pets?search=ownerId[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isOk());
+		.andExpect(status().isOk());
+		
 	}  
-	
+
 	@Test
 	public void GetPets_searchIsNotEmpty() throws Exception {
-	
+
 		Mockito.when(ownersAppService.parsePetsJoinColumn(anyString())).thenReturn(null);
-		mvc.perform(get("/owners/1/pets?search=ownerid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/owners/1/pets?search=ownerid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+//		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/owners/1/pets?search=ownerid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
 	}    
-    
+
 
 }

@@ -1,8 +1,7 @@
 package com.fastcode.demopet.restcontrollers;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -41,12 +40,22 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
+import com.fastcode.demopet.application.visits.VisitMailUtils;
 import com.fastcode.demopet.application.visits.VisitsAppService;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.domain.irepository.IVisitsRepository;
 import com.fastcode.demopet.domain.model.VisitsEntity;
+import com.fastcode.demopet.emailbuilder.application.emailtemplate.EmailTemplateAppService;
+import com.fastcode.demopet.emailbuilder.application.emailtemplate.dto.FindEmailTemplateByNameOutput;
+import com.fastcode.demopet.domain.irepository.IOwnersRepository;
 import com.fastcode.demopet.domain.irepository.IPetsRepository;
+import com.fastcode.demopet.domain.irepository.IUserRepository;
+import com.fastcode.demopet.domain.irepository.IVetsRepository;
+import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.PetsEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;    
 import com.fastcode.demopet.application.pets.PetsAppService;    
 
@@ -63,11 +72,26 @@ public class VisitsControllerTest {
 	@Autowired 
 	private IPetsRepository petsRepository;
 	
+	@Autowired 
+	private IOwnersRepository ownersRepository;
+	
+	@Autowired 
+	private IVetsRepository vetsRepository;
+	
+	@Autowired 
+	private IUserRepository userRepository;
+	
 	@SpyBean
 	private VisitsAppService visitsAppService;
     
     @SpyBean
 	private InvoicesAppService invoicesAppService;
+    
+    @SpyBean
+    EmailTemplateAppService _emailAppservice;
+    
+    @SpyBean
+	private UserAppService userAppService;
     
     @SpyBean
 	private PetsAppService petsAppService;
@@ -99,6 +123,9 @@ public class VisitsControllerTest {
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.visits").executeUpdate();
 		em.createNativeQuery("truncate table sample.pets").executeUpdate();
+		em.createNativeQuery("truncate table sample.f_user").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -116,6 +143,7 @@ public class VisitsControllerTest {
 		visits.setId(1L);
 		visits.setVisitDate(new Date());
 		visits.setPets(pets);
+		visits.setStatus(Status.CREATED);
 		
 		return visits;
 	}
@@ -125,24 +153,59 @@ public class VisitsControllerTest {
 	    CreateVisitsInput visits = new CreateVisitsInput();
   		visits.setDescription("2");
 		visits.setVisitDate(new Date());
-	    
-		
-		PetsEntity pets = new PetsEntity();
-		pets.setBirthDate(new Date());
-		pets.setId(2L);
-  		pets.setName("2");
-		pets=petsRepository.save(pets);
-		visits.setPetId(pets.getId());
-		
 		
 		return visits;
 	}
+	
+	
+     public VetsEntity createVet() {
+		
+		VetsEntity vets = new VetsEntity();
+	
+		UserEntity user = new UserEntity();
+		user.setUserName("v2");
+		user.setIsActive(true);
+		user.setPassword("secret");
+		user.setFirstName("v1");
+		user.setLastName("11");
+		user.setEmailAddress("u11@g.com");
+		user = userRepository.save(user);
+		vets.setId(user.getId());
+		vets.setUser(user);
+		vets=vetsRepository.save(vets);
+		
+		return vets;
+	}
+	
+	public OwnersEntity createOwner() {
+		
+		OwnersEntity owners = new OwnersEntity();
+		owners.setAddress("2");
+		owners.setCity("2");
+		owners.setId(2L);
 
+		UserEntity user = new UserEntity();
+		user.setUserName("u2");
+		user.setId(1L);
+		user.setIsActive(true);
+		user.setPassword("secret");
+		user.setFirstName("U1");
+		user.setLastName("11");
+		user.setEmailAddress("u11@g.com");
+		user = userRepository.save(user);
+		owners.setId(user.getId());
+		owners.setUser(user);
+		owners=ownersRepository.save(owners);
+		
+		return owners;
+	}
+	
 	public VisitsEntity createNewEntity() {
 		VisitsEntity visits = new VisitsEntity();
   		visits.setDescription("3");
 		visits.setId(3L);
 		visits.setVisitDate(new Date());
+		visits.setStatus(Status.CREATED);
 		return visits;
 	}
 	
@@ -158,7 +221,7 @@ public class VisitsControllerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		final VisitsController visitsController = new VisitsController(visitsAppService,invoicesAppService,petsAppService,
+		final VisitsController visitsController = new VisitsController(visitsAppService,invoicesAppService,petsAppService,userAppService,
 	logHelper);
 		when(logHelper.getLogger()).thenReturn(loggerMock);
 		doNothing().when(loggerMock).error(anyString());
@@ -191,18 +254,35 @@ public class VisitsControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/visits/111")
+//		mvc.perform(get("/visits/111")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/visits/111")
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
+	
 	@Test
 	public void CreateVisits_VisitsDoesNotExist_ReturnStatusOk() throws Exception {
-		PetsEntity pets = createPetsEntity();
-		petsRepository.save(pets);
+		
 		CreateVisitsInput visits = createVisitsInput();
+		
+		PetsEntity pets = createPetsEntity();
+		OwnersEntity owner = createOwner();
+		pets.setOwners(owner);
+		pets = petsRepository.save(pets);
+		visits.setPetId(pets.getId());
+		
+		VetsEntity vet = createVet();
+		visits.setVetId(vet.getId());
+		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(visits);
+		
+		FindEmailTemplateByNameOutput emailTemplate = Mockito.mock(FindEmailTemplateByNameOutput.class);
+		doReturn(emailTemplate).when(_emailAppservice).findByName(anyString());
 
 		mvc.perform(post("/visits").contentType(MediaType.APPLICATION_JSON).content(json))
 		.andExpect(status().isOk());
@@ -229,7 +309,6 @@ public class VisitsControllerTest {
         org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(delete("/visits/111")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("There does not exist a visits with a id=111"));
-
 	}  
 
 	@Test
@@ -268,8 +347,12 @@ public class VisitsControllerTest {
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(visits);
-		mvc.perform(put("/visits/111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
+//		mvc.perform(put("/visits/111").contentType(MediaType.APPLICATION_JSON).content(json))
+//		.andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/visits/111")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Visits with id=111 not found."));
 
 	}    
 
@@ -306,6 +389,10 @@ public class VisitsControllerTest {
 	@Test
 	public void FindAll_SearchIsNotNullAndPropertyIsValid_ReturnStatusOk() throws Exception {
 
+		UserEntity user = Mockito.mock(UserEntity.class);
+		doReturn(user).when(userAppService).getUser();
+		doReturn(true).when(userAppService).checkIsAdmin(any(UserEntity.class));
+		
 		mvc.perform(get("/visits?search=id[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk());
@@ -349,16 +436,24 @@ public class VisitsControllerTest {
 	public void GetInvoices_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(visitsAppService.parseInvoicesJoinColumn(anyString())).thenReturn(null);
-		mvc.perform(get("/visits/1/invoices?search=visitid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/visits/1/invoices?search=visitid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/visits/1/invoices?search=visitid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
 	}    
 	@Test
 	public void GetPets_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
 	
-	    mvc.perform(get("/visits/111/pets")
+//	    mvc.perform(get("/visits/111/pets")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+	    
+	    org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/visits/111/pets")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	

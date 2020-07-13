@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "act_id_user")
+@Table(name = "act_id_user", schema = "sample")
 @Getter @Setter
 @NoArgsConstructor
 public class ActIdUserEntity  implements Serializable {
@@ -52,9 +52,9 @@ public class ActIdUserEntity  implements Serializable {
     @Column(name = "rev_", nullable = true)
 	private Long rev;
 	
-	@Basic
-	@Column(name = "tenant_id_", nullable = true, length =255)
-	private String tenantId;
+//	@Basic
+//	@Column(name = "tenant_id_", nullable = true, length =255)
+//	private String tenantId;
 
 	@OneToMany(mappedBy = "actIdUser", cascade = CascadeType.ALL, orphanRemoval = true) 
 	private Set<ActIdMembershipEntity> actIdGroup = new HashSet<>();

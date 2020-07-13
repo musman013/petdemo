@@ -24,7 +24,7 @@ public class OwnersEntity extends AbstractEntity {
   	private String city;
 
   	@Id
-  	@GeneratedValue(strategy = GenerationType.IDENTITY)
+ // @GeneratedValue(strategy = GenerationType.IDENTITY)
   	@Column(name = "id", nullable = false)
 	private Long id;
 
@@ -42,7 +42,8 @@ public class OwnersEntity extends AbstractEntity {
 	}
 
 	@OneToOne
-    @MapsId
+	@JoinColumn(name = "id")
+ //   @MapsId
     private UserEntity user;
 
 

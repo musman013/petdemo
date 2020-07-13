@@ -153,6 +153,8 @@ public class RoleAppService implements IRoleAppService{
 					builder.and(role.name.ne(details.getValue().getSearchValue()));
 			}
 		}
+		
+		
 		return builder;
 	}
 

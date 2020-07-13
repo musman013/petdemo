@@ -40,11 +40,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import com.fastcode.demopet.application.visits.dto.Status;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.*;
 import com.fastcode.demopet.domain.irepository.IInvoicesRepository;
 import com.fastcode.demopet.domain.model.InvoicesEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.irepository.IVisitsRepository;
 import com.fastcode.demopet.domain.model.VisitsEntity;
 import com.fastcode.demopet.application.visits.VisitsAppService;    
@@ -64,6 +68,9 @@ public class InvoicesControllerTest {
 	
 	@SpyBean
 	private InvoicesAppService invoicesAppService;
+	
+	@SpyBean
+	private UserAppService userAppService;
     
     @SpyBean
 	private VisitsAppService visitsAppService;
@@ -95,6 +102,8 @@ public class InvoicesControllerTest {
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.invoices").executeUpdate();
 		em.createNativeQuery("truncate table sample.visits").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -110,6 +119,7 @@ public class InvoicesControllerTest {
 		InvoicesEntity invoices = new InvoicesEntity();
 		invoices.setAmount(1L);
 		invoices.setId(1L);
+		invoices.setStatus(InvoiceStatus.Unpaid);
 		invoices.setVisits(visits);
 		
 		return invoices;
@@ -119,14 +129,15 @@ public class InvoicesControllerTest {
 	
 	    CreateInvoicesInput invoices = new CreateInvoicesInput();
 		invoices.setAmount(2L);
+		invoices.setStatus(InvoiceStatus.Unpaid);
 	    
 		VisitsEntity visits = new VisitsEntity();
   		visits.setDescription("2");
 		visits.setId(2L);
+		visits.setStatus(Status.CREATED);
 		visits.setVisitDate(new Date());
 		visits=visitsRepository.save(visits);
 		invoices.setVisitId(visits.getId());
-		
 		
 		return invoices;
 	}
@@ -134,12 +145,14 @@ public class InvoicesControllerTest {
 	public InvoicesEntity createNewEntity() {
 		InvoicesEntity invoices = new InvoicesEntity();
 		invoices.setAmount(3L);
+		invoices.setStatus(InvoiceStatus.Unpaid);
 		invoices.setId(3L);
 		return invoices;
 	}
 	
 	public VisitsEntity createVisitsEntity() {
 		VisitsEntity visits = new VisitsEntity();
+		visits.setStatus(Status.CREATED);
   		visits.setDescription("1");
 		visits.setId(1L);
 		visits.setVisitDate(new Date());
@@ -150,9 +163,9 @@ public class InvoicesControllerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		final InvoicesController invoicesController = new InvoicesController(invoicesAppService,visitsAppService,
-	logHelper);
-		when(logHelper.getLogger()).thenReturn(loggerMock);
+		final InvoicesController invoicesController = new InvoicesController(invoicesAppService, userAppService);
+	//	when(logHelper.getLogger()).thenReturn(loggerMock);
+	//
 		doNothing().when(loggerMock).error(anyString());
 
 		this.mvc = MockMvcBuilders.standaloneSetup(invoicesController)
@@ -183,9 +196,13 @@ public class InvoicesControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/invoices/111")
+//		mvc.perform(get("/invoices/111")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/invoices/111")
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
 	@Test
@@ -227,10 +244,11 @@ public class InvoicesControllerTest {
 	@Test
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
 	
-	 InvoicesEntity entity =  createNewEntity();
+	    InvoicesEntity entity =  createNewEntity();
 		VisitsEntity visits = new VisitsEntity();
   		visits.setDescription("3");
 		visits.setId(3L);
+		visits.setStatus(Status.CONFIRMED);
 		visits.setVisitDate(new Date());
 		visits=visitsRepository.save(visits);
 		
@@ -256,11 +274,17 @@ public class InvoicesControllerTest {
 		UpdateInvoicesInput invoices = new UpdateInvoicesInput();
 		invoices.setAmount(111L);
 		invoices.setId(111L);
+		invoices.setStatus(InvoiceStatus.Paid);
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(invoices);
-		mvc.perform(put("/invoices/111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
+//		mvc.perform(put("/invoices/111").contentType(MediaType.APPLICATION_JSON).content(json))
+//		.andExpect(status().isNotFound());
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/invoices/111")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Invoices with id=111 not found."));
+
 
 	}    
 
@@ -270,6 +294,7 @@ public class InvoicesControllerTest {
 		VisitsEntity visits = new VisitsEntity();
   		visits.setDescription("5");
 		visits.setId(5L);
+		visits.setStatus(Status.CREATED);
 		visits.setVisitDate(new Date());
 		visits=visitsRepository.save(visits);
 		entity.setVisits(visits);
@@ -296,6 +321,10 @@ public class InvoicesControllerTest {
 	@Test
 	public void FindAll_SearchIsNotNullAndPropertyIsValid_ReturnStatusOk() throws Exception {
 
+		 UserEntity user = Mockito.mock(UserEntity.class);
+		 doReturn(user).when(userAppService).getUser();
+		 doReturn(true).when(userAppService).checkIsAdmin(any(UserEntity.class));
+
 		mvc.perform(get("/invoices?search=id[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk());
@@ -303,6 +332,10 @@ public class InvoicesControllerTest {
 
 	@Test
 	public void FindAll_SearchIsNotNullAndPropertyIsNotValid_ThrowException() throws Exception {
+
+//		UserEntity user = Mockito.mock(UserEntity.class);
+//		 doReturn(user).when(userAppService).getUser();
+//		 doReturn(true).when(userAppService).checkIsAdmin(any(UserEntity.class));
 
 		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/invoices?search=invoicesid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -312,10 +345,14 @@ public class InvoicesControllerTest {
 	
 	@Test
 	public void GetVisits_IdIsNotEmptyAndIdDoesNotExist_ReturnNotFound() throws Exception {
-	
-	    mvc.perform(get("/invoices/111/visits")
+//	
+//	    mvc.perform(get("/invoices/111/visits")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+//	    
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/invoices/111/visits")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 	
 	}    
 	

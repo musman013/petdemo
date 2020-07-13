@@ -22,7 +22,6 @@ public class UpdateUserOutput {
     private String firstName;
     private Boolean isActive;
     private Boolean shouldChangePasswordOnNextLogin;
-    private String passwordResetCode;
     private String phoneNumber;
     private Long profilePictureId;
     private String signInToken;

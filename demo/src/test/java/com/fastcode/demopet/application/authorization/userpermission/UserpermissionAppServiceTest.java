@@ -35,6 +35,7 @@ import com.fastcode.demopet.domain.model.UserpermissionId;
 import com.fastcode.demopet.domain.authorization.userpermission.*;
 import com.fastcode.demopet.commons.search.*;
 import com.fastcode.demopet.application.authorization.userpermission.dto.*;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.model.QUserpermissionEntity;
 import com.fastcode.demopet.domain.model.UserpermissionEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
@@ -60,6 +61,9 @@ public class UserpermissionAppServiceTest {
 	
     @Mock
 	private PermissionManager  _permissionManager;
+    
+    @Mock
+ 	private FlowableIdentityService idmIdentityService;
 	
 	@Mock
 	private IUserpermissionMapper _mapper;
@@ -107,14 +111,19 @@ public class UserpermissionAppServiceTest {
  
         UserpermissionEntity userpermissionEntity = new UserpermissionEntity(); 
         CreateUserpermissionInput userpermission = mock(CreateUserpermissionInput.class); 
+        CreateUserpermissionOutput output = mock(CreateUserpermissionOutput.class);
+		
         UserEntity userEntity = mock (UserEntity.class);
 		PermissionEntity permissionEntity=mock(PermissionEntity.class);
 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
 		Mockito.when(_permissionManager.findById(anyLong())).thenReturn(permissionEntity);
-        Mockito.when(_mapper.createUserpermissionInputToUserpermissionEntity(any(CreateUserpermissionInput.class))).thenReturn(userpermissionEntity); 
+		doNothing().when(idmIdentityService).addUserPrivilegeMapping(anyString(),anyString());
+		Mockito.when(_mapper.userAndPermissionEntityToCreateUserpermissionOutput(any(UserEntity.class), any(PermissionEntity.class))).thenReturn(output);
+		
+		Mockito.when(_mapper.createUserpermissionInputToUserpermissionEntity(any(CreateUserpermissionInput.class))).thenReturn(userpermissionEntity); 
         Mockito.when(_userpermissionManager.create(any(UserpermissionEntity.class))).thenReturn(userpermissionEntity); 
         
-        Assertions.assertThat(_appService.create(userpermission)).isEqualTo(_mapper.userpermissionEntityToCreateUserpermissionOutput(userpermissionEntity)); 
+        Assertions.assertThat(_appService.create(userpermission)).isEqualTo(_mapper.userAndPermissionEntityToCreateUserpermissionOutput(userEntity, permissionEntity)); 
     } 
 
     @Test 
@@ -122,17 +131,21 @@ public class UserpermissionAppServiceTest {
 
 		UserpermissionEntity userpermissionEntity = new UserpermissionEntity(); 
 		CreateUserpermissionInput userpermission = mock(CreateUserpermissionInput.class);
+		CreateUserpermissionOutput output = mock(CreateUserpermissionOutput.class);
 		UserEntity userEntity = mock (UserEntity.class);
 		PermissionEntity permissionEntity=mock(PermissionEntity.class);
 		
 		Mockito.doReturn(true).when(_appService).checkIfPermissionAlreadyAssigned(any(UserEntity.class), any(PermissionEntity.class));
 		_appService.checkIfPermissionAlreadyAssigned(userEntity,permissionEntity);  
 		verify(_appService).checkIfPermissionAlreadyAssigned(userEntity,permissionEntity);
+		Mockito.when(_mapper.userAndPermissionEntityToCreateUserpermissionOutput(any(UserEntity.class), any(PermissionEntity.class))).thenReturn(output);
 		Mockito.when(_mapper.createUserpermissionInputToUserpermissionEntity(any(CreateUserpermissionInput.class))).thenReturn(userpermissionEntity); 
 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
+		doNothing().when(idmIdentityService).addUserPrivilegeMapping(anyString(),anyString());
+		   
 		Mockito.when(_permissionManager.findById(anyLong())).thenReturn(permissionEntity);
 		Mockito.when(_userpermissionManager.create(any(UserpermissionEntity.class))).thenReturn(userpermissionEntity); 
-		Assertions.assertThat(_appService.create(userpermission)).isEqualTo(_mapper.userpermissionEntityToCreateUserpermissionOutput(null)); 
+		Assertions.assertThat(_appService.create(userpermission)).isEqualTo(_mapper.userAndPermissionEntityToCreateUserpermissionOutput(null, null)); 
 	} 
 
 
@@ -186,6 +199,7 @@ public class UserpermissionAppServiceTest {
 		Mockito.when(_mapper.updateUserpermissionInputToUserpermissionEntity(any(UpdateUserpermissionInput.class))).thenReturn(userpermissionEntity);
 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
 		Mockito.when(_permissionManager.findById(anyLong())).thenReturn(permissionEntity); 
+		doNothing().when(idmIdentityService).updateUserPrivilegeMapping(anyString(),anyString());
 		Mockito.when(_userpermissionManager.update(any(UserpermissionEntity.class))).thenReturn(userpermissionEntity);
 
 		Assertions.assertThat(_appService.update(userPermissionId,userpermission)).isEqualTo(_mapper.userpermissionEntityToUpdateUserpermissionOutput(userpermissionEntity));
@@ -223,6 +237,13 @@ public class UserpermissionAppServiceTest {
 		UserpermissionEntity userpermission= mock(UserpermissionEntity.class);
 		Mockito.when(_userpermissionManager.findById(any(UserpermissionId.class))).thenReturn(userpermission);
 		
+		PermissionEntity permissionEntity= mock(PermissionEntity.class);
+ 		UserEntity userEntity = mock(UserEntity.class);
+  
+ 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
+ 		Mockito.when(_permissionManager.findById(anyLong())).thenReturn(permissionEntity); 
+ 		doNothing().when(idmIdentityService).deleteUserPrivilegeMapping(anyString(),anyString());
+	   
 		_appService.delete(userPermissionId); 
 		verify(_userpermissionManager).delete(userpermission);
 	}

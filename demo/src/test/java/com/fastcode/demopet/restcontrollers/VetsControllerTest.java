@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,9 +42,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
+import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.vets.VetsAppService;
 import com.fastcode.demopet.application.vets.dto.*;
+import com.fastcode.demopet.domain.authorization.userrole.IUserroleManager;
+import com.fastcode.demopet.domain.irepository.IRoleRepository;
+import com.fastcode.demopet.domain.irepository.IUserRepository;
 import com.fastcode.demopet.domain.irepository.IVetsRepository;
+import com.fastcode.demopet.domain.model.RoleEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.application.vetspecialties.VetSpecialtiesAppService;    
 
@@ -57,11 +65,29 @@ public class VetsControllerTest {
 	@Autowired 
 	private IVetsRepository vets_repository;
 	
+	@Autowired 
+	private IUserRepository userRepository;
+	
+	@Autowired 
+	private IRoleRepository roleRepository;
+	
 	@SpyBean
 	private VetsAppService vetsAppService;
     
     @SpyBean
 	private VetSpecialtiesAppService vetSpecialtiesAppService;
+    
+    @SpyBean
+	private UserroleAppService userroleAppService;
+    
+    @SpyBean
+	private IUserroleManager userroleManager;
+    
+    @SpyBean
+    private PasswordEncoder pEncoder;
+	
+    @SpyBean
+	private UserAppService userAppService;
 
 	@SpyBean
 	private LoggingHelper logHelper;
@@ -89,17 +115,31 @@ public class VetsControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.vets").executeUpdate();
+		em.createNativeQuery("truncate table sample.role").executeUpdate();
+		em.createNativeQuery("truncate table sample.f_user").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
 
+	public static UserEntity createUserEntity() {
+		UserEntity user = new UserEntity();
+		user.setUserName("u1");
+		user.setId(1L);
+		user.setIsActive(true);
+		user.setPassword("secret");
+		user.setFirstName("U1");
+		user.setLastName("11");
+		user.setEmailAddress("u11@g.com");
+		
+		return user;
+	}
 
 	public VetsEntity createEntity() {
 	
 		VetsEntity vets = new VetsEntity();
-  		vets.setFirstName("1");
+		vets.setUser(createUserEntity());
 		vets.setId(1L);
-  		vets.setLastName("1");
 		
 		return vets;
 	}
@@ -109,26 +149,39 @@ public class VetsControllerTest {
 	    CreateVetsInput vets = new CreateVetsInput();
   		vets.setFirstName("2");
   		vets.setLastName("2");
-	    
-		
+  		vets.setUserName("u2");
+		vets.setIsActive(true);
+		vets.setPassword("secret");
+		vets.setFirstName("U2");
+		vets.setLastName("12");
+		vets.setEmailAddress("u12@g.com");
 		
 		return vets;
 	}
-
-	public VetsEntity createNewEntity() {
-		VetsEntity vets = new VetsEntity();
-  		vets.setFirstName("3");
-		vets.setId(3L);
-  		vets.setLastName("3");
-		return vets;
+	
+	public RoleEntity createVetRole() {
+		
+		RoleEntity role = new RoleEntity();
+		role.setName("ROLE_Vet");
+		role.setDisplayName("r1");
+		
+		return roleRepository.save(role);
 	}
+//	public VetsEntity createNewEntity() {
+//		VetsEntity vets = new VetsEntity();
+//		UserEntity user = createUserEntity();
+//		user.setUserName("u3");
+//		vets.setUser(user);
+//		vets.setId(3L);
+//		return vets;
+//	}
 	
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		final VetsController vetsController = new VetsController(vetsAppService,vetSpecialtiesAppService,
-	logHelper);
+	    logHelper, userAppService, pEncoder);
 		when(logHelper.getLogger()).thenReturn(loggerMock);
 		doNothing().when(loggerMock).error(anyString());
 
@@ -143,7 +196,10 @@ public class VetsControllerTest {
 
 		vets= createEntity();
 		List<VetsEntity> list= vets_repository.findAll();
-		if(!list.contains(vets)) {
+		if(!list.stream().anyMatch(item -> vets.getUser().getUserName().equals(item.getUser().getUserName()))) {
+			UserEntity user = userRepository.save(createUserEntity());
+			vets.setUser(user);
+			vets.setId(user.getId());
 			vets=vets_repository.save(vets);
 		}
 
@@ -160,14 +216,25 @@ public class VetsControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/vets/111")
-				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+//		mvc.perform(get("/vets/111")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vets/111")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+
 
 	}    
 	@Test
 	public void CreateVets_VetsDoesNotExist_ReturnStatusOk() throws Exception {
+		
+		Mockito.doReturn(null).when(userAppService).findByUserName(anyString());
+		Mockito.doReturn(null).when(userAppService).findByEmailAddress(anyString());
+        
 		CreateVetsInput vets = createVetsInput();
+		createVetRole();
+		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(vets);
 
@@ -189,10 +256,13 @@ public class VetsControllerTest {
 	@Test
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
 	
-	 VetsEntity entity =  createNewEntity();
-		
+	    VetsEntity entity =  new VetsEntity();
+		UserEntity user = createUserEntity();
+		user.setUserName("kl");
+		user= userRepository.save(user);
+		entity.setId(user.getId());
+		entity.setUser(user);
 		entity = vets_repository.save(entity);
-
 		FindVetsByIdOutput output= new FindVetsByIdOutput();
   		output.setId(entity.getId());
         Mockito.when(vetsAppService.findById(entity.getId())).thenReturn(output);
@@ -209,38 +279,61 @@ public class VetsControllerTest {
         doReturn(null).when(vetsAppService).findById(111L);
 
 		UpdateVetsInput vets = new UpdateVetsInput();
-  		vets.setFirstName("111");
-		vets.setId(111L);
-  		vets.setLastName("111");
+//  		vets.setFirstName("111");
+//		vets.setId(111L);
+//  		vets.setLastName("111");
+  		vets.setId(1L);
+        vets.setUserName("U116");
+		vets.setFirstName("U116");
+		vets.setLastName("116");
+		vets.setEmailAddress("u116@g.com");
+		vets.setIsActive(false);
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(vets);
-		mvc.perform(put("/vets/111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
+//		mvc.perform(put("/vets/111").contentType(MediaType.APPLICATION_JSON).content(json))
+//		.andExpect(status().isNotFound());
+//		
+		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/vets/99")
+	    		  .contentType(MediaType.APPLICATION_JSON).content(json))
+	      .andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Vets with id=99 not found."));
 
 	}    
 
 	@Test
 	public void UpdateVets_VetsExists_ReturnStatusOk() throws Exception {
-		VetsEntity entity =  createNewEntity();
-		entity = vets_repository.save(entity);
+		UserEntity user = createUserEntity();
+		user.setUserName("u7");
+		user= userRepository.save(user);
+		Long id = user.getId();
+	
 		FindVetsByIdOutput output= new FindVetsByIdOutput();
-  		output.setFirstName(entity.getFirstName());
-  		output.setId(entity.getId());
-  		output.setLastName(entity.getLastName());
-        Mockito.when(vetsAppService.findById(entity.getId())).thenReturn(output);
+  		output.setId(id);
+	    output.setUserName(user.getUserName());
+	    output.setFirstName(user.getFirstName());
+	    output.setLastName(user.getLastName());
+	    output.setEmailAddress(user.getEmailAddress());
+	    output.setIsActive(user.getIsActive());
+	    Mockito.when(vetsAppService.findById(id)).thenReturn(output);
         
 		UpdateVetsInput vets = new UpdateVetsInput();
-  		vets.setId(entity.getId());
+  		vets.setId(id);
+		vets.setUserName("us1");
+		vets.setFirstName("U1");
+		vets.setLastName("16");
+		vets.setEmailAddress("u16@g.com");
+		vets.setIsActive(true);
+  		
 		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(vets);
 	
-		mvc.perform(put("/vets/" + entity.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
+		mvc.perform(put("/vets/" + id).contentType(MediaType.APPLICATION_JSON).content(json))
 		.andExpect(status().isOk());
 
 		VetsEntity de = createEntity();
-		de.setId(entity.getId());
+		de.setId(id);
 		vets_repository.delete(de);
 
 	}    
@@ -284,15 +377,20 @@ public class VetsControllerTest {
 		mvc.perform(get("/vets/1/vetSpecialties?search=vetId[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
 	    		  .andExpect(status().isOk());
+		
 	}  
 	
 	@Test
 	public void GetVetSpecialties_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(vetsAppService.parseVetSpecialtiesJoinColumn(anyString())).thenReturn(null);
-		mvc.perform(get("/vets/1/vetSpecialties?search=vetid[equals]=1&limit=10&offset=1")
+//		mvc.perform(get("/vets/1/vetSpecialties?search=vetid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+//		
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vets/1/vetSpecialties?search=vetid[equals]=1&limit=10&offset=1")
 				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
 	}    
     
 

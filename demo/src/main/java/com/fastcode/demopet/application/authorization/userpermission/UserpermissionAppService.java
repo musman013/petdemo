@@ -10,12 +10,10 @@ import com.fastcode.demopet.domain.authorization.user.IUserManager;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.authorization.permission.IPermissionManager;
 import com.fastcode.demopet.domain.model.PermissionEntity;
-import com.fastcode.demopet.domain.model.RolepermissionEntity;
 import com.fastcode.demopet.commons.search.*;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
@@ -23,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page; 
@@ -141,8 +138,9 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 		
 		user.removeUserpermission(existing);
 		permission.removeUserpermission(existing);
-		
+	
 		idmIdentityService.deleteUserPrivilegeMapping(user.getUserName(), permission.getName());
+		_userpermissionManager.delete(existing);
 	}
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -220,6 +218,8 @@ public class UserpermissionAppService implements IUserpermissionAppService {
     	list.get(i).replace("%20","").trim().equals("userId")||
 		 list.get(i).replace("%20","").trim().equals("permission") ||
 		 list.get(i).replace("%20","").trim().equals("permissionId") ||
+		 list.get(i).replace("%20","").trim().equals("userName")||
+	     list.get(i).replace("%20","").trim().equals("name")||
 		 list.get(i).replace("%20","").trim().equals("user")
 		)) 
 		{
@@ -232,14 +232,19 @@ public class UserpermissionAppService implements IUserpermissionAppService {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
-        
         if(joinCol != null && joinCol.getKey().equals("userId")) {
 		    builder.and(userpermission.user.id.eq(Long.parseLong(joinCol.getValue())));
+		}
+        if(joinCol != null && joinCol.getKey().equals("userName")) {
+		    builder.and(userpermission.user.userName.eq(joinCol.getValue()));
 		}
         }
 		for (Map.Entry<String, String> joinCol : joinColumns.entrySet()) {
         if(joinCol != null && joinCol.getKey().equals("permissionId")) {
 		    builder.and(userpermission.permission.id.eq(Long.parseLong(joinCol.getValue())));
+		}
+        if(joinCol != null && joinCol.getKey().equals("name")) {
+		    builder.and(userpermission.permission.name.eq(joinCol.getValue()));
 		}
         }
 		return builder;

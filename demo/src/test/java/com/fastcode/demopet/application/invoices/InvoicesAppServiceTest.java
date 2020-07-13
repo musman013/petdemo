@@ -54,7 +54,7 @@ public class InvoicesAppServiceTest {
 	private VisitsManager  _visitsManager;
 	
 	@Mock
-	private InvoicesMapper _mapper;
+	private IInvoicesMapper _mapper;
 
 	@Mock
 	private Logger loggerMock;
@@ -165,7 +165,10 @@ public class InvoicesAppServiceTest {
 	@Test
 	public void deleteInvoices_InvoicesIsNotNullAndInvoicesExists_InvoicesRemoved() {
 
-		InvoicesEntity invoices= mock(InvoicesEntity.class);
+		InvoicesEntity invoices= new InvoicesEntity();
+		VisitsEntity visits = mock(VisitsEntity.class);
+		invoices.setVisits(visits);
+		
 		Mockito.when(_invoicesManager.findById(anyLong())).thenReturn(invoices);
 		
 		_appService.delete(ID); 

@@ -80,14 +80,13 @@ public class VisitsController {
 	@Autowired
 	private Environment env;
 
-
-
 	public VisitsController(VisitsAppService visitsAppService, InvoicesAppService invoicesAppService, PetsAppService petsAppService,
-			LoggingHelper helper) {
+			UserAppService userAppService, LoggingHelper helper) {
 		super();
 		this._visitsAppService = visitsAppService;
 		this._invoicesAppService = invoicesAppService;
 		this._petsAppService = petsAppService;
+		this._userAppService = userAppService;
 		this.logHelper = helper;
 	}
 
@@ -144,12 +143,11 @@ public class VisitsController {
 		if (offset == null) { offset = env.getProperty("fastCode.offset.default"); }
 		if (limit == null) { limit = env.getProperty("fastCode.limit.default"); }
 
-		UserEntity user = _userAppService.getUser();
-
 		Pageable Pageable = new OffsetBasedPageRequest(Integer.parseInt(offset), Integer.parseInt(limit), sort);
 		SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject(search);
 
 		List<FindVisitsByIdOutput> list =_visitsAppService.find(searchCriteria,Pageable);
+		UserEntity user = _userAppService.getUser();
 
 		if(_userAppService.checkIsAdmin(user))
 		{

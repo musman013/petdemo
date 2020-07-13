@@ -60,7 +60,7 @@ public class VetSpecialtiesAppServiceTest {
 	private VetsManager  _vetsManager;
 	
 	@Mock
-	private VetSpecialtiesMapper _mapper;
+	private IVetSpecialtiesMapper _mapper;
 
 	@Mock
 	private Logger loggerMock;
@@ -108,13 +108,11 @@ public class VetSpecialtiesAppServiceTest {
        CreateVetSpecialtiesInput vetSpecialties = new CreateVetSpecialtiesInput();
    
 		SpecialtiesEntity specialties= mock(SpecialtiesEntity.class);
-        vetSpecialties.setSpecialtyId(Integer.valueOf(ID.intValue()));
-		Mockito.when(_specialtiesManager.findById(
-        any(Integer.class))).thenReturn(specialties);
+        vetSpecialties.setSpecialtyId(Long.valueOf(ID.intValue()));
+		Mockito.when(_specialtiesManager.findById(anyLong())).thenReturn(specialties);
 		VetsEntity vets= mock(VetsEntity.class);
-        vetSpecialties.setVetId(Integer.valueOf(ID.intValue()));
-		Mockito.when(_vetsManager.findById(
-        any(Integer.class))).thenReturn(vets);
+        vetSpecialties.setVetId(Long.valueOf(ID.intValue()));
+		Mockito.when(_vetsManager.findById(anyLong())).thenReturn(vets);
 		
         Mockito.when(_mapper.createVetSpecialtiesInputToVetSpecialtiesEntity(any(CreateVetSpecialtiesInput.class))).thenReturn(vetSpecialtiesEntity); 
         Mockito.when(_vetSpecialtiesManager.create(any(VetSpecialtiesEntity.class))).thenReturn(vetSpecialtiesEntity);
@@ -159,7 +157,11 @@ public class VetSpecialtiesAppServiceTest {
 	@Test
 	public void deleteVetSpecialties_VetSpecialtiesIsNotNullAndVetSpecialtiesExists_VetSpecialtiesRemoved() {
 
-		VetSpecialtiesEntity vetSpecialties= mock(VetSpecialtiesEntity.class);
+		VetSpecialtiesEntity vetSpecialties= new VetSpecialtiesEntity();
+		SpecialtiesEntity specialtiesEntity = mock(SpecialtiesEntity.class);
+		VetsEntity vetsEntity = mock(VetsEntity.class);
+		vetSpecialties.setVets(vetsEntity);
+		vetSpecialties.setSpecialties(specialtiesEntity);
 		Mockito.when(_vetSpecialtiesManager.findById(any(VetSpecialtiesId.class))).thenReturn(vetSpecialties);
 		
 		_appService.delete(vetSpecialtiesId); 
@@ -297,8 +299,8 @@ public class VetSpecialtiesAppServiceTest {
 		String keyString= "specialtyId:15,vetId:15";
 	
 		VetSpecialtiesId vetSpecialtiesId = new VetSpecialtiesId();
-		vetSpecialtiesId.setSpecialtyId(Integer.valueOf(ID.intValue()));
-		vetSpecialtiesId.setVetId(Integer.valueOf(ID.intValue()));
+		vetSpecialtiesId.setSpecialtyId(Long.valueOf(ID));
+		vetSpecialtiesId.setVetId(Long.valueOf(ID));
 
 		Assertions.assertThat(_appService.parseVetSpecialtiesKey(keyString)).isEqualToComparingFieldByField(vetSpecialtiesId);
 	}

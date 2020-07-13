@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.Date;
 
 @Entity
-@Table(name = "act_id_priv_mapping")
+@Table(name = "act_id_priv_mapping", schema = "sample")
 @Getter @Setter
 @NoArgsConstructor
 public class ActIdPrivMappingEntity  implements Serializable {

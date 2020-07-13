@@ -12,7 +12,6 @@ import com.fastcode.demopet.commons.search.SearchCriteria;
 import com.fastcode.demopet.commons.search.SearchUtils;
 import com.fastcode.demopet.commons.application.OffsetBasedPageRequest;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
-import com.fastcode.demopet.commons.domain.EmptyJsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -126,6 +127,30 @@ public class UserController {
 		FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(user.getId());
 		return new ResponseEntity(_userAppService.updateUserProfile(currentUser,userProfile), HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/updateTheme", method = RequestMethod.PUT)
+	public ResponseEntity<HashMap<String,String>> updateTheme(@RequestParam @Valid String theme) {
+		
+		UserEntity user = _userAppService.getUser();
+		_userAppService.updateTheme(user, theme);
+		
+		String msg = "Theme updated successfully !";
+		HashMap resultMap = new HashMap<String,String>();
+		resultMap.put("message", msg);
+		return new ResponseEntity(resultMap, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/updateLanguage", method = RequestMethod.PUT)
+	public ResponseEntity<HashMap<String,String>> updateLanguage(@RequestParam @Valid String language) {
+		
+		UserEntity user = _userAppService.getUser();
+		_userAppService.updateTheme(user, language);
+		
+		String msg = "Language updated successfully !";
+		HashMap resultMap = new HashMap<String,String>();
+		resultMap.put("message", msg);
+		return new ResponseEntity(resultMap, HttpStatus.OK);
+	}
 
 	// ------------ Delete a user ------------
 	@PreAuthorize("hasAnyAuthority('USERENTITY_DELETE')")
@@ -170,6 +195,7 @@ public class UserController {
 		
     return new ResponseEntity(_userAppService.update(Long.valueOf(id),user), HttpStatus.OK);
 	}
+		
 	// ------------ Retrieve a user ------------
 	@PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

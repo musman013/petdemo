@@ -12,6 +12,7 @@ import com.fastcode.demopet.application.authorization.user.dto.UserProfile;
 import com.fastcode.demopet.application.owners.dto.*;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
+import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 
 @Mapper(componentModel = "spring")
 public interface IOwnersMapper {
@@ -19,7 +20,7 @@ public interface IOwnersMapper {
    OwnersEntity createOwnersInputToOwnersEntity(CreateOwnersInput ownersDto);
    
    @Mapping(source = "entity.user.id" , target ="id" )
-   CreateOwnersOutput ownersEntityAndUserEntityToCreateOwnersOutput(OwnersEntity entity, UserEntity user);
+   CreateOwnersOutput ownersEntityAndUserEntityToCreateOwnersOutput(OwnersEntity entity, UserEntity user, UserpreferenceEntity userpreference);
 
    OwnersEntity updateOwnersInputToOwnersEntity(UpdateOwnersInput ownersDto);
 
@@ -30,7 +31,7 @@ public interface IOwnersMapper {
    @Mapping(source = "entity.user.id" , target = "id" ),
    @Mapping(source = "entity.version" , target = "version" )
    })
-   FindOwnersByIdOutput ownersEntityAndUserEntityToFindOwnersByIdOutput(OwnersEntity entity, UserEntity user);
+   FindOwnersByIdOutput ownersEntityAndUserEntityToFindOwnersByIdOutput(OwnersEntity entity, UserEntity user, UserpreferenceEntity userpreference);
 
    OwnerProfile findOwnersByIdOutputToOwnerProfile(FindOwnersByIdOutput owner);
    

@@ -27,6 +27,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -141,6 +142,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         out.println("}");
         out.close();
 
+    }
+    
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    logger.info("Authentication failed");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+    response.getWriter().print(authException.getLocalizedMessage());
+    response.getWriter().flush();
     }
 
 }

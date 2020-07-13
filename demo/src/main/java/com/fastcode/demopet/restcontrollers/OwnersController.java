@@ -60,8 +60,6 @@ public class OwnersController {
 	
 	@Autowired
 	private UserAppService _userAppService;
-	
-	
     
     public OwnersController(OwnersAppService ownersAppService, PetsAppService petsAppService,
 	 LoggingHelper helper, UserAppService userAppService, PasswordEncoder passwordEncoder) {

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class VetsEntity extends AbstractEntity {
 
   	@Id
-  	@GeneratedValue(strategy = GenerationType.IDENTITY)
+ // 	@GeneratedValue(strategy = GenerationType.IDENTITY)
   	@Column(name = "id", nullable = false)
 	private Long id;
 	
@@ -47,7 +47,8 @@ public class VetsEntity extends AbstractEntity {
 
 	
 	@OneToOne
-    @MapsId
+	@JoinColumn(name = "id")
+//    @MapsId
     private UserEntity user;
 	
 }
