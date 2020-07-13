@@ -37,13 +37,20 @@ import com.fastcode.demopet.application.authorization.user.dto.CreateUserInput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.authorization.user.dto.UpdateUserInput;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
+import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
+import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
+import com.fastcode.demopet.application.owners.dto.OwnerProfile;
+import com.fastcode.demopet.application.owners.dto.UpdateOwnersInput;
+import com.fastcode.demopet.application.owners.dto.UpdateOwnersOutput;
 import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
 import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.application.vets.dto.*;
+import com.fastcode.demopet.domain.authorization.role.RoleManager;
 import com.fastcode.demopet.domain.authorization.user.UserManager;
 import com.fastcode.demopet.domain.authorization.userpreference.UserpreferenceManager;
 import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.QVetsEntity;
+import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.UserpreferenceEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
@@ -63,6 +70,9 @@ public class VetsAppServiceTest {
 
 	@Mock
 	private VetsManager _vetsManager;
+	
+	@Mock
+	private RoleManager _roleManager;
 	
 	@Mock
 	private UserAppService _userAppService;
@@ -156,6 +166,51 @@ public class VetsAppServiceTest {
 		Assertions.assertThat(_appService.create(vets)).isEqualTo(_mapper.vetsEntityAndUserEntityToCreateVetsOutput(vetsEntity, vetsEntity.getUser(),userPreference)); 
 	
 	} 
+	
+	@Test
+	public void assignVetRole_RoleExists_ReturnNothing()
+	{
+	    RoleEntity roleEntity = mock(RoleEntity.class);
+		Mockito.when(_roleManager.findByRoleName(anyString())).thenReturn(roleEntity);
+		Mockito.when(_userroleAppService.create(any(CreateUserroleInput.class))).thenReturn(null);
+		
+		_appService.assignVetRole(ID); 
+		verify(_userroleAppService).create(any(CreateUserroleInput.class));
+	}
+	
+	@Test
+	public void assignVetRole_RoleDoestNotExists_ReturnNothing()
+	{
+	   
+		Mockito.when(_roleManager.findByRoleName(anyString())).thenReturn(null);
+		_appService.assignVetRole(ID); 
+		verify(_userroleAppService, Mockito.times(0)).create(any(CreateUserroleInput.class));
+	}
+	
+	@Test
+	public void getProfile_VetIsValid_ReturnVetProfile()
+	{
+		VetProfile vetProfile = mock(VetProfile.class);
+		FindVetsByIdOutput vet = mock(FindVetsByIdOutput.class);
+		Mockito.when(_mapper.findVetsByIdOutputToVetProfile(any(FindVetsByIdOutput.class))).thenReturn(vetProfile);
+	
+		Assertions.assertThat(_appService.getProfile(vet)).isEqualTo(_mapper.findVetsByIdOutputToVetProfile(vet)); 
+		
+	}
+	
+	@Test
+	public void updateVetProfile_UserIsValid_ReturnVetProfile()
+	{
+		VetProfile vetProfile = mock(VetProfile.class);
+		FindUserWithAllFieldsByIdOutput user = mock(FindUserWithAllFieldsByIdOutput.class);
+		UpdateVetsInput vetInput = mock (UpdateVetsInput.class);
+		UpdateVetsOutput vetOutput = mock (UpdateVetsOutput.class);
+		
+		Mockito.when(_mapper.findUserWithAllFieldsByIdOutputAndVetProfileToUpdateVetInput(any(FindUserWithAllFieldsByIdOutput.class), any(VetProfile.class))).thenReturn(vetInput);
+	    Mockito.doReturn(vetOutput).when(_appService).update(anyLong(), any(UpdateVetsInput.class));
+		Assertions.assertThat(_appService.updateVetProfile(user, vetProfile)).isEqualTo(_mapper.updateVetsOutputToVetProfile(vetOutput));
+	}
+	
 	@Test
 	public void updateVets_VetsIdIsNotNullAndIdExists_ReturnUpdatedVets() {
 
@@ -202,10 +257,7 @@ public class VetsAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindVetsByIdOutput> output = new ArrayList<>();
 		SearchCriteria search= new SearchCriteria();
-		//		search.setType(1);
-		//		search.setValue("xyz");
-		//		search.setOperator("equals");
-
+		
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
 		Mockito.when(_vetsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
@@ -226,8 +278,7 @@ public class VetsAppServiceTest {
 		
 		output.add(_mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(vets, vets.getUser(), userPreference));
 		Mockito.doReturn(new BooleanBuilder()).when(_appService).search(any(SearchCriteria.class));
-	//	Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
-		Mockito.when(_vetsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
+	    Mockito.when(_vetsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
 	}
 

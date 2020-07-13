@@ -103,7 +103,7 @@ public class PetsAppServiceTest {
 		Assertions.assertThat(_appService.findById(ID)).isEqualTo(_mapper.petsEntityToFindPetsByIdOutput(pets));
 	}
 	
-	 @Test 
+	@Test 
     public void createPets_PetsIsNotNullAndPetsDoesNotExist_StorePets() { 
  
        PetsEntity petsEntity = mock(PetsEntity.class); 
@@ -198,9 +198,6 @@ public class PetsAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindPetsByIdOutput> output = new ArrayList<>();
 		SearchCriteria search= new SearchCriteria();
-//		search.setType(1);
-//		search.setValue("xyz");
-//		search.setOperator("equals");
 
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
 		Mockito.when(_petsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
@@ -217,14 +214,39 @@ public class PetsAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindPetsByIdOutput> output = new ArrayList<>();
         SearchCriteria search= new SearchCriteria();
-//		search.setType(1);
-//		search.setValue("xyz");
-//		search.setOperator("equals");
 		output.add(_mapper.petsEntityToFindPetsByIdOutput(pets));
 		
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
     	Mockito.when(_petsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
+	}
+	
+	@Test
+	public void filterPets_ListIsNotEmptyAndPetExistsAgainstOwner_ReturnList() {
+		
+		List<FindPetsByIdOutput> list = new ArrayList<>();
+		FindPetsByIdOutput pets = new FindPetsByIdOutput();
+		
+		OwnersEntity owners = mock(OwnersEntity.class);
+		pets.setOwnerId(2L);
+		
+		list.add(pets);
+		
+		Mockito.when(_ownersManager.findById(anyLong())).thenReturn(owners);
+		Assertions.assertThat(_appService.filterPets(list, 2L)).isEqualTo(list);
+	}
+	
+	@Test
+	public void filterPets_ListIsNotEmptyAndPetDoesNotExistsAgainstOwner_ReturnEmptyList() {
+		
+		List<FindPetsByIdOutput> list = new ArrayList<>();
+		FindPetsByIdOutput pets = mock(FindPetsByIdOutput.class);
+		OwnersEntity owners = mock(OwnersEntity.class);
+		
+		list.add(pets);
+		
+		Mockito.when(_ownersManager.findById(anyLong())).thenReturn(owners);
+		Assertions.assertThat(_appService.filterPets(list, 2L)).isEqualTo(new ArrayList<>());
 	}
 	
 	@Test

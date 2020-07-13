@@ -90,10 +90,12 @@ public class VetsAppService implements IVetsAppService {
 	public void assignVetRole(Long userId)
 	{
 		RoleEntity role = _roleManager.findByRoleName("ROLE_Vet");
+		if(role !=null && userId !=null) {
 		CreateUserroleInput input = new CreateUserroleInput();
 		input.setRoleId(role.getId());
 		input.setUserId(userId);
 		_userroleAppService.create(input);
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)

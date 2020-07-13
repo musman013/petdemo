@@ -3,8 +3,6 @@ package com.fastcode.demopet.application.visits;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.domain.visits.IVisitsManager;
 import com.fastcode.demopet.emailbuilder.application.emailtemplate.EmailTemplateAppService;
-import com.fastcode.demopet.emailbuilder.application.emailtemplate.dto.FindEmailTemplateByNameOutput;
-import com.fastcode.demopet.emailbuilder.application.mail.EmailService;
 import com.fastcode.demopet.domain.model.QVisitsEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
@@ -18,30 +16,15 @@ import com.fastcode.demopet.commons.search.*;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
-
-import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page; 
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 
 @Service
 @Validated
@@ -75,8 +58,6 @@ public class VisitsAppService implements IVisitsAppService {
 	@Autowired
 	private LoggingHelper logHelper;
 	
-	
-
     @Transactional(propagation = Propagation.REQUIRED)
 	public CreateVisitsOutput create(CreateVisitsInput input) {
 
@@ -144,7 +125,6 @@ public class VisitsAppService implements IVisitsAppService {
 		VisitsEntity updatedVisits = _visitsManager.update(visits);
 		return mapper.visitsEntityToUpdateVisitsOutput(updatedVisits);
 	}
-	
 	
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void delete(Long visitsId) {
@@ -216,7 +196,7 @@ public class VisitsAppService implements IVisitsAppService {
     	VetsEntity vet = _vetsManager.findById(userId);
     	for(FindVisitsByIdOutput obj : list)
     	{
-    		VisitsEntity visit = _visitsManager.findById(obj.getId());
+    		//VisitsEntity visit = _visitsManager.findById(obj.getId());
     		
     		if(owner !=null) {
     			PetsEntity pet = _petsManager.findById(obj.getPetId());

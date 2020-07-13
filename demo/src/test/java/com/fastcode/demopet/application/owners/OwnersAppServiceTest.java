@@ -28,6 +28,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fastcode.demopet.domain.owners.*;
 import com.fastcode.demopet.commons.search.*;
@@ -37,12 +39,15 @@ import com.fastcode.demopet.application.authorization.user.dto.CreateUserInput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.authorization.user.dto.UpdateUserInput;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
+import com.fastcode.demopet.application.authorization.userrole.dto.CreateUserroleInput;
 import com.fastcode.demopet.application.owners.dto.*;
 import com.fastcode.demopet.application.processmanagement.ActIdUserMapper;
 import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
 import com.fastcode.demopet.domain.model.QOwnersEntity;
+import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.UserpreferenceEntity;
+import com.fastcode.demopet.domain.authorization.role.RoleManager;
 import com.fastcode.demopet.domain.authorization.user.UserManager;
 import com.fastcode.demopet.domain.authorization.userpreference.UserpreferenceManager;
 import com.fastcode.demopet.domain.model.OwnersEntity;
@@ -53,6 +58,8 @@ import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
+import liquibase.pro.packaged.O;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OwnersAppServiceTest {
 
@@ -62,6 +69,9 @@ public class OwnersAppServiceTest {
 
 	@Mock
 	private OwnersManager _ownersManager;
+	
+	@Mock
+	private RoleManager _roleManager;
 	
 	@Mock
 	private UserManager _userManager;
@@ -153,7 +163,51 @@ public class OwnersAppServiceTest {
 		
 		Assertions.assertThat(_appService.create(owners)).isEqualTo(_mapper.ownersEntityAndUserEntityToCreateOwnersOutput(ownersEntity,  ownersEntity.getUser(),userPreference)); 
 	} 
-
+	
+	@Test
+	public void assignOwnerRole_RoleExists_ReturnNothing()
+	{
+	    RoleEntity roleEntity = mock(RoleEntity.class);
+		Mockito.when(_roleManager.findByRoleName(anyString())).thenReturn(roleEntity);
+		Mockito.when(_userroleAppService.create(any(CreateUserroleInput.class))).thenReturn(null);
+		
+		_appService.assignOwnerRole(ID); 
+		verify(_userroleAppService).create(any(CreateUserroleInput.class));
+	}
+	
+	@Test
+	public void assignOwnerRole_RoleDoestNotExists_ReturnNothing()
+	{
+	   
+		Mockito.when(_roleManager.findByRoleName(anyString())).thenReturn(null);
+		_appService.assignOwnerRole(ID); 
+		verify(_userroleAppService, Mockito.times(0)).create(any(CreateUserroleInput.class));
+	}
+	
+	@Test
+	public void getProfile_OwnerIsValid_ReturnOwnerProfile()
+	{
+		OwnerProfile ownerProfile = mock(OwnerProfile.class);
+		FindOwnersByIdOutput owner = mock(FindOwnersByIdOutput.class);
+		Mockito.when(_mapper.findOwnersByIdOutputToOwnerProfile(any(FindOwnersByIdOutput.class))).thenReturn(ownerProfile);
+	
+		Assertions.assertThat(_appService.getProfile(owner)).isEqualTo(_mapper.findOwnersByIdOutputToOwnerProfile(owner)); 
+		
+	}
+	
+	@Test
+	public void updateOwnerProfile_UserIsValid_ReturnOwnerProfile()
+	{
+		OwnerProfile ownerProfile = mock(OwnerProfile.class);
+		FindUserWithAllFieldsByIdOutput user = mock(FindUserWithAllFieldsByIdOutput.class);
+		UpdateOwnersInput ownerInput = mock (UpdateOwnersInput.class);
+		UpdateOwnersOutput ownerOutput = mock (UpdateOwnersOutput.class);
+		
+		Mockito.when(_mapper.findUserWithAllFieldsByIdOutputAndOwnerProfileToUpdateOwnerInput(any(FindUserWithAllFieldsByIdOutput.class), any(OwnerProfile.class))).thenReturn(ownerInput);
+	    Mockito.doReturn(ownerOutput).when(_appService).update(anyLong(), any(UpdateOwnersInput.class));
+		Assertions.assertThat(_appService.updateOwnerProfile(user, ownerProfile)).isEqualTo(_mapper.updateOwnerOutputToOwnerProfile(ownerOutput));
+	}
+	
 	@Test
 	public void updateOwners_OwnersIdIsNotNullAndIdExists_ReturnUpdatedOwners() {
 
@@ -198,12 +252,9 @@ public class OwnersAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindOwnersByIdOutput> output = new ArrayList<>();
 		SearchCriteria search= new SearchCriteria();
-		//		search.setType(1);
-		//		search.setValue("xyz");
-		//		search.setOperator("equals");
+		
 		Mockito.doReturn(new BooleanBuilder()).when(_appService).search(any(SearchCriteria.class));
-	//	Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
-		Mockito.when(_ownersManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
+	    Mockito.when(_ownersManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
 	}
 
@@ -219,9 +270,6 @@ public class OwnersAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindOwnersByIdOutput> output = new ArrayList<>();
 		SearchCriteria search= new SearchCriteria();
-		//		search.setType(1);
-		//		search.setValue("xyz");
-		//		search.setOperator("equals");
 		output.add(_mapper.ownersEntityAndUserEntityToFindOwnersByIdOutput(owners, owners.getUser(), userPreference));
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
 		Mockito.when(_ownersManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);

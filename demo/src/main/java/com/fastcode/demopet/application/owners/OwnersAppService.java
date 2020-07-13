@@ -90,11 +90,12 @@ public class OwnersAppService implements IOwnersAppService {
 	public void assignOwnerRole(Long userId)
 	{
 		RoleEntity role = _roleManager.findByRoleName("ROLE_Owner");
+		if(role != null && userId !=null) {
 		CreateUserroleInput input = new CreateUserroleInput();
 		input.setRoleId(role.getId());
 		input.setUserId(userId);
 		_userroleAppService.create(input);
-		
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -141,6 +142,7 @@ public class OwnersAppService implements IOwnersAppService {
 		
 		return output;
 	}
+	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<FindOwnersByIdOutput> find(SearchCriteria search, Pageable pageable) throws Exception  {
 
@@ -162,6 +164,7 @@ public class OwnersAppService implements IOwnersAppService {
 		return mapper.findOwnersByIdOutputToOwnerProfile(owner);
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public OwnerProfile updateOwnerProfile(FindUserWithAllFieldsByIdOutput user, OwnerProfile ownerProfile)
 	{
 		UpdateOwnersInput ownerInput = mapper.findUserWithAllFieldsByIdOutputAndOwnerProfileToUpdateOwnerInput(user, ownerProfile);
