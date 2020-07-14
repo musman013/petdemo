@@ -47,6 +47,14 @@ const colors: any = {
 export class VisitPlannerComponent {
   @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
 
+
+  // events = [{description:'demo visit1',id:2,visitDate:'2020-06-26T14:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  //   {description:'demo visit2',id:2,visitDate:'2020-06-26T03:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  //   {description:'demo visit3',id:2,visitDate:'2020-06-26T16:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  //   {description:'demo visit3',id:2,visitDate:'2020-06-26T21:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  // ];
+
+
   view: CalendarView = CalendarView.Month;
 
   CalendarView = CalendarView;
@@ -188,4 +196,5 @@ export class VisitPlannerComponent {
   closeOpenMonthViewDay() {
     this.activeDayIsOpen = false;
   }
+
 }
