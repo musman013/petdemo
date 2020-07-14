@@ -163,7 +163,7 @@ public class OwnersAppServiceTest {
 		
 		Assertions.assertThat(_appService.create(owners)).isEqualTo(_mapper.ownersEntityAndUserEntityToCreateOwnersOutput(ownersEntity,  ownersEntity.getUser(),userPreference)); 
 	} 
-	
+	 
 	@Test
 	public void assignOwnerRole_RoleExists_ReturnNothing()
 	{

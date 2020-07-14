@@ -72,9 +72,7 @@ public class PetsAppServiceTest {
 	@Mock
 	private LoggingHelper logHelper;
 	
-
     private static Long ID=15L;
-    
 	 
 	@Before
 	public void setUp() throws Exception {

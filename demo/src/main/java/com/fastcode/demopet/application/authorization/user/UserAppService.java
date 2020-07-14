@@ -100,7 +100,7 @@ public class UserAppService implements IUserAppService {
 	}
     
     @Transactional(propagation = Propagation.REQUIRED)
-   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) {
+   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) { 
     	
     	UserpreferenceEntity userpreference = new UserpreferenceEntity();
     	userpreference.setTheme("default-theme");
@@ -239,7 +239,7 @@ public class UserAppService implements IUserAppService {
 		if (foundUser == null) {
 			return null;
 		}
-	
+	 
 		return  mapper.userEntityToFindUserByNameOutput(foundUser);
 	}
 	

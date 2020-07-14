@@ -167,7 +167,7 @@ public class VisitsAppService implements IVisitsAppService {
 	public GetPetsOutput getPets(Long visitsId) {
 
 		VisitsEntity foundVisits = _visitsManager.findById(visitsId);
-		if (foundVisits == null) {
+		if (foundVisits == null) { 
 			logHelper.getLogger().error("There does not exist a visits wth a id=%s", visitsId);
 			return null;
 		}

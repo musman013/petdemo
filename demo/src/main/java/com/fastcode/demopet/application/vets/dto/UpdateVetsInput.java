@@ -1,9 +1,5 @@
 package com.fastcode.demopet.application.vets.dto;
 
-import java.util.Date;
-import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
-
 import com.fastcode.demopet.application.authorization.user.dto.UpdateUserInput;
 
 import lombok.Getter;

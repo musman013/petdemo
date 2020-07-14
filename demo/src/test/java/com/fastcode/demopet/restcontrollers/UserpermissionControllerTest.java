@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,6 +25,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
@@ -61,7 +64,7 @@ public class UserpermissionControllerTest {
 
 	private static final Long DEFAULT_PERMISSION_ID = 1L;
 	private static final Long DEFAULT_USER_ID = 1L;
-	private static final Boolean DEFAULT_REVOKED=true;
+	private static final Boolean DEFAULT_REVOKED=true; 
 	
 	@Autowired
     private SortHandlerMethodArgumentResolver sortArgumentResolver;
@@ -71,7 +74,7 @@ public class UserpermissionControllerTest {
 	
 	@Autowired
 	private IUserRepository userRepository;
-	
+	 
 	@Autowired
 	private IPermissionRepository permissionRepository;
 
@@ -362,7 +365,7 @@ public class UserpermissionControllerTest {
 
 	}
 
-	@Test
+	@Test 
 	public void Delete_IdIsValid_ReturnStatusNoContent() throws Exception {
 		
 		UserpermissionEntity up = userpermissionRepository.save(createNewEntityForDelete());

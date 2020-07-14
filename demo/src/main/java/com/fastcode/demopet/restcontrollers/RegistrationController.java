@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fastcode.demopet.application.authorization.tokenverification.TokenVerificationAppService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
-import com.fastcode.demopet.application.authorization.user.dto.CreateUserInput;
-import com.fastcode.demopet.application.authorization.user.dto.CreateUserOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
+import com.fastcode.demopet.application.owners.OwnersAppService;
+import com.fastcode.demopet.application.owners.dto.CreateOwnersInput;
+import com.fastcode.demopet.application.owners.dto.CreateOwnersOutput;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.fastcode.demopet.domain.model.TokenverificationEntity;
 import com.fastcode.demopet.emailbuilder.application.mail.AsyncMailTrigger;
@@ -42,6 +43,9 @@ public class RegistrationController {
 	private UserAppService _userAppService;
 	
 	@Autowired
+	private OwnersAppService _ownerAppService;
+	
+	@Autowired
 	public AsyncMailTrigger _asyncEmailTrigger;
 
 	@Autowired
@@ -52,9 +56,8 @@ public class RegistrationController {
 
 	public static final long ACCOUNT_VERIFICATION_TOKEN_EXPIRATION_TIME = 86_400_000;
 
-
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<HashMap<String,String>> registerUserAccount(@RequestBody CreateUserInput user, HttpServletRequest request) {
+	public ResponseEntity<HashMap<String,String>> registerUserAccount(@RequestBody CreateOwnersInput user, HttpServletRequest request) {
 
 		FindUserByNameOutput foundUser = _userAppService.findByUserName(user.getUserName());
 
@@ -74,9 +77,8 @@ public class RegistrationController {
 		user.setIsActive(false);
 		user.setPassword(pEncoder.encode(user.getPassword()));
 
-		CreateUserOutput output=_userAppService.create(user);
+		CreateOwnersOutput output= _ownerAppService.create(user);
 		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
-
 
 		TokenverificationEntity tokenEntity = _tokenAppService.generateToken("registration", output.getId());
 

@@ -55,7 +55,7 @@ public class UserController {
 	private LoggingHelper logHelper;
 
 	@Autowired
-	private Environment env;
+	private Environment env; 
 	
 	public UserController(UserAppService userAppService, UserpermissionAppService userpermissionAppService,
 			UserroleAppService userroleAppService, PasswordEncoder pEncoder, JWTAppService jwtAppService, LoggingHelper logHelper) {
@@ -116,7 +116,7 @@ public class UserController {
 					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
 		}
 		
-		userOutput = _userAppService.findByEmailAddress(userProfile.getUserName());
+		userOutput = _userAppService.findByUserName(userProfile.getUserName());
 		if(userOutput != null && userOutput.getId() !=user.getId())
 		{
 			logHelper.getLogger().error("There already exists a user with userName =%s", user.getUserName());

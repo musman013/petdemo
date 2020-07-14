@@ -11,10 +11,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import java.util.HashMap;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,9 +85,7 @@ public class InvoicesAppServiceTest {
 	@Mock
 	private LoggingHelper logHelper;
 	
-
     private static Long ID=15L;
-    
 	 
 	@Before
 	public void setUp() throws Exception {

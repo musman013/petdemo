@@ -101,9 +101,10 @@ public class OwnersAppService implements IOwnersAppService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public UpdateOwnersOutput update(Long  ownersId, UpdateOwnersInput input) {
 
-		UserEntity user = _userMapper.updateUserInputToUserEntity(input);
-        FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(Long.valueOf(ownersId));
+		OwnersEntity owners = mapper.updateOwnersInputToOwnersEntity(input);
+	    FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(Long.valueOf(ownersId));
 	
+	    UserEntity user = _userMapper.updateUserInputToUserEntity(input);
         user.setVersion(currentUser.getVersion());
         user.setPassword(currentUser.getPassword());
         user=_userManager.update(user);
@@ -111,8 +112,7 @@ public class OwnersAppService implements IOwnersAppService {
         ActIdUserEntity actIdUser = actIdUserMapper.createUsersEntityToActIdUserEntity( user);
  		idmIdentityService.updateUser( user, actIdUser);
  		
-		OwnersEntity owners = mapper.updateOwnersInputToOwnersEntity(input);
-		OwnersEntity updatedOwners = _ownersManager.update(owners);
+ 		OwnersEntity updatedOwners = _ownersManager.update(owners);
 
 		return mapper.ownersEntityAndUserEntityToUpdateOwnersOutput(updatedOwners,user);
 	}
@@ -174,7 +174,7 @@ public class OwnersAppService implements IOwnersAppService {
 		return mapper.updateOwnerOutputToOwnerProfile(output);
 	}
 
-
+ 
 	public BooleanBuilder search(SearchCriteria search) throws Exception {
 
 		QOwnersEntity owners= QOwnersEntity.ownersEntity;

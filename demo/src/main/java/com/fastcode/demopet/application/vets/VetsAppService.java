@@ -137,14 +137,14 @@ public class VetsAppService implements IVetsAppService {
 			return null ; 
 
 		UserpreferenceEntity userpreference = _userpreferenceManager.findById(vetsId);
-		FindVetsByIdOutput output=mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
+		FindVetsByIdOutput output = mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
 		
 		return output;
 	}
 
 	public VetProfile getProfile(FindVetsByIdOutput vet)
 	{
-		return mapper.findVetsByIdOutputToVetProfile(vet);
+		return mapper.findVetsByIdOutputToVetProfile(vet);  
 	}
 	
 	public VetProfile updateVetProfile(FindUserWithAllFieldsByIdOutput user, VetProfile vetProfile)

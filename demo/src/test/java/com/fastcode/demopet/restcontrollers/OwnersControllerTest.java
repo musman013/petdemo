@@ -19,6 +19,7 @@ import java.util.HashMap;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 
 import org.junit.AfterClass;
@@ -43,6 +44,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.owners.OwnersAppService;
 import com.fastcode.demopet.application.owners.dto.*;
 import com.fastcode.demopet.domain.irepository.IOwnersRepository;
@@ -55,7 +58,8 @@ import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.application.pets.PetsAppService;
 import com.fastcode.demopet.application.vets.dto.CreateVetsInput;
 import com.fastcode.demopet.application.vets.dto.FindVetsByIdOutput;
-import com.fastcode.demopet.application.vets.dto.UpdateVetsInput;    
+import com.fastcode.demopet.application.vets.dto.UpdateVetsInput;
+import com.fastcode.demopet.application.vets.dto.VetProfile;    
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -165,16 +169,7 @@ public class OwnersControllerTest {
 		owners.setEmailAddress("u12@g.com");
 
 		return owners;
-	}
-
-	//	public OwnersEntity createNewEntity() {
-	//		OwnersEntity owners = new OwnersEntity();
-	//  		owners.setAddress("3");
-	//  		owners.setCity("3");
-	//		owners.setId(3L);
-	//		return owners;
-	//	}
-	//	
+	}	
 
 	@Before
 	public void setup() {
@@ -215,16 +210,120 @@ public class OwnersControllerTest {
 
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
-
-		//		mvc.perform(get("/owners/111")
-		//				.contentType(MediaType.APPLICATION_JSON))
-		//		.andExpect(status().isNotFound());
-
 		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/owners/111")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
+
+	@Test
+	public void GetProfile_OwnerExists_ReturnLoggedInOwnerProfile() throws Exception {
+	
+		UserEntity user = Mockito.mock (UserEntity.class);
+		FindOwnersByIdOutput currentvet = Mockito.mock(FindOwnersByIdOutput.class);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(currentvet).when(ownersAppService).findById(anyLong());
+		
+		mvc.perform(get("/owners/getProfile")
+				.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk());
+	}  
+	
+	@Test
+	public void GetProfile_OwnerNotExists_ThrowException() throws Exception {
+	
+		UserEntity user = Mockito.mock (UserEntity.class);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(null).when(ownersAppService).findById(anyLong());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/owners/getProfile")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+	}  
+
+	@Test
+	public void UpdateProfile_OwnerExists_ReturnUpdatedOwnerProfile() throws Exception {
+	
+		UserEntity user = createUserEntity();
+		user.setUserName("aaa");
+		user = userRepository.save(user);
+		FindOwnersByIdOutput currentvet = Mockito.mock(FindOwnersByIdOutput.class);
+		FindUserWithAllFieldsByIdOutput currentUser = new FindUserWithAllFieldsByIdOutput();
+		currentUser.setId(1L);
+		currentUser.setIsActive(true);
+		currentUser.setPassword("secret");
+		currentUser.setVersion(0L);
+		
+		OwnerProfile profile = new OwnerProfile();
+		profile.setEmailAddress("abc@g.c");
+		profile.setFirstName("u1");
+		profile.setLastName("u2");
+		profile.setUserName("user");
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(profile);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(currentvet).when(ownersAppService).findById(anyLong());
+		Mockito.doReturn(null).when(userAppService).findByEmailAddress(anyString());
+		Mockito.doReturn(null).when(userAppService).findByUserName(anyString());
+		Mockito.doReturn(currentUser).when(userAppService).findWithAllFieldsById(anyLong());
+		
+		mvc.perform(put("/owners/updateProfile")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+		.andExpect(status().isOk());
+	}  
+	
+	@Test
+	public void UpdateProfile_OwnerDoesNotExists_ThrowException() throws Exception {
+	
+		UserEntity user = createUserEntity();
+	
+		OwnerProfile profile = new OwnerProfile();
+		profile.setEmailAddress("abc@g.c");
+		profile.setFirstName("u1");
+		profile.setLastName("u2");
+		profile.setUserName("user");
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(profile);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(null).when(ownersAppService).findById(anyLong());
+	
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/owners/updateProfile")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+	}  
+	
+	@Test
+	public void UpdateProfile_OwnerExistsWithSameUserName_ThrowException() throws Exception {
+	
+		UserEntity user = createUserEntity();
+		FindOwnersByIdOutput currentowner = Mockito.mock(FindOwnersByIdOutput.class);
+		FindUserByNameOutput userOutput = new FindUserByNameOutput();
+		userOutput.setId(9L);
+		
+		OwnerProfile profile = new OwnerProfile();
+		profile.setEmailAddress("abc@g.c");
+		profile.setFirstName("u1");
+		profile.setLastName("u2");
+		profile.setUserName("user");
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(profile);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(currentowner).when(ownersAppService).findById(anyLong());
+		Mockito.doReturn(null).when(userAppService).findByEmailAddress(anyString());
+		Mockito.doReturn(userOutput).when(userAppService).findByUserName(anyString());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/owners/updateProfile")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityExistsException("There already exists a user with userName = u1"));
+	} 
 	
 	@Test
 	public void CreateOwners_OwnersDoesNotExist_ReturnStatusOk() throws Exception {
