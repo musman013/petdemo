@@ -32,11 +32,11 @@ public class UserpreferenceEntity extends AbstractEntity{
 	
 	@Id
 	@EqualsAndHashCode.Include()
-	@Column(name = "id", nullable = false)
-	private Long id;
+	@Column(name = "userId", nullable = false)
+	private Long userId;
 	
 	@OneToOne
-    @JoinColumn(name = "id", nullable = false, insertable=false, updatable=false)
+    @JoinColumn(name = "userId", nullable = false, insertable=false, updatable=false)
     private UserEntity user;
 
 }

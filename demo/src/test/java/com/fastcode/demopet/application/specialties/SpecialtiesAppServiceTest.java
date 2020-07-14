@@ -54,7 +54,7 @@ public class SpecialtiesAppServiceTest {
 	private VetSpecialtiesManager  _vetSpecialtiesManager;
 	
 	@Mock
-	private SpecialtiesMapper _mapper;
+	private ISpecialtiesMapper _mapper;
 
 	@Mock
 	private Logger loggerMock;

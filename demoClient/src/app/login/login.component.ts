@@ -81,6 +81,7 @@ export class LoginComponent implements OnInit {
         data => {
           this.loading = false;
           this.authenticationService.permissionsChange.next();
+          this.authenticationService.getProfile();
           // this.global.isAuthenticated = true;
           this.router.navigate([this.returnUrl]);
         },

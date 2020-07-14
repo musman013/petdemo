@@ -33,7 +33,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fastcode.demopet.domain.authorization.userrole.*;
 import com.fastcode.demopet.commons.search.*;
+import com.fastcode.demopet.application.authorization.userpermission.dto.CreateUserpermissionInput;
+import com.fastcode.demopet.application.authorization.userpermission.dto.CreateUserpermissionOutput;
 import com.fastcode.demopet.application.authorization.userrole.dto.*;
+import com.fastcode.demopet.application.processmanagement.FlowableIdentityService;
+import com.fastcode.demopet.domain.model.PermissionEntity;
 import com.fastcode.demopet.domain.model.QUserroleEntity;
 import com.fastcode.demopet.domain.model.UserroleEntity;
 import com.fastcode.demopet.domain.model.UserroleId;
@@ -59,6 +63,9 @@ public class UserroleAppServiceTest {
 	
     @Mock
 	private RoleManager  _roleManager;
+    
+    @Mock
+ 	private FlowableIdentityService idmIdentityService;
 	
 	@Mock
 	private IUserroleMapper _mapper;
@@ -73,6 +80,7 @@ public class UserroleAppServiceTest {
 	private UserroleId userRoleId;
 	
 	private static Long ID=15L;
+	
 	@Before
 	public void setUp() throws Exception {
 
@@ -105,15 +113,19 @@ public class UserroleAppServiceTest {
  
         UserroleEntity userroleEntity = new UserroleEntity(); 
         CreateUserroleInput userrole = mock(CreateUserroleInput.class); 
+        CreateUserroleOutput output = mock(CreateUserroleOutput.class);
+		
         UserEntity userEntity = mock (UserEntity.class);
 		RoleEntity roleEntity=mock(RoleEntity.class);
 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
 		Mockito.when(_roleManager.findById(anyLong())).thenReturn(roleEntity);
+		doNothing().when(idmIdentityService).addUserGroupMapping(anyString(),anyString());
+		Mockito.when(_mapper.userAndRoleEntityToCreateUserroleOutput(any(UserEntity.class), any(RoleEntity.class))).thenReturn(output);
+		
         Mockito.when(_mapper.createUserroleInputToUserroleEntity(any(CreateUserroleInput.class))).thenReturn(userroleEntity); 
         Mockito.when(_userroleManager.create(any(UserroleEntity.class))).thenReturn(userroleEntity); 
         
-        Assertions.assertThat(_appService.create(userrole)).isEqualTo(_mapper.userroleEntityToCreateUserroleOutput(userroleEntity)); 
-
+        Assertions.assertThat(_appService.create(userrole)).isEqualTo(_mapper.userAndRoleEntityToCreateUserroleOutput(userEntity, roleEntity)); 
     } 
 
     @Test 
@@ -121,18 +133,22 @@ public class UserroleAppServiceTest {
 
 		UserroleEntity userroleEntity = new UserroleEntity(); 
 		CreateUserroleInput userrole = mock(CreateUserroleInput.class);
+		CreateUserroleOutput output = mock(CreateUserroleOutput.class);
 		UserEntity userEntity = mock (UserEntity.class);
 		RoleEntity roleEntity=mock(RoleEntity.class);
 		
 		Mockito.doReturn(true).when(_appService).checkIfRoleAlreadyAssigned(any(UserEntity.class), any(RoleEntity.class));
 		_appService.checkIfRoleAlreadyAssigned(userEntity,roleEntity);  
 		verify(_appService).checkIfRoleAlreadyAssigned(userEntity,roleEntity);
+		Mockito.when(_mapper.userAndRoleEntityToCreateUserroleOutput(any(UserEntity.class), any(RoleEntity.class))).thenReturn(output);
+		doNothing().when(idmIdentityService).addUserGroupMapping(anyString(),anyString());
+		   
 		Mockito.when(_mapper.createUserroleInputToUserroleEntity(any(CreateUserroleInput.class))).thenReturn(userroleEntity); 
 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
 		Mockito.when(_roleManager.findById(anyLong())).thenReturn(roleEntity);
 		Mockito.when(_userroleManager.create(any(UserroleEntity.class))).thenReturn(userroleEntity); 
 		
-		Assertions.assertThat(_appService.create(userrole)).isEqualTo(_mapper.userroleEntityToCreateUserroleOutput(null)); 
+		Assertions.assertThat(_appService.create(userrole)).isEqualTo(_mapper.userAndRoleEntityToCreateUserroleOutput(null, null)); 
 	} 
 
 	@Test
@@ -180,6 +196,7 @@ public class UserroleAppServiceTest {
 		UserEntity userEntity = mock (UserEntity.class);
 		userroleEntity.setRole(roleEntity);
 
+		doNothing().when(idmIdentityService).updateUserGroupMapping(anyString(),anyString());
 		Mockito.when(_mapper.updateUserroleInputToUserroleEntity(any(UpdateUserroleInput.class))).thenReturn(userroleEntity);
 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
 		Mockito.when(_roleManager.findById(anyLong())).thenReturn(roleEntity); 
@@ -219,11 +236,15 @@ public class UserroleAppServiceTest {
 		UserroleEntity userrole= mock(UserroleEntity.class);
 		Mockito.when(_userroleManager.findById(any(UserroleId.class))).thenReturn(userrole);
 		
+		RoleEntity roleEntity= mock(RoleEntity.class);
+ 		UserEntity userEntity = mock(UserEntity.class);
+  
+ 		Mockito.when(_userManager.findById(any(Long.class))).thenReturn(userEntity);
+ 		Mockito.when(_roleManager.findById(anyLong())).thenReturn(roleEntity); 
+ 		doNothing().when(idmIdentityService).deleteUserPrivilegeMapping(anyString(),anyString());
 		_appService.delete(userRoleId); 
 		verify(_userroleManager).delete(userrole);
 	}
-	
-
 	
 	@Test
 	public void Find_ListIsEmpty_ReturnList() throws Exception {

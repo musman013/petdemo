@@ -94,8 +94,8 @@
             <mat-nav-list class="subnav">
 
               <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/schema'"> Generate Schema </a>
-              <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/reports/add'"> Generate
-                Report</a>
+              <!-- <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/reports/add'"> Generate
+                Report</a> -->
               <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/myreports'"> My Reports </a>
               <a mat-list-item class="sidenav-sub-list-item" [routerLink]="'/reporting/dashboard'"> My Dashboard </a>
 
@@ -262,7 +262,7 @@
           <button mat-menu-item routerLink="/update-profile"><i class="material-icons"
               style="position: relative;top: 7px;">person</i>&nbsp; Update Profile</button>
           <span *ngFor="let theme of themes">
-            <button mat-menu-item (click)="changeTheme(theme)">{{theme}}</button>
+            <button mat-menu-item (click)="changeTheme(theme, true)">{{theme}}</button>
           </span>
           <button mat-menu-item (click)="logout()"><i class="material-icons"
               style="position: relative;top: 7px;color: red;">power_settings_new</i>&nbsp; Logout</button>

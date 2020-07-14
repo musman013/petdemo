@@ -100,12 +100,12 @@ public class UserAppService implements IUserAppService {
 	}
     
     @Transactional(propagation = Propagation.REQUIRED)
-   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) {
+   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) { 
     	
     	UserpreferenceEntity userpreference = new UserpreferenceEntity();
     	userpreference.setTheme("default-theme");
     	userpreference.setLanguage("en");
-    	userpreference.setId(user.getId());
+    	userpreference.setUserId(user.getId());
     	userpreference.setUser(user);
     	
     	return _userpreferenceManager.create(userpreference);
@@ -123,7 +123,7 @@ public class UserAppService implements IUserAppService {
     @Transactional(propagation = Propagation.REQUIRED)
    	public UserpreferenceEntity updateLanguage(UserEntity user, String language) {
     	UserpreferenceEntity userpreference = _userpreferenceManager.findById(user.getId());
-    	userpreference.setTheme(language);
+    	userpreference.setLanguage(language);
     	
     	return _userpreferenceManager.update(userpreference);
     }
@@ -184,7 +184,9 @@ public class UserAppService implements IUserAppService {
 	   }
 	    
 	    UserpreferenceEntity userpreference = _userpreferenceManager.findById(userId);
+	    if(userpreference !=null) {
 	    _userpreferenceManager.delete(userpreference);
+	    }
 		_userManager.delete(existing);
 		idmIdentityService.deleteUser(existing.getUserName());
 	
@@ -237,7 +239,7 @@ public class UserAppService implements IUserAppService {
 		if (foundUser == null) {
 			return null;
 		}
-	
+	 
 		return  mapper.userEntityToFindUserByNameOutput(foundUser);
 	}
 	
@@ -275,7 +277,7 @@ public class UserAppService implements IUserAppService {
 		if (foundUser == null)  
 			return null ; 
  	   
-	    UserpreferenceEntity userPreference = _userpreferenceManager.findById(userId);
+	   UserpreferenceEntity userPreference = _userpreferenceManager.findById(userId);
  	   FindUserByIdOutput output= mapper.userEntityToFindUserByIdOutput(foundUser, userPreference); 
 		return output;
 	}
@@ -421,7 +423,7 @@ public class UserAppService implements IUserAppService {
 					builder.and(user.isEmailConfirmed.eq(Boolean.parseBoolean(details.getValue().getSearchValue())));
 				else if(details.getValue().getOperator().equals("notEqual") && (details.getValue().getSearchValue().equalsIgnoreCase("true") || details.getValue().getSearchValue().equalsIgnoreCase("false")))
 					builder.and(user.isEmailConfirmed.ne(Boolean.parseBoolean(details.getValue().getSearchValue())));
-			}
+			} 
 			if(details.getKey().replace("%20","").trim().equals("isLockoutEnabled")) {
 				if(details.getValue().getOperator().equals("equals") && (details.getValue().getSearchValue().equalsIgnoreCase("true") || details.getValue().getSearchValue().equalsIgnoreCase("false")))
 					builder.and(user.isLockoutEnabled.eq(Boolean.parseBoolean(details.getValue().getSearchValue())));
@@ -533,6 +535,8 @@ public class UserAppService implements IUserAppService {
 					builder.and(user.userName.ne(details.getValue().getSearchValue()));
 			}
 		}
+		
+		
 	
 		return builder;
 	}

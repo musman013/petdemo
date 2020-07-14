@@ -47,7 +47,8 @@ public class VetsEntity extends AbstractEntity {
 
 	
 	@OneToOne
-    @MapsId
+	@JoinColumn(name = "id")
+//    @MapsId
     private UserEntity user;
 	
 }

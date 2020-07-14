@@ -1,0 +1,31 @@
+<section class="spinner-container" *ngIf="loading" style="z-index:99999999;">
+  <mat-spinner></mat-spinner>
+</section>
+<div class="login-container">
+  <div class="confirmbox" *ngIf="confirmed">
+    <figure class="logo">
+      <img src="../../assets/images/check.png" class="mark" alt="logo"/>
+    </figure>
+    <h1>Email address confirmed</h1>
+    <h3>You have successfully confirmed your email. You can log in to your account now.</h3>
+    <!-- <button class="button" (click)="GotoLogin()" color="accent" mat-flat-button>Login</button> -->
+    <button name="login" (click)="GotoLogin()" mat-flat-button color="accent" class="btn-submit">
+      Login &nbsp; <i class="material-icons" style="color:#fff; bottom:0;">
+      near_me
+      </i>
+    </button>
+  </div>
+  <div class="confirmbox" *ngIf="!confirmed">
+    <figure class="logo">
+      <img src="../../assets/images/crossicon.png" alt="logo" class="mark" />
+    </figure>
+    <h1>Email address not confirmed</h1>
+    <h3>We cannot confirm your email. Try again or contact support@fastcode.</h3>
+    <!-- <button class="button" (click)="GotoLogin()" color="accent" mat-flat-button>Login</button> -->
+    <button name="login" (click)="GotoLogin()" mat-flat-button color="accent" class="btn-submit">
+      Login &nbsp; <i class="material-icons" style="color:#fff; bottom:0;">
+      near_me
+      </i>
+    </button>
+  </div>
+</div>

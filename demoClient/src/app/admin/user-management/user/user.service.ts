@@ -26,8 +26,19 @@ export class UserService extends GenericApiService<IUser> {
   }
 
   getProfile() {
-
     return this.httpclient.get<IUser>(this.url + '/getProfile').pipe(map((response: any) => {
+      return response;
+    }), catchError(this.handleError))
+  }
+
+  updateTheme(theme: string){
+    return this.httpclient.put(`${this.url}/updateTheme?theme=${theme}`, null).pipe(map((response: any) => {
+      return response;
+    }), catchError(this.handleError))
+  }
+
+  updateLanguage(language: string){
+    return this.httpclient.put(`${this.url}/updateLanguage?language=${language}`, null).pipe(map((response: any) => {
       return response;
     }), catchError(this.handleError))
   }

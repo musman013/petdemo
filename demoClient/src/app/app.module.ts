@@ -34,6 +34,9 @@ import { JwtInterceptor } from './core/jwt-interceptor';
 import { JwtErrorInterceptor } from './core/jwt-error-interceptor';
 import { GlobalPermissionService } from './core/global-permission.service';
 
+import { RegisterComponent } from './register/register.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+
 import { LoginComponent } from './login/index';
 
 /** end of core components and filters for authorization and authentication **/
@@ -66,6 +69,7 @@ import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.c
 import { VisitPlannerComponent } from './visits/visit-planner/visit-planner.component';
 import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
 import { ReportPasswordComponent } from './reporting-module/pages/myreports/report-password/report-password.component';
+import { RegisterCompleteComponent } from './register/register-complete/register-complete.component';
 
 const cubejsOptions = {
 	token:
@@ -122,8 +126,12 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 		InvoicesListComponent,
 		InvoicesDetailsComponent,
 		InvoicesNewComponent,
-    ResourceViewComponent,
-    VisitPlannerComponent
+
+    VisitPlannerComponent,
+		ResourceViewComponent,
+		RegisterComponent,
+		ConfirmEmailComponent,
+		RegisterCompleteComponent,
 	],
 	imports: [
 		BrowserModule,

@@ -7,17 +7,16 @@ import org.flowable.engine.TaskService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fastcode.demopet.application.invoices.IInvoicesAppService;
-import com.fastcode.demopet.application.invoices.InvoicesAppService;
 import com.fastcode.demopet.application.invoices.dto.CreateInvoicesInput;
 import com.fastcode.demopet.application.invoices.dto.CreateInvoicesOutput;
 import com.fastcode.demopet.application.invoices.dto.InvoiceStatus;
 import com.fastcode.demopet.application.invoices.dto.UpdateInvoicesInput;
 import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
-import com.fastcode.demopet.domain.irepository.IInvoicesRepository;
 import com.fastcode.demopet.domain.model.InvoicesEntity;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 
@@ -31,6 +30,7 @@ public class StartProcessService {
 	private RuntimeService runtimeService;
 
 	@Autowired
+	@Lazy
 	private IInvoicesAppService _invoicesAppService;
 
 	@Autowired
@@ -83,7 +83,7 @@ public class StartProcessService {
 
 	public void updateInvoiceStatus(String processInstanceId, String variableName, String variableValue) {
 		runtimeService.setVariable(processInstanceId, variableName, variableValue);
-	}
+	} 
 
 	public void userTaskListener (DelegateTask delegateTask) {
 

@@ -69,7 +69,7 @@ public class EmailService implements IEmailService {
 		registrationEmail.setTo(email);
 		registrationEmail.setSubject("Account Verfication");
 		registrationEmail.setText("To verify your account, click the link below:\n" + appUrl
-				+ "/verifyEmail?token=" + verificationCode);
+				+ "/verify-email?token=" + verificationCode);
 		System.out.println("App url " + registrationEmail.getText());
 
 		return registrationEmail;

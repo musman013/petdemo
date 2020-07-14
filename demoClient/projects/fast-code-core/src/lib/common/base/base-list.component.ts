@@ -225,6 +225,7 @@ export class BaseListComponent<E> implements OnInit {
     });
     this.dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.errorService.showError(`Item created!`);
         this.getItems();
       }
     });

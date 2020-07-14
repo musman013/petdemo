@@ -89,6 +89,8 @@ public class SpecialtiesControllerTest {
 		em.getTransaction().begin();
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.specialties").executeUpdate();
+		em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+		
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -157,9 +159,13 @@ public class SpecialtiesControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-		mvc.perform(get("/specialties/111")
-				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isNotFound());
+//		mvc.perform(get("/specialties/111")
+//				.contentType(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/specialties/111")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
 	}    
 	@Test
@@ -211,8 +217,13 @@ public class SpecialtiesControllerTest {
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(specialties);
-		mvc.perform(put("/specialties/111").contentType(MediaType.APPLICATION_JSON).content(json))
-		.andExpect(status().isNotFound());
+		
+//		mvc.perform(put("/specialties/111").contentType(MediaType.APPLICATION_JSON).content(json))
+//		.andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/specialties/111")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Specialties with id=111 not found."));
 
 	}    
 
@@ -285,9 +296,14 @@ public class SpecialtiesControllerTest {
 	public void GetVetSpecialties_searchIsNotEmpty() throws Exception {
 	
 		Mockito.when(specialtiesAppService.parseVetSpecialtiesJoinColumn(anyString())).thenReturn(null);
-		mvc.perform(get("/specialties/1/vetSpecialties?search=specialtyid[equals]=1&limit=10&offset=1")
-				.contentType(MediaType.APPLICATION_JSON))
-	    		  .andExpect(status().isNotFound());
+//		mvc.perform(get("/specialties/1/vetSpecialties?search=specialtyid[equals]=1&limit=10&offset=1")
+//				.contentType(MediaType.APPLICATION_JSON))
+//	    		  .andExpect(status().isNotFound());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/specialties/1/vetSpecialties?search=specid[equals]=1&limit=10&offset=1")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Invalid join column"));
+
 	}    
     
 

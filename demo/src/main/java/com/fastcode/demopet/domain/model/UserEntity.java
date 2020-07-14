@@ -133,6 +133,12 @@ public class  UserEntity extends AbstractEntity {
   	
   	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL) 
 	private UserpreferenceEntity userpreference;
+  	
+  	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL) 
+	private VetsEntity vet;
+  	
+  	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL) 
+	private OwnersEntity owner;
 	
 	public void addTokenVerification(TokenverificationEntity tokenVerification) {
 		tokenverificationSet.add(tokenVerification);

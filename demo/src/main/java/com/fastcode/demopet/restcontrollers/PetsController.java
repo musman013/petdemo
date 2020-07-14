@@ -47,21 +47,15 @@ public class PetsController {
 
     @Autowired
     private UserAppService _userAppService;
-    
-	@Autowired
-	private LoggingHelper logHelper;
 
 	@Autowired
 	private Environment env;
-	
-	
     
-    public PetsController(PetsAppService petsAppService, VisitsAppService visitsAppService,
-	 LoggingHelper helper) {
+    public PetsController(PetsAppService petsAppService, VisitsAppService visitsAppService, UserAppService userAppService) {
 		super();
 		this._petsAppService = petsAppService;
     	this._visitsAppService = visitsAppService;
-		this.logHelper = helper;
+    	this._userAppService = userAppService;
 	}
 
     @PreAuthorize("hasAnyAuthority('PETSENTITY_CREATE')")
@@ -75,9 +69,7 @@ public class PetsController {
     		pets.setOwnerId(user.getId());
     	}
     	
-    	CreatePetsOutput output=_petsAppService.create(pets);
-		
-		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
+    	CreatePetsOutput output =_petsAppService.create(pets);
 		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
 		
 		return new ResponseEntity(output, HttpStatus.OK);
@@ -103,11 +95,11 @@ public class PetsController {
 	    FindPetsByIdOutput currentPets = _petsAppService.findById(Long.valueOf(id));
 		Optional.ofNullable(currentPets).orElseThrow(() -> new EntityNotFoundException(String.format("Unable to update. Pets with id=%s not found.", id)));
 		
-		
 		pets.setVersion(currentPets.getVersion());
     	
 	    return new ResponseEntity(_petsAppService.update(Long.valueOf(id),pets), HttpStatus.OK);
 	}
+    
     @PreAuthorize("hasAnyAuthority('PETSENTITY_READ')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<FindPetsByIdOutput> findById(@PathVariable String id) {
@@ -127,11 +119,10 @@ public class PetsController {
 
 		Pageable Pageable = new OffsetBasedPageRequest(Integer.parseInt(offset), Integer.parseInt(limit), sort);
 		SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject(search);
-		
-		
-		UserEntity user = _userAppService.getUser();
 
 		List<FindPetsByIdOutput> list = _petsAppService.find(searchCriteria,Pageable);
+		UserEntity user = _userAppService.getUser();
+		
 		if(_userAppService.checkIsAdmin(user))
 		{
 			return ResponseEntity.ok(list);

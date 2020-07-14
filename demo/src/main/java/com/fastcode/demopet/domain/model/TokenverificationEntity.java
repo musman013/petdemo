@@ -28,7 +28,7 @@ public class TokenverificationEntity extends AbstractEntity {
 
 	@Basic
 	@Column(name = "Token", nullable = true, length = 512)
-	private String token;
+	private String token; 
 	
 	@Basic
 	@Column(name = "ExpirationTime", nullable = true, length = 512)

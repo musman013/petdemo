@@ -11,10 +11,16 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import java.util.HashMap;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +30,7 @@ import org.mockito.Spy;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +79,7 @@ public class RolepermissionAppServiceTest {
 	private LoggingHelper logHelper;
     
 	private static long ID=15;
+	
 	@Before
 	public void setUp() throws Exception {
 
@@ -112,7 +120,7 @@ public class RolepermissionAppServiceTest {
 		Mockito.when(_permissionManager.findById(anyLong())).thenReturn(permissionEntity);
 		Mockito.when(_rolepermissionManager.create(any(RolepermissionEntity.class))).thenReturn(rolepermissionEntity); 
 		
-		Assertions.assertThat(_appService.create(rolepermission)).isEqualTo(_mapper.rolepermissionEntityToCreateRolepermissionOutput(rolepermissionEntity)); 
+		Assertions.assertThat(_appService.create(rolepermission)).isEqualTo(_mapper.roleAndPermissionEntityToCreateRolepermissionOutput(roleEntity, permissionEntity)); 
 	} 
 
 	@Test
@@ -178,6 +186,11 @@ public class RolepermissionAppServiceTest {
 		RolepermissionEntity rolepermission= mock(RolepermissionEntity.class);
 		Mockito.when(_rolepermissionManager.findById(any(RolepermissionId.class))).thenReturn(rolepermission);
 		
+		RoleEntity roleEntity= mock(RoleEntity.class);
+		PermissionEntity permissionEntity= mock(PermissionEntity.class);
+ 		
+		Mockito.when(_permissionManager.findById(any(Long.class))).thenReturn(permissionEntity);
+ 		Mockito.when(_roleManager.findById(anyLong())).thenReturn(roleEntity); 
 		_appService.delete(rolePermissionId); 
 		verify(_rolepermissionManager).delete(rolepermission);
 	}

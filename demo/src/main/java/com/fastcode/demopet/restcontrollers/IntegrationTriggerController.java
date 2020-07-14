@@ -1,11 +1,7 @@
 package com.fastcode.demopet.restcontrollers;
 
-import com.fastcode.demopet.application.invoices.IInvoicesAppService;
-import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
 import com.fastcode.demopet.domain.invoices.IInvoicesManager;
 import com.fastcode.demopet.domain.model.InvoicesEntity;
-
-import javassist.expr.NewArray;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +49,7 @@ public class IntegrationTriggerController {
             e.printStackTrace();
         }
 
-        String pattern = "dd/MM/yyyy";
+        String pattern = "MM/dd/yyyy";
         DateFormat df = new SimpleDateFormat(pattern);
         JSONObject invoiceJsonObject = new JSONObject();
         invoiceJsonObject.put("visitCompletionDate", df.format(new Date()));

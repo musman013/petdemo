@@ -21,7 +21,7 @@ public class ActIdUserMapper {
 		actIdUser.setRev(0L);
 		actIdUser.setDisplayName(null);
 		actIdUser.setPictureId(null);
-		actIdUser.setTenantId(null);
+	//	actIdUser.setTenantId(null);
 
 		return actIdUser;
 	}

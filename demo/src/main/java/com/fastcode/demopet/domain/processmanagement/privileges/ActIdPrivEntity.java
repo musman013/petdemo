@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.Date;
 
 @Entity
-@Table(name = "act_id_priv")
+@Table(name = "act_id_priv", schema = "sample")
 @Getter @Setter
 @NoArgsConstructor
 public class ActIdPrivEntity  implements Serializable {

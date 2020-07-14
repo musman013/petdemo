@@ -38,24 +38,21 @@ public class InvoicesController {
     @Autowired
 	private UserAppService  _userAppService;
 
-	@Autowired
-	private LoggingHelper logHelper;
 
 	@Autowired
 	private Environment env;
 
     
-    public InvoicesController(InvoicesAppService invoicesAppService,
-	 LoggingHelper helper) {
+    public InvoicesController(InvoicesAppService invoicesAppService, UserAppService userAppService) {
 		super();
 		this._invoicesAppService = invoicesAppService;
-		this.logHelper = helper;
+		this._userAppService = userAppService;
 	}
 
     @PreAuthorize("hasAnyAuthority('INVOICESENTITY_CREATE')")
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<CreateInvoicesOutput> create(@RequestBody @Valid CreateInvoicesInput invoices) {
-		CreateInvoicesOutput output=_invoicesAppService.create(invoices);
+		CreateInvoicesOutput output = _invoicesAppService.create(invoices);
 		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
 		
 		return new ResponseEntity(output, HttpStatus.OK);
@@ -73,7 +70,6 @@ public class InvoicesController {
     _invoicesAppService.delete(Long.valueOf(id));
     }
     
-	
 	// ------------ Update invoices ------------
     @PreAuthorize("hasAnyAuthority('INVOICESENTITY_UPDATE')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -86,6 +82,7 @@ public class InvoicesController {
     	
 	    return new ResponseEntity(_invoicesAppService.update(Long.valueOf(id),invoices), HttpStatus.OK);
 	}
+    
     @PreAuthorize("hasAnyAuthority('INVOICESENTITY_READ')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<FindInvoicesByIdOutput> findById(@PathVariable String id) {
@@ -106,9 +103,11 @@ public class InvoicesController {
 		Pageable Pageable = new OffsetBasedPageRequest(Integer.parseInt(offset), Integer.parseInt(limit), sort);
 		SearchCriteria searchCriteria = SearchUtils.generateSearchCriteriaObject(search);
 
-		UserEntity user = _userAppService.getUser();
-
+	
 		List<FindInvoicesByIdOutput> list = _invoicesAppService.find(searchCriteria,Pageable);
+		
+		UserEntity user = _userAppService.getUser();
+		
 		if(_userAppService.checkIsAdmin(user))
 		{
 			return ResponseEntity.ok(list);

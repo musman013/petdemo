@@ -1,12 +1,6 @@
 package com.fastcode.demopet.application.visits;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +25,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fastcode.demopet.domain.visits.*;
 import com.fastcode.demopet.commons.search.*;
+import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.domain.model.QVisitsEntity;
+import com.fastcode.demopet.domain.model.VetsEntity;
 import com.fastcode.demopet.domain.model.VisitsEntity;
-import com.fastcode.demopet.domain.model.InvoicesEntity;
+import com.fastcode.demopet.domain.owners.OwnersManager;
 import com.fastcode.demopet.domain.invoices.InvoicesManager;
+import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.pets.PetsManager;
+import com.fastcode.demopet.domain.vets.VetsManager;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -52,14 +50,23 @@ public class VisitsAppServiceTest {
 	@Mock
 	private VisitsManager _visitsManager;
 	
+	@Mock
+	private OwnersManager _ownersManager;
+	
+	@Mock
+	private VetsManager _vetsManager;
+	
     @Mock
 	private InvoicesManager  _invoicesManager;
+    
+    @Mock
+   	private VisitMailUtils _visitMailUtils;
 	
     @Mock
 	private PetsManager  _petsManager;
 	
 	@Mock
-	private VisitsMapper _mapper;
+	private IVisitsMapper _mapper;
 
 	@Mock
 	private Logger loggerMock;
@@ -101,9 +108,9 @@ public class VisitsAppServiceTest {
 	 @Test 
     public void createVisits_VisitsIsNotNullAndVisitsDoesNotExist_StoreVisits() { 
  
-       VisitsEntity visitsEntity = mock(VisitsEntity.class); 
+       VisitsEntity visitsEntity = new VisitsEntity(); 
        CreateVisitsInput visits = new CreateVisitsInput();
-   
+       
 		PetsEntity pets= mock(PetsEntity.class);
         visits.setPetId(Long.valueOf(ID));
 		Mockito.when(_petsManager.findById(
@@ -111,15 +118,17 @@ public class VisitsAppServiceTest {
 		
         Mockito.when(_mapper.createVisitsInputToVisitsEntity(any(CreateVisitsInput.class))).thenReturn(visitsEntity); 
         Mockito.when(_visitsManager.create(any(VisitsEntity.class))).thenReturn(visitsEntity);
-      
+        doNothing().when(_visitMailUtils).buildVisitConfirmationMail(any(Long.class));
+        doNothing().when(_visitMailUtils).scheduleReminderJob(any(Long.class));
         Assertions.assertThat(_appService.create(visits)).isEqualTo(_mapper.visitsEntityToCreateVisitsOutput(visitsEntity)); 
     } 
 	@Test
 	public void createVisits_VisitsIsNotNullAndVisitsDoesNotExistAndChildIsNullAndChildIsMandatory_ReturnNull() {
 
 		CreateVisitsInput visits = mock(CreateVisitsInput.class);
-		
-		Mockito.when(_mapper.createVisitsInputToVisitsEntity(any(CreateVisitsInput.class))).thenReturn(null); 
+		VisitsEntity visitsEntity = new VisitsEntity(); 
+		 
+		Mockito.when(_mapper.createVisitsInputToVisitsEntity(any(CreateVisitsInput.class))).thenReturn(visitsEntity); 
 		Assertions.assertThat(_appService.create(visits)).isEqualTo(null);
 	}
 	
@@ -127,9 +136,11 @@ public class VisitsAppServiceTest {
 	public void createVisits_VisitsIsNotNullAndVisitsDoesNotExistAndChildIsNotNullAndChildIsMandatoryAndFindByIdIsNull_ReturnNull() {
 
 		CreateVisitsInput visits = new CreateVisitsInput();
-	    
+		VisitsEntity visitsEntity = new VisitsEntity(); 
         visits.setPetId(Long.valueOf(ID));
      
+        Mockito.when(_mapper.createVisitsInputToVisitsEntity(any(CreateVisitsInput.class))).thenReturn(visitsEntity); 
+		
 		Mockito.when(_petsManager.findById(any(Long.class))).thenReturn(null);
 		Assertions.assertThat(_appService.create(visits)).isEqualTo(null);
     }
@@ -149,12 +160,10 @@ public class VisitsAppServiceTest {
 		
 		UpdateVisitsInput visits = new UpdateVisitsInput();
         visits.setPetId(Long.valueOf(ID));
-		
      
 		Mockito.when(_petsManager.findById(any(Long.class))).thenReturn(null);
 		Assertions.assertThat(_appService.update(ID,visits)).isEqualTo(null);
 	}
-
 		
 	@Test
 	public void updateVisits_VisitsIdIsNotNullAndIdExists_ReturnUpdatedVisits() {
@@ -170,7 +179,9 @@ public class VisitsAppServiceTest {
 	@Test
 	public void deleteVisits_VisitsIsNotNullAndVisitsExists_VisitsRemoved() {
 
-		VisitsEntity visits= mock(VisitsEntity.class);
+		VisitsEntity visits= new VisitsEntity();
+		PetsEntity pets = mock(PetsEntity.class);
+		visits.setPets(pets);
 		Mockito.when(_visitsManager.findById(anyLong())).thenReturn(visits);
 		
 		_appService.delete(ID); 
@@ -185,11 +196,8 @@ public class VisitsAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindVisitsByIdOutput> output = new ArrayList<>();
 		SearchCriteria search= new SearchCriteria();
-//		search.setType(1);
-//		search.setValue("xyz");
-//		search.setOperator("equals");
 
-		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
+		doReturn(new BooleanBuilder()).when(_appService).search(any(SearchCriteria.class));
 		Mockito.when(_visitsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
 	}
@@ -204,14 +212,94 @@ public class VisitsAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindVisitsByIdOutput> output = new ArrayList<>();
         SearchCriteria search= new SearchCriteria();
-//		search.setType(1);
-//		search.setValue("xyz");
-//		search.setOperator("equals");
 		output.add(_mapper.visitsEntityToFindVisitsByIdOutput(visits));
 		
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
     	Mockito.when(_visitsManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
+	}
+
+	@Test
+	public void changeStatus_VisitExistsAndVisitNotesAreNull_ReturnUpdatedVisitObject() {
+		
+		VisitsEntity visits = new VisitsEntity();
+		FindVisitsByIdOutput  output = new FindVisitsByIdOutput();
+		
+		UpdateVisitStatus input = new UpdateVisitStatus();
+		input.setStatus(Status.CONFIRMED);
+		
+		Mockito.when(_visitsManager.findById(anyLong())).thenReturn(visits);
+	    Mockito.doReturn(visits).when(_visitsManager).update(any(VisitsEntity.class));
+	    Mockito.when(_mapper.visitsEntityToFindVisitsByIdOutput(any(VisitsEntity.class))).thenReturn(output);
+	    Assertions.assertThat(_appService.changeStatus(2L, input)).isEqualTo(_mapper.visitsEntityToFindVisitsByIdOutput(visits));
+	}
+	
+	@Test
+	public void changeStatus_VisitExistsAndVisitNotesAreNotNull_ReturnUpdatedVisitObject() {
+		
+		VisitsEntity visits = new VisitsEntity();
+		FindVisitsByIdOutput  output = new FindVisitsByIdOutput();
+		
+		UpdateVisitStatus input = new UpdateVisitStatus();
+		input.setStatus(Status.CONFIRMED);
+		input.setVisitNotes("abc");
+		
+		Mockito.when(_visitsManager.findById(anyLong())).thenReturn(visits);
+	    Mockito.doReturn(visits).when(_visitsManager).update(any(VisitsEntity.class));
+	    Mockito.when(_mapper.visitsEntityToFindVisitsByIdOutput(any(VisitsEntity.class))).thenReturn(output);
+	    Assertions.assertThat(_appService.changeStatus(2L, input)).isEqualTo(_mapper.visitsEntityToFindVisitsByIdOutput(visits));
+	}
+	
+	@Test
+	public void filterVisits_ListIsNotEmptyAndVisitExistsAgainstOwner_ReturnList() {
+		
+		List<FindVisitsByIdOutput> list = new ArrayList<>();
+		FindVisitsByIdOutput visits = new FindVisitsByIdOutput();
+		
+		OwnersEntity owners = new OwnersEntity();
+		owners.setId(2L);
+		PetsEntity pets = new PetsEntity();
+		pets.setOwners(owners);
+		visits.setPetId(2L);
+		
+		list.add(visits);
+		
+		Mockito.when(_ownersManager.findById(anyLong())).thenReturn(owners);
+		Mockito.when(_vetsManager.findById(anyLong())).thenReturn(null);
+		Mockito.when(_petsManager.findById(anyLong())).thenReturn(pets);
+		Assertions.assertThat(_appService.filterVisits(list, 2L)).isEqualTo(list);
+	}
+	
+	@Test
+	public void filterVisits_ListIsNotEmptyAndVisitExistsAgainstVet_ReturnList() {
+		
+		List<FindVisitsByIdOutput> list = new ArrayList<>();
+		FindVisitsByIdOutput visits = new FindVisitsByIdOutput();
+		
+		VetsEntity vets = new VetsEntity();
+		vets.setId(2L);
+
+		visits.setVetId(2L);
+		
+		list.add(visits);
+		
+		Mockito.when(_ownersManager.findById(anyLong())).thenReturn(null);
+		Mockito.when(_vetsManager.findById(anyLong())).thenReturn(vets);
+	
+		Assertions.assertThat(_appService.filterVisits(list, 2L)).isEqualTo(list);
+	}
+	
+	@Test
+	public void filterVisits_ListIsNotEmptyAndPetDoesNotExistsAgainstOwner_ReturnEmptyList() {
+		
+		List<FindVisitsByIdOutput> list = new ArrayList<>();
+		FindVisitsByIdOutput visits = new FindVisitsByIdOutput();
+		
+		list.add(visits);
+		
+		Mockito.when(_ownersManager.findById(anyLong())).thenReturn(null);
+		Mockito.when(_vetsManager.findById(anyLong())).thenReturn(null);
+		Assertions.assertThat(_appService.filterVisits(list, 2L)).isEqualTo(new ArrayList<>());
 	}
 	
 	@Test

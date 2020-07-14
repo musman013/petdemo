@@ -19,12 +19,12 @@ public interface IOwnersMapper {
 
    OwnersEntity createOwnersInputToOwnersEntity(CreateOwnersInput ownersDto);
    
-   @Mapping(source = "entity.user.id" , target ="id" )
+   @Mapping(source = "entity.id" , target ="id" )
    CreateOwnersOutput ownersEntityAndUserEntityToCreateOwnersOutput(OwnersEntity entity, UserEntity user, UserpreferenceEntity userpreference);
 
    OwnersEntity updateOwnersInputToOwnersEntity(UpdateOwnersInput ownersDto);
 
-   @Mapping(source = "entity.user.id" , target ="id" )
+   @Mapping(source = "entity.id" , target ="id" )
    UpdateOwnersOutput ownersEntityAndUserEntityToUpdateOwnersOutput(OwnersEntity entity, UserEntity user);
 
    @Mappings({

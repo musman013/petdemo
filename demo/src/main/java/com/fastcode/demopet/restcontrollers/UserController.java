@@ -55,7 +55,7 @@ public class UserController {
 	private LoggingHelper logHelper;
 
 	@Autowired
-	private Environment env;
+	private Environment env; 
 	
 	public UserController(UserAppService userAppService, UserpermissionAppService userpermissionAppService,
 			UserroleAppService userroleAppService, PasswordEncoder pEncoder, JWTAppService jwtAppService, LoggingHelper logHelper) {
@@ -96,7 +96,7 @@ public class UserController {
 		return new ResponseEntity(output, HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
+//	@PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
 	@RequestMapping(value = "/getProfile",method = RequestMethod.GET)
 	public ResponseEntity<UserProfile> getProfile() {
 		UserEntity user = _userAppService.getUser();
@@ -116,7 +116,7 @@ public class UserController {
 					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
 		}
 		
-		userOutput = _userAppService.findByEmailAddress(userProfile.getUserName());
+		userOutput = _userAppService.findByUserName(userProfile.getUserName());
 		if(userOutput != null && userOutput.getId() !=user.getId())
 		{
 			logHelper.getLogger().error("There already exists a user with userName =%s", user.getUserName());
@@ -144,7 +144,7 @@ public class UserController {
 	public ResponseEntity<HashMap<String,String>> updateLanguage(@RequestParam @Valid String language) {
 		
 		UserEntity user = _userAppService.getUser();
-		_userAppService.updateTheme(user, language);
+		_userAppService.updateLanguage(user, language);
 		
 		String msg = "Language updated successfully !";
 		HashMap resultMap = new HashMap<String,String>();
@@ -195,6 +195,7 @@ public class UserController {
 		
     return new ResponseEntity(_userAppService.update(Long.valueOf(id),user), HttpStatus.OK);
 	}
+		
 	// ------------ Retrieve a user ------------
 	@PreAuthorize("hasAnyAuthority('USERENTITY_READ')")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

@@ -42,7 +42,8 @@ public class OwnersEntity extends AbstractEntity {
 	}
 
 	@OneToOne
-    @MapsId
+	@JoinColumn(name = "id")
+ //   @MapsId
     private UserEntity user;
 
 

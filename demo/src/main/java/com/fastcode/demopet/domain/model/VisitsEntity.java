@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "visits", schema = "sample")
 @Getter @Setter
-@NoArgsConstructor
 public class VisitsEntity extends AbstractEntity {
 
   	@Basic

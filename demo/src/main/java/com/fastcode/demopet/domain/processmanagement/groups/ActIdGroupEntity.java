@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "act_id_group")
+@Table(name = "act_id_group", schema = "sample")
 @Getter @Setter
 @NoArgsConstructor
 public class ActIdGroupEntity  implements Serializable {

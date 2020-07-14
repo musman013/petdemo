@@ -25,7 +25,7 @@ public class OffsetBasedPageRequestTest {
 	{
 		
 		try {
-			new OffsetBasedPageRequest(-1, 1, new Sort(Sort.Direction.ASC, "id"));
+			new OffsetBasedPageRequest(-1, 1, Sort.by(Sort.Direction.ASC, "id"));
         } catch (IllegalArgumentException ex) {
             Assertions.assertThat(ex.getMessage()).isEqualTo("Offset index must not be less than zero!");
         }
@@ -37,7 +37,7 @@ public class OffsetBasedPageRequestTest {
 	{
 		
 		try {
-			new OffsetBasedPageRequest(1, -1,new Sort(Sort.Direction.ASC, "id"));
+			new OffsetBasedPageRequest(1, -1,Sort.by(Sort.Direction.ASC, "id"));
         } catch (IllegalArgumentException ex) {
             Assertions.assertThat(ex.getMessage()).isEqualTo("Limit must not be less than one!");
         }

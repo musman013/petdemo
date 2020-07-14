@@ -12,6 +12,7 @@ import com.fastcode.demopet.application.vets.dto.*;
 import com.fastcode.demopet.domain.vets.IVetsManager;
 import com.fastcode.demopet.domain.authorization.role.IRoleManager;
 import com.fastcode.demopet.domain.authorization.user.IUserManager;
+import com.fastcode.demopet.domain.authorization.userpreference.IUserpreferenceManager;
 import com.fastcode.demopet.domain.model.QVetsEntity;
 import com.fastcode.demopet.domain.model.RoleEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
@@ -40,6 +41,9 @@ public class VetsAppService implements IVetsAppService {
 
 	@Autowired
 	private IVetsManager _vetsManager;
+	
+	@Autowired
+	private IUserpreferenceManager _userpreferenceManager;
 
 	@Autowired
 	private IVetsMapper mapper;
@@ -74,6 +78,7 @@ public class VetsAppService implements IVetsAppService {
  		idmIdentityService.createUser(user, actIdUser);
 		assignVetRole(user.getId());
 		
+		vets.setId(user.getId());
 		vets.setUser(user);
 
 		VetsEntity createdVets = _vetsManager.create(vets);
@@ -85,10 +90,12 @@ public class VetsAppService implements IVetsAppService {
 	public void assignVetRole(Long userId)
 	{
 		RoleEntity role = _roleManager.findByRoleName("ROLE_Vet");
+		if(role !=null && userId !=null) {
 		CreateUserroleInput input = new CreateUserroleInput();
 		input.setRoleId(role.getId());
 		input.setUserId(userId);
 		_userroleAppService.create(input);
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -129,15 +136,15 @@ public class VetsAppService implements IVetsAppService {
 		if (foundVets == null)  
 			return null ; 
 
-		UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(foundVets.getUser());
-		FindVetsByIdOutput output=mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
+		UserpreferenceEntity userpreference = _userpreferenceManager.findById(vetsId);
+		FindVetsByIdOutput output = mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
 		
 		return output;
 	}
 
 	public VetProfile getProfile(FindVetsByIdOutput vet)
 	{
-		return mapper.findVetsByIdOutputToVetProfile(vet);
+		return mapper.findVetsByIdOutputToVetProfile(vet);  
 	}
 	
 	public VetProfile updateVetProfile(FindUserWithAllFieldsByIdOutput user, VetProfile vetProfile)
@@ -159,7 +166,7 @@ public class VetsAppService implements IVetsAppService {
 
 		while (vetsIterator.hasNext()) {
 			VetsEntity vet = vetsIterator.next();
-			UserpreferenceEntity userpreference = _userAppService.createDefaultUserPreference(vet.getUser());
+			UserpreferenceEntity userpreference = _userpreferenceManager.findById(vet.getId());
 			output.add(mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(vet, vet.getUser(), userpreference));
 		}
 		return output;
