@@ -25,6 +25,10 @@ import { MainNavComponent } from './common/components/main-nav/main-nav.componen
 import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
 import { TaskAppRoutes } from 'projects/task-app/src/public_api';
 
+import { RegisterComponent } from './register/register.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+import { RegisterCompleteComponent } from './register/register-complete/register-complete.component';
+
 const routes: Routes = [
 	{ path: 'resourceView/:id', component: ResourceViewComponent },
 	{ path: '', pathMatch: "full", component: HomeComponent },
@@ -46,6 +50,9 @@ const routes: Routes = [
 	},
 	{ path: 'login', component: LoginComponent },
 	{ path: 'login/:returnUrl', component: LoginComponent },
+	{ path: 'register', component: RegisterComponent },
+	{ path: 'register-complete', component: RegisterCompleteComponent },
+	{ path: 'verify-email', component: ConfirmEmailComponent },
 	{ path: 'pets', component: PetsListComponent, canDeactivate: [CanDeactivateGuard], canActivate: [AuthGuard] },
 	{ path: 'pets/new', component: PetsNewComponent, canActivate: [AuthGuard] },
 	{ path: 'pets/:id', component: PetsDetailsComponent, canDeactivate: [CanDeactivateGuard], canActivate: [AuthGuard] },

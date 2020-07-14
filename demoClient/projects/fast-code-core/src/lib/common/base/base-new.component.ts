@@ -120,7 +120,7 @@ export class BaseNewComponent<E> implements OnInit, CanDeactivateGuard {
           this.dialogRef.close(data);
         },
         error => {
-          this.errorService.showError("Error Occured while updating");
+          this.errorService.showError("Error Occured while creating");
           this.loading = false;
           this.dialogRef.close(null)
 

@@ -3,11 +3,13 @@
 
     <div class="sort-value-block">
       <mat-form-field class="full-width">
-        <input matInput placeholder="Search Report" [(ngModel)]="searchText" (ngModelChange)="applyFilters()" />
+        <input matInput placeholder="Search Reports" [(ngModel)]="searchText" (ngModelChange)="applyFilters()" />
       </mat-form-field>
       <div class="create-report">
-        <button name="add" mat-raised-button color="primary" routerLink="/reporting/reports/add">Generate new
-          report</button>
+        <button name="add" mat-raised-button color="primary" routerLink="/reporting/reports/add"><i
+          class="material-icons">
+          add_circle_outline
+        </i> &nbsp;{{'GENERAL.ACTIONS.ADD' | translate}}</button>
       </div>
     </div>
 

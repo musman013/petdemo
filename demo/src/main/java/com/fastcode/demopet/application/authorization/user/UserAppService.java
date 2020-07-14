@@ -123,7 +123,7 @@ public class UserAppService implements IUserAppService {
     @Transactional(propagation = Propagation.REQUIRED)
    	public UserpreferenceEntity updateLanguage(UserEntity user, String language) {
     	UserpreferenceEntity userpreference = _userpreferenceManager.findById(user.getId());
-    	userpreference.setTheme(language);
+    	userpreference.setLanguage(language);
     	
     	return _userpreferenceManager.update(userpreference);
     }
@@ -423,7 +423,7 @@ public class UserAppService implements IUserAppService {
 					builder.and(user.isEmailConfirmed.eq(Boolean.parseBoolean(details.getValue().getSearchValue())));
 				else if(details.getValue().getOperator().equals("notEqual") && (details.getValue().getSearchValue().equalsIgnoreCase("true") || details.getValue().getSearchValue().equalsIgnoreCase("false")))
 					builder.and(user.isEmailConfirmed.ne(Boolean.parseBoolean(details.getValue().getSearchValue())));
-			}
+			} 
 			if(details.getKey().replace("%20","").trim().equals("isLockoutEnabled")) {
 				if(details.getValue().getOperator().equals("equals") && (details.getValue().getSearchValue().equalsIgnoreCase("true") || details.getValue().getSearchValue().equalsIgnoreCase("false")))
 					builder.and(user.isLockoutEnabled.eq(Boolean.parseBoolean(details.getValue().getSearchValue())));

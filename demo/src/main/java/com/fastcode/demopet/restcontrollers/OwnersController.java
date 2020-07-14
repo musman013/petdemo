@@ -129,6 +129,7 @@ public class OwnersController {
 		}
 	    
 		owners.setPassword(pEncoder.encode(owners.getPassword()));
+		owners.setIsActive(true);
 
 		CreateOwnersOutput output=_ownersAppService.create(owners);
 		return new ResponseEntity(output, HttpStatus.OK);

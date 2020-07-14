@@ -126,6 +126,7 @@ public class VetsController {
 		}
 
 		vets.setPassword(pEncoder.encode(vets.getPassword()));
+		vets.setIsActive(true);
 
 		CreateVetsOutput output=_vetsAppService.create(vets);
 		return new ResponseEntity(output, HttpStatus.OK);

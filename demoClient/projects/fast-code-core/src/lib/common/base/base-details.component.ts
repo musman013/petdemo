@@ -142,7 +142,8 @@ export class BaseDetailsComponent<E> implements OnInit, CanDeactivateGuard {
         data => {
           this.loading = false;
           // this.router.navigate([this.parentUrl], { relativeTo: this.route.parent });
-          this.router.navigate([this.router.url.substring(0, this.router.url.indexOf(this.idParam))]);
+          this.errorService.showError(`Item updated!`);
+          // this.router.navigate([this.router.url.substring(0, this.router.url.indexOf(this.idParam))]);
         
         },
         error => {

@@ -41,6 +41,9 @@ public class RegistrationController {
 
 	@Autowired
 	private UserAppService _userAppService;
+
+	@Autowired
+	private OwnersAppService _ownersAppService;
 	
 	@Autowired
 	private OwnersAppService _ownerAppService;
@@ -62,27 +65,29 @@ public class RegistrationController {
 		FindUserByNameOutput foundUser = _userAppService.findByUserName(user.getUserName());
 
 		if (foundUser != null) {
-			logHelper.getLogger().error("There already exists a user with a name=%s", user.getUserName());
+			logHelper.getLogger().error("There already exists a user with the username \"%s\"", user.getUserName());
 			throw new EntityExistsException(
-					String.format("There already exists a user with a name=%s", user.getUserName()));
+					String.format("There already exists a user with the username \"%s\"", user.getUserName()));
 		}
 
 		foundUser = _userAppService.findByEmailAddress(user.getEmailAddress());
 		if (foundUser != null) {
-			logHelper.getLogger().error("There already exists a user with a email=%s", user.getEmailAddress());
+			logHelper.getLogger().error("There already exists a user with the email \"%s\"", user.getEmailAddress());
 			throw new EntityExistsException(
-					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
+					String.format("There already exists a user with the email \"%s\"", user.getEmailAddress()));
 		}
 
 		user.setIsActive(false);
 		user.setPassword(pEncoder.encode(user.getPassword()));
 
 		CreateOwnersOutput output= _ownerAppService.create(user);
+//		CreateUserOutput output=_userAppService.create(user);
 		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
 
 		TokenverificationEntity tokenEntity = _tokenAppService.generateToken("registration", output.getId());
 
-		String appUrl = request.getScheme() + "://" + request.getServerName()+ ":" + request.getLocalPort() +"/register";
+//		String appUrl = request.getScheme() + "://" + request.getServerName()+ ":" + request.getLocalPort() +"/register";
+		String appUrl = "http://localhost:4400/#";
 		System.out.println("App url " + appUrl);
 		_asyncEmailTrigger.sendEmail(_emailService.buildVerifyRegistrationEmail(user.getEmailAddress(), appUrl, tokenEntity.getToken()));
 
@@ -94,7 +99,7 @@ public class RegistrationController {
 
 	}
 
-	@RequestMapping(value = "/verifyEmail", method = RequestMethod.POST)
+	@RequestMapping(value = "/verifyEmail", method = RequestMethod.GET)
 	public ResponseEntity<HashMap<String,String>> verifyEmail(@RequestParam("token") final String token) {
 
 		TokenverificationEntity tokenEntity = _tokenAppService.findByTokenAndType(token, "registration");
