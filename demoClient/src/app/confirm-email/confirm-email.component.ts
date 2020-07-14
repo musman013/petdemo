@@ -8,7 +8,7 @@ import { RegisterService } from '../register/register.service';
   styleUrls: ['./confirm-email.component.scss']
 })
 export class ConfirmEmailComponent implements OnInit {
-  loading = false;
+  loading = true;
   confirmed = false;
   resetToken = "";
   constructor(
@@ -21,9 +21,12 @@ export class ConfirmEmailComponent implements OnInit {
     this.resetToken = this.activatedRoute.snapshot.queryParamMap.get("token");
     if(this.resetToken){
       this.registerService.verifyEmail(this.resetToken).subscribe(resp => {
+        this.loading = false;
         if(resp){
           this.confirmed = true;
         }
+      }, err => {
+        this.loading = false;
       });
     }
   }

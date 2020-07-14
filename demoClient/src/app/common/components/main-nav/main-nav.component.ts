@@ -98,16 +98,16 @@ export class MainNavComponent {
 	setPreferences() {
 		let theme = localStorage.getItem('theme');
 		let language = localStorage.getItem('language');
-		if (!(theme || language)) {
+
+		if (theme) {
+			this.changeTheme(theme, false);
+		}
+		else {
 			this.changeTheme(this.themes[0], false);
-		} else {
-			if (theme) {
-				this.changeTheme(theme, false);
-			}
-			if (language) {
-				this.selectedLanguage = language;
-				this.translate.use(language);
-			}
+		}
+		if (language) {
+			this.selectedLanguage = language;
+			this.translate.use(language);
 		}
 	}
 

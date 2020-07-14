@@ -65,16 +65,16 @@ public class RegistrationController {
 		FindUserByNameOutput foundUser = _userAppService.findByUserName(user.getUserName());
 
 		if (foundUser != null) {
-			logHelper.getLogger().error("There already exists a user with a name=%s", user.getUserName());
+			logHelper.getLogger().error("There already exists a user with the username \"%s\"", user.getUserName());
 			throw new EntityExistsException(
-					String.format("There already exists a user with a name=%s", user.getUserName()));
+					String.format("There already exists a user with the username \"%s\"", user.getUserName()));
 		}
 
 		foundUser = _userAppService.findByEmailAddress(user.getEmailAddress());
 		if (foundUser != null) {
-			logHelper.getLogger().error("There already exists a user with a email=%s", user.getEmailAddress());
+			logHelper.getLogger().error("There already exists a user with the email \"%s\"", user.getEmailAddress());
 			throw new EntityExistsException(
-					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
+					String.format("There already exists a user with the email \"%s\"", user.getEmailAddress()));
 		}
 
 		user.setIsActive(false);
@@ -88,7 +88,7 @@ public class RegistrationController {
 		TokenverificationEntity tokenEntity = _tokenAppService.generateToken("registration", output.getId());
 
 //		String appUrl = request.getScheme() + "://" + request.getServerName()+ ":" + request.getLocalPort() +"/register";
-		String appUrl = "http://localhost:4400";
+		String appUrl = "http://localhost:4400/#";
 		System.out.println("App url " + appUrl);
 		_asyncEmailTrigger.sendEmail(_emailService.buildVerifyRegistrationEmail(user.getEmailAddress(), appUrl, tokenEntity.getToken()));
 

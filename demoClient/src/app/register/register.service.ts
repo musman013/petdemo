@@ -37,7 +37,8 @@ export class RegisterService {
       errorMessage = 'An error occurred: ' + err.error.message;
     } else {
       console.log(err);
-      errorMessage = 'Server returned code: ' + err.status + ', error message is: ' + err.message;
+      // errorMessage = 'Server returned code: ' + err.status + ', error message is: ' + err.message;
+      errorMessage = err + "";
     }
     console.error(errorMessage);
     return throwError(errorMessage);

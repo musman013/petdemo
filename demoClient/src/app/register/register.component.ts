@@ -53,15 +53,17 @@ export class RegisterComponent implements OnInit {
     this.submitted = true;
     this.loading = true;
     console.log(this.itemForm);
-    this.registerService.register(this.itemForm.getRawValue())
+    let user = this.itemForm.getRawValue();
+    this.registerService.register(user)
       .pipe(first())
       .subscribe(
         data => {
           this.loading = false;
-          console.log(data);
+          this.router.navigate(['register-complete'], { queryParams: {email: user.emailAddress} })
         },
         error => {
           this.loading = false;
+          this.errorService.showError(error);
         });
   }
 

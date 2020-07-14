@@ -60,6 +60,7 @@ import { InvoicesListComponent, InvoicesDetailsComponent, InvoicesNewComponent }
 import { CompleteVisitComponent } from './visits/complete-visit/complete-visit.component';
 import { ResourceViewComponent } from './reporting-module/pages/resourceView/resourceView.component';
 import { ReportPasswordComponent } from './reporting-module/pages/myreports/report-password/report-password.component';
+import { RegisterCompleteComponent } from './register/register-complete/register-complete.component';
 
 const cubejsOptions = {
 	token:
@@ -119,6 +120,7 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 		ResourceViewComponent,
 		RegisterComponent,
 		ConfirmEmailComponent,
+		RegisterCompleteComponent,
 	],
 	imports: [
 		BrowserModule,
