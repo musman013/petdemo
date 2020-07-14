@@ -28,5 +28,9 @@ public class UserProfile {
 	
 	@Length(max = 32, message = "phoneNumber must be less than 32 characters")
 	private String phoneNumber;
+  	
+  	private String theme;
+
+  	private String language;
 	
 }

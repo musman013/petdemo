@@ -1,34 +1,34 @@
 <section class="spinner-container" *ngIf="loading" style="z-index:99999999;">
-    <mat-spinner></mat-spinner>
+  <mat-spinner></mat-spinner>
 </section>
 <div class="login-container">
   <mat-card class="item-card">
     <mat-card-title class="text-center">
       <figure class="logo">
         <img src="../../assets/images/logo.png" alt="logo" style="    border-radius: 46px;" />
-      </figure>   
+      </figure>
       <figcaption class="text-center">
         <h2 class="sub-title">Log In</h2>
-      </figcaption>         
+      </figcaption>
     </mat-card-title>
     <mat-card-content>
       <form [formGroup]="itemForm" #loginNgForm="ngForm" (ngSubmit)="onSubmit()" class="item-form">
         <mat-form-field>
           <span matPrefix><i class="material-icons">
-            account_circle
+              account_circle
             </i> &nbsp;</span>
           <input formControlName="userName" matInput placeholder="Enter User Name" required>
           <mat-error *ngIf="!itemForm.get('userName').valid && itemForm.get('userName').touched">User Name
-          is required</mat-error>
+            is required</mat-error>
         </mat-form-field>
         <mat-form-field>
           <span matPrefix><i class="material-icons">
-            https
+              https
             </i> &nbsp;
           </span>
           <input type="password" formControlName="password" matInput placeholder="Enter Password" required>
           <mat-error *ngIf="!itemForm.get('password').valid && itemForm.get('password').touched">Password
-          is required</mat-error>
+            is required</mat-error>
         </mat-form-field>
         <mat-error *ngIf="itemForm.errors?.passwordUserNameError && (itemForm.touched || itemForm.dirty)">
           Wrong username or password.
@@ -36,15 +36,17 @@
         <mat-card-actions class="item-action text-center">
           <button name="login" mat-flat-button color="primary" class="btn-submit">
             Login &nbsp; <i class="material-icons" style="color:#fff; bottom:0;">
-            near_me
+              near_me
             </i>
           </button>
         </mat-card-actions>
         <span [routerLink]="['/forgot-password']" style="text-align: center">
-        <a href="javascript:;">forgot password?</a>
+          <a href="javascript:;">forgot password?</a>
+        </span>
+        <span [routerLink]="['/register']" style="text-align: center">
+          Don't have an account? Register <a href="javascript:;"> here.</a>
         </span>
       </form>
     </mat-card-content>
   </mat-card>
 </div>
-

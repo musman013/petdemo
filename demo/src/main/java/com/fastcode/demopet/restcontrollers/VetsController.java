@@ -98,7 +98,7 @@ public class VetsController {
 					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
 		}
 		
-		userOutput = _userAppService.findByEmailAddress(vetProfile.getUserName());
+		userOutput = _userAppService.findByUserName(vetProfile.getUserName());
 		if(userOutput != null && userOutput.getId() !=user.getId())
 		{
 			logHelper.getLogger().error("There already exists a user with userName =%s", user.getUserName());
@@ -129,6 +129,7 @@ public class VetsController {
 		}
 	    
 		vets.setPassword(pEncoder.encode(vets.getPassword()));
+		vets.setIsActive(true);
 
 		CreateVetsOutput output=_vetsAppService.create(vets);
 		return new ResponseEntity(output, HttpStatus.OK);

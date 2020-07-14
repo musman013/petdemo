@@ -123,7 +123,7 @@ public class UserAppService implements IUserAppService {
     @Transactional(propagation = Propagation.REQUIRED)
    	public UserpreferenceEntity updateLanguage(UserEntity user, String language) {
     	UserpreferenceEntity userpreference = _userpreferenceManager.findById(user.getId());
-    	userpreference.setTheme(language);
+    	userpreference.setLanguage(language);
     	
     	return _userpreferenceManager.update(userpreference);
     }

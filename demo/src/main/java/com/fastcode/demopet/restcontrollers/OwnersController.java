@@ -103,7 +103,7 @@ public class OwnersController {
 					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
 		}
 		
-		userOutput = _userAppService.findByEmailAddress(ownerProfile.getUserName());
+		userOutput = _userAppService.findByUserName(ownerProfile.getUserName());
 		if(userOutput != null && userOutput.getId() !=user.getId())
 		{
 			logHelper.getLogger().error("There already exists a user with userName =%s", user.getUserName());
@@ -134,6 +134,7 @@ public class OwnersController {
 		}
 	    
 		owners.setPassword(pEncoder.encode(owners.getPassword()));
+		owners.setIsActive(true);
 
 		CreateOwnersOutput output=_ownersAppService.create(owners);
 		return new ResponseEntity(output, HttpStatus.OK);

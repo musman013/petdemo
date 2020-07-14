@@ -23,6 +23,9 @@ import com.fastcode.demopet.application.authorization.user.dto.CreateUserInput;
 import com.fastcode.demopet.application.authorization.user.dto.CreateUserOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
 import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
+import com.fastcode.demopet.application.owners.OwnersAppService;
+import com.fastcode.demopet.application.owners.dto.CreateOwnersInput;
+import com.fastcode.demopet.application.owners.dto.CreateOwnersOutput;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.fastcode.demopet.domain.model.TokenverificationEntity;
 import com.fastcode.demopet.emailbuilder.application.mail.AsyncMailTrigger;
@@ -40,6 +43,9 @@ public class RegistrationController {
 
 	@Autowired
 	private UserAppService _userAppService;
+
+	@Autowired
+	private OwnersAppService _ownersAppService;
 	
 	@Autowired
 	public AsyncMailTrigger _asyncEmailTrigger;
@@ -54,7 +60,7 @@ public class RegistrationController {
 
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<HashMap<String,String>> registerUserAccount(@RequestBody CreateUserInput user, HttpServletRequest request) {
+	public ResponseEntity<HashMap<String,String>> registerUserAccount(@RequestBody CreateOwnersInput user, HttpServletRequest request) {
 
 		FindUserByNameOutput foundUser = _userAppService.findByUserName(user.getUserName());
 
@@ -74,13 +80,15 @@ public class RegistrationController {
 		user.setIsActive(false);
 		user.setPassword(pEncoder.encode(user.getPassword()));
 
-		CreateUserOutput output=_userAppService.create(user);
+//		CreateUserOutput output=_userAppService.create(user);
+		CreateOwnersOutput output= _ownersAppService.create(user);
 		Optional.ofNullable(output).orElseThrow(() -> new EntityNotFoundException(String.format("No record found")));
 
 
 		TokenverificationEntity tokenEntity = _tokenAppService.generateToken("registration", output.getId());
 
-		String appUrl = request.getScheme() + "://" + request.getServerName()+ ":" + request.getLocalPort() +"/register";
+//		String appUrl = request.getScheme() + "://" + request.getServerName()+ ":" + request.getLocalPort() +"/register";
+		String appUrl = "http://localhost:4400";
 		System.out.println("App url " + appUrl);
 		_asyncEmailTrigger.sendEmail(_emailService.buildVerifyRegistrationEmail(user.getEmailAddress(), appUrl, tokenEntity.getToken()));
 
@@ -92,7 +100,7 @@ public class RegistrationController {
 
 	}
 
-	@RequestMapping(value = "/verifyEmail", method = RequestMethod.POST)
+	@RequestMapping(value = "/verifyEmail", method = RequestMethod.GET)
 	public ResponseEntity<HashMap<String,String>> verifyEmail(@RequestParam("token") final String token) {
 
 		TokenverificationEntity tokenEntity = _tokenAppService.findByTokenAndType(token, "registration");

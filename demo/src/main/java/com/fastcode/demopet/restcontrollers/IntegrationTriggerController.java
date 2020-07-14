@@ -53,7 +53,7 @@ public class IntegrationTriggerController {
             e.printStackTrace();
         }
 
-        String pattern = "dd/MM/yyyy";
+        String pattern = "MM/dd/yyyy";
         DateFormat df = new SimpleDateFormat(pattern);
         JSONObject invoiceJsonObject = new JSONObject();
         invoiceJsonObject.put("visitCompletionDate", df.format(new Date()));

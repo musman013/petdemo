@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { ITokenDetail } from 'projects/fast-code-core/src/public_api';
 import { CookieService } from './cookie.service';
+import { UserService } from '../admin/user-management/user';
 
 const API_URL = environment.apiUrl;
 
@@ -15,6 +16,7 @@ const helper = new JwtHelperService();
 export class AuthenticationService {
   private decodedToken: ITokenDetail;
   permissionsChange: Subject<string> = new Subject<string>();
+  preferenceChange: Subject<string> = new Subject<string>(); 
   private apiUrl = API_URL;// 'http://localhost:5555';
   private _reqOptionsArgs = {
     withCredentials: true,
@@ -25,7 +27,8 @@ export class AuthenticationService {
 
   constructor(
     private http: HttpClient,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private userService: UserService
   ) {
   }
 
@@ -43,10 +46,20 @@ export class AuthenticationService {
     }));
   }
 
+  getProfile(){
+    this.userService.getProfile().subscribe(profile => {
+      localStorage.setItem('language', profile.language);
+      localStorage.setItem('theme', profile.theme);
+      this.preferenceChange.next();
+    })
+  }
+
   logout() {
     this.http.post<any>(this.apiUrl + '/auth/logout', null, this._reqOptionsArgs).subscribe(result => {
     })
     localStorage.removeItem('token');
+    localStorage.removeItem('language');
+    localStorage.removeItem('theme');
     this.cookieService.set(this.cookieName, 'UNKNOWN');
   }
 

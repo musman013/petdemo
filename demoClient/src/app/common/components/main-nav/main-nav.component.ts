@@ -17,6 +17,7 @@ import { FastCodeCoreTranslateUiService, Globals } from 'projects/fast-code-core
 import { SchedulerTranslateUiService } from 'projects/scheduler/src/public_api';
 import { EmailBuilderTranslateUiService } from 'projects/ip-email-builder/src/public_api';
 import { TaskAppTranslateUiService } from 'projects/task-app/src/public_api';
+import { UserService } from 'src/app/admin/user-management/user';
 
 @Component({
 	selector: 'app-main-nav',
@@ -62,6 +63,7 @@ export class MainNavComponent {
 		private taskAppTranslateUiService: TaskAppTranslateUiService,
 		public authenticationService: AuthenticationService,
 		public globalPermissionService: GlobalPermissionService,
+		public userService: UserService,
 	) {
 
 		this.isSmallDevice$ = Global.isSmallDevice$;
@@ -71,12 +73,16 @@ export class MainNavComponent {
 			this.isCurrentRootRoute = (this.router.url == '/') ? true : false;
 		});
 
-		this.selectedLanguage = localStorage.getItem('selectedLanguage');
+		// this.selectedLanguage = localStorage.getItem('selectedLanguage');
 		this.authenticationService.permissionsChange.subscribe(() => {
 			this.setPermissions();
 		});
+		this.authenticationService.preferenceChange.subscribe(() => {
+			this.setPreferences();
+		});
 		this.setPermissions();
-		this.changeTheme(this.themes[0]);
+		// this.changeTheme(this.themes[0]);
+		this.setPreferences();
 
 		this.router.events.subscribe((event: RouterEvent) => {
 			if (event instanceof NavigationEnd) {
@@ -87,6 +93,22 @@ export class MainNavComponent {
 				}
 			}
 		});
+	}
+
+	setPreferences() {
+		let theme = localStorage.getItem('theme');
+		let language = localStorage.getItem('language');
+		if (!(theme || language)) {
+			this.changeTheme(this.themes[0], false);
+		} else {
+			if (theme) {
+				this.changeTheme(theme, false);
+			}
+			if (language) {
+				this.selectedLanguage = language;
+				this.translate.use(language);
+			}
+		}
 	}
 
 	switchLanguage(language: string) {
@@ -100,8 +122,10 @@ export class MainNavComponent {
 				this.taskAppTranslateUiService.init(language);
 			});
 		}
-		localStorage.setItem('selectedLanguage', language);
 		this.selectedLanguage = language;
+		this.userService.updateLanguage(language).subscribe(data => {
+			localStorage.setItem('language', language);
+		});
 	}
 
 	setPermissions() {
@@ -181,9 +205,10 @@ export class MainNavComponent {
 
 	logout() {
 		this.authenticationService.logout();
+		this.changeTheme(this.themes[0], false);
 		this.router.navigate(['/']);
 	}
-	changeTheme(theme: any) {
+	changeTheme(theme: any, updatePreference: boolean) {
 		console.log("add css class");
 		for (let i = 0; i < this.themes.length; i++) {
 			if (document.body.className.match(this.themes[i])) {
@@ -191,6 +216,12 @@ export class MainNavComponent {
 			}
 		}
 		document.body.classList.add(theme);
+		if (updatePreference) {
+			this.userService.updateTheme(theme).subscribe(data => {
+				console.log(data);
+				localStorage.setItem("theme", theme);
+			});
+		}
 	}
 
 }

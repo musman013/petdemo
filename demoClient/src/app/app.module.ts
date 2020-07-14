@@ -26,6 +26,9 @@ import { JwtInterceptor } from './core/jwt-interceptor';
 import { JwtErrorInterceptor } from './core/jwt-error-interceptor';
 import { GlobalPermissionService } from './core/global-permission.service';
 
+import { RegisterComponent } from './register/register.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+
 import { LoginComponent } from './login/index';
 
 /** end of core components and filters for authorization and authentication **/
@@ -113,7 +116,9 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 		InvoicesListComponent,
 		InvoicesDetailsComponent,
 		InvoicesNewComponent,
-		ResourceViewComponent
+		ResourceViewComponent,
+		RegisterComponent,
+		ConfirmEmailComponent,
 	],
 	imports: [
 		BrowserModule,

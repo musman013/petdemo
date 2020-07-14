@@ -1,0 +1,38 @@
+@import 'src/styles/base.scss';
+.login-container {
+    height: calc(100%);
+    overflow: auto;
+    display: flex;
+    // justify-content: center;
+    flex-direction: column;
+     background-color: #47b3c3;
+    background-image:url('../../assets/images/login_bg4.jpg');
+    // background-image:url('../../assets/images/form_bg1.png');
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    // align-items: center;
+    background: linear-gradient(346deg, rgba(43,100,109,1) 0%, rgba(54,134,146,1) 35%, rgba(71,179,195,1) 100%);
+}
+
+.logo {
+height:200px;
+}
+
+.mark{
+  width: 175px;
+}
+.confirmbox{
+  margin:10%;
+}
+
+.btn-submit{
+  margin:25px auto 0 !important;
+  font-size: 18px;
+  min-width: 270px;
+  width:auto;
+  padding: 10px 20px;
+  border-radius: 4px;
+  // width: 100%;
+  font-family: "Futura PT";
+}
