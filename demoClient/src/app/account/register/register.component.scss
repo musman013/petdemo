@@ -6,7 +6,7 @@
     // justify-content: center;
     flex-direction: column;
      background-color: #47b3c3;
-    background-image:url('../../assets/images/login_bg.jpg');
+    background-image:url('src/assets/images/login_bg.jpg');
     background-size: cover;
     background-position: center;
     padding: 15px 0px;
@@ -39,7 +39,7 @@
     border-radius: 16px;
     position: relative;
     z-index: 9;
-    background-image: url('../../assets/images/form-bg1.png');
+    background-image: url('src/assets/images/form-bg1.png');
     background-size: cover;
     background-position: top;
     @media screen and (max-width:479px) {

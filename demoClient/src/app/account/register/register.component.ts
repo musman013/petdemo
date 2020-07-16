@@ -1,9 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { IUser } from 'src/app/admin/user-management/user/index';
+import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { GlobalPermissionService } from '../core/global-permission.service';
 import { RegisterService } from '../register/register.service';
 import { ErrorService, Globals } from 'projects/fast-code-core/src/public_api';
 
@@ -39,8 +37,8 @@ export class RegisterComponent implements OnInit {
       confirmPassword: ['', Validators.required],
       phoneNumber: [''],
       userName: ['', Validators.required],
-			address: [''],
-			city: [''],
+      address: [''],
+      city: [''],
     });
   }
 
@@ -52,14 +50,13 @@ export class RegisterComponent implements OnInit {
 
     this.submitted = true;
     this.loading = true;
-    console.log(this.itemForm);
     let user = this.itemForm.getRawValue();
     this.registerService.register(user)
       .pipe(first())
       .subscribe(
         data => {
           this.loading = false;
-          this.router.navigate(['register-complete'], { queryParams: {email: user.emailAddress} })
+          this.router.navigate(['register-complete'], { queryParams: { email: user.emailAddress } })
         },
         error => {
           this.loading = false;

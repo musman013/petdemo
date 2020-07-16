@@ -23,6 +23,15 @@ $fc-row-height10:80px;
         padding-right: 24px;
     }
 
+    mat-cell{
+        padding: 2px;
+        word-break: break-all;
+    }
+
+    .mat-sort-header-button {
+        white-space: break-spaces !important;
+    }
+
     mat-cell:first-child, mat-footer-cell:first-child, mat-header-cell:first-child {
         padding-left: 0;
     }

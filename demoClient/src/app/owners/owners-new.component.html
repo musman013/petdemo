@@ -59,9 +59,9 @@
   				<input formControlName="city" matInput placeholder="Enter city">
   			</mat-form-field>
 
-        <div class="checkbox-container">
+        <!-- <div class="checkbox-container">
           <mat-checkbox formControlName="isActive">Active</mat-checkbox>
-        </div>
+        </div> -->
   		
 			  <mat-form-field *ngFor="let association of parentAssociations">
           <input type="text" matInput formControlName="{{association.descriptiveField}}"
