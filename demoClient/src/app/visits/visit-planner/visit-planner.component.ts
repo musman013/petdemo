@@ -2,7 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   ViewChild,
-  TemplateRef, Input, OnInit, ChangeDetectorRef
+  TemplateRef, Input, OnInit, ChangeDetectorRef, OnChanges, SimpleChanges
 } from '@angular/core';
 import {
   startOfDay,
@@ -60,16 +60,16 @@ const colors: any = {
   styleUrls: ['visit-planner.component.scss'],
   templateUrl: 'visit-planner.component.html',
 })
-export class VisitPlannerComponent extends BaseListComponent<IVisits> implements OnInit {
+export class VisitPlannerComponent extends BaseListComponent<IVisits> implements OnInit, OnChanges {
   @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
   events: CalendarEvent[] = [];
   @Input() items;
-  item = [
-    // {description:'demo visit1',id:2,visitDate:'2020-07-17T06:00:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-    {description:'demo visit2',id:2,visitDate:'Wed Jul 17 2020 03:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-    // {description:'demo visit3',id:2,visitDate:'Wed Jul 15 2020 05:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-    // {description:'demo visit3',id:2,visitDate:'Wed Jul 15 2020 07:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2}
-  ];
+  // item = [
+  //   {description:'demo visit1',id:2,visitDate:'2020-07-17T03:00:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  //   // {description:'demo visit2',id:2,visitDate:'Wed Jul 17 2020 03:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  //   // {description:'demo visit3',id:2,visitDate:'Wed Jul 15 2020 05:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+  //   // {description:'demo visit3',id:2,visitDate:'Wed Jul 15 2020 07:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2}
+  // ];
 
   view: CalendarView = CalendarView.Month;
 
@@ -94,7 +94,6 @@ export class VisitPlannerComponent extends BaseListComponent<IVisits> implements
       label: '<i class="fas fa-fw fa-trash-alt"></i>',
       a11yLabel: 'Delete',
       onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.events = this.events.filter((iEvent) => iEvent !== event);
         this.handleEvent('Deleted', event);
       },
     },
@@ -163,12 +162,27 @@ export class VisitPlannerComponent extends BaseListComponent<IVisits> implements
     super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, dataService, errorService)
 	}
 
+  ngOnChanges(changes: SimpleChanges) {
+    for (let propName in changes) {
+      // only run when property "formData" changed
+      if (propName === 'items') {
+        //  update formData value when a task is selected
+        this.items = changes[propName].currentValue;
+        this.createEventData();
+      }
+    }
+  }
 
   ngOnInit() {
+    this.primaryKeys = ["id",]
+    this.refresh.next();
+  }
 
-    // this.item.forEach(element  => {
-      for (let i = 0 ; i < this.item.length; i++ ) {
-        let element = this.item[i];
+  createEventData() {
+    this.events = [];
+    console.log(this.items);
+    for (let i = 0 ; i < this.items.length; i++ ) {
+      let element = this.items[i];
       console.log(addHours(new Date(element.visitDate), 0));
       var data = {
         title: element.description + ' (Vet: ' + element.vetsDescriptiveField + ', Owner: ' + element.petsDescriptiveField + ')',
@@ -185,7 +199,8 @@ export class VisitPlannerComponent extends BaseListComponent<IVisits> implements
       };
       this.events.push(data);
     }
-    // });
+    // this.setView(CalendarView.Week);
+    this.refresh.next();
   }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
@@ -221,21 +236,28 @@ export class VisitPlannerComponent extends BaseListComponent<IVisits> implements
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    // this.modalData = { event, action };
-    // this.modal.open(this.modalContent, { size: 'lg' });
     console.log(action);
     if (action == 'Edited') {
       var data= event;
       console.log(event);
-      console.log(this.item[data.index]);
-      let i = this.item[data.index];
-      this.openDetails(this.item[i]);
-    } else if(action == 'Deleted') {
-      var data= event;
-      // console.log(this.item[data.index]);
-      // this.delete(this.item[data.index]);
-      this.deleteEvent(event);
-      console.log(event);
+      console.log(this.items[data.index]);
+      // i = this.items[data.index];
+      this.openDetails(this.items[data.index]);
+    } else if (action == 'Deleted') {
+        this.deleteDialogRef = this.dialog.open(ConfirmDialogComponent, {
+          disableClose: true,
+          data: {
+            confirmationType: 'delete'
+          }
+        });
+
+        this.deleteDialogRef.afterClosed().subscribe(action => {
+          console.log(action);
+          if (action) {
+            this.deleteItem(this.items[event.index]);
+            this.deleteEvent(event);
+          }
+        });
     }
   }
 
