@@ -13,25 +13,16 @@
         </mat-form-field>
 
         <mat-form-field>
-          <input formControlName="visitDate" matInput [matDatepicker]="visitstartDatePicker" placeholder="Enter visit start Date">
-          <mat-datepicker-toggle matSuffix [for]="visitstartDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #visitstartDatePicker></mat-datepicker>
+          <input formControlName="visitDate" matInput [matDatepicker]="visitDatePicker" placeholder="Enter visit start Date">
+          <mat-datepicker-toggle matSuffix [for]="visitDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #visitDatePicker></mat-datepicker>
         </mat-form-field>
         <div class="time-container mat-form-field">
           <label class="lable-inline">Visit start time</label>
-          <ngx-timepicker-field [defaultTime]="'12:00 am'" #visitstartTimePicker formControlName="visitTime">
+          <ngx-timepicker-field [defaultTime]="'12:00 am'" #visitTimePicker formControlName="visitTime">
           </ngx-timepicker-field>
         </div>
-        <mat-form-field>
-          <input formControlName="visitDate" matInput [matDatepicker]="visitendDatePicker" placeholder="Enter visit End Date">
-          <mat-datepicker-toggle matSuffix [for]="visitendDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #visitendDatePicker></mat-datepicker>
-        </mat-form-field>
-        <div class="time-container mat-form-field">
-          <label class="lable-inline">Visit end time</label>
-          <ngx-timepicker-field [defaultTime]="'12:00 am'" #visitendTimePicker formControlName="visitTime">
-          </ngx-timepicker-field>
-        </div>
+
 
         <mat-form-field *ngFor="let association of parentAssociations">
           <input type="text" matInput formControlName="{{association.descriptiveField}}"

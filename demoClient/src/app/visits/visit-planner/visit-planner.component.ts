@@ -2,7 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   ViewChild,
-  TemplateRef,
+  TemplateRef, Input, OnInit, ChangeDetectorRef
 } from '@angular/core';
 import {
   startOfDay,
@@ -13,6 +13,7 @@ import {
   isSameDay,
   isSameMonth,
   addHours,
+  addMinutes,
 } from 'date-fns';
 import { Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -22,6 +23,21 @@ import {
   CalendarEventTimesChangedEvent,
   CalendarView,
 } from 'angular-calendar';
+
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+
+import { VisitsService } from '../visits.service';
+import { Router, ActivatedRoute } from '@angular/router';
+// import { VisitsNewComponent } from '../visits-new.component';
+
+// import { PetsService } from '../../pets/pets.service';
+// import { VetsService } from '../../vets/vets.service';
+import { GlobalPermissionService } from '../../core/global-permission.service';
+// import { AuthenticationService } from '../../core/authentication.service';
+
+import { IVisits, IChangeStatusObj, VisitStatus } from '../ivisits';
+import { BaseListComponent, Globals, IListColumn, listColumnType, PickerDialogService, ErrorService, ConfirmDialogComponent, ITokenRole } from 'projects/fast-code-core/src/public_api';
+// import { BaseListComponent, Globals, ErrorService} from 'projects/fast-code-core/src/public_api';
 
 const colors: any = {
   red: {
@@ -44,16 +60,16 @@ const colors: any = {
   styleUrls: ['visit-planner.component.scss'],
   templateUrl: 'visit-planner.component.html',
 })
-export class VisitPlannerComponent {
+export class VisitPlannerComponent extends BaseListComponent<IVisits> implements OnInit {
   @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
-
-
-  // events = [{description:'demo visit1',id:2,visitDate:'2020-06-26T14:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-  //   {description:'demo visit2',id:2,visitDate:'2020-06-26T03:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-  //   {description:'demo visit3',id:2,visitDate:'2020-06-26T16:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-  //   {description:'demo visit3',id:2,visitDate:'2020-06-26T21:56:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
-  // ];
-
+  events: CalendarEvent[] = [];
+  @Input() items;
+  item = [
+    // {description:'demo visit1',id:2,visitDate:'2020-07-17T06:00:00.000+0000',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+    {description:'demo visit2',id:2,visitDate:'Wed Jul 17 2020 03:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+    // {description:'demo visit3',id:2,visitDate:'Wed Jul 15 2020 05:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2},
+    // {description:'demo visit3',id:2,visitDate:'Wed Jul 15 2020 07:00:00 GMT+0500 (Pakistan Standard Time)',petId:1,petsDescriptiveField:'Mrs. Norris',vetId:2,vetsDescriptiveField:'strange',status:'COMPLETED',visitNotes:'visit completed',version:2}
+  ];
 
   view: CalendarView = CalendarView.Month;
 
@@ -86,50 +102,91 @@ export class VisitPlannerComponent {
 
   refresh: Subject<any> = new Subject();
 
-  events: CalendarEvent[] = [
-    {
-      start: subDays(startOfDay(new Date()), 1),
-      end: addDays(new Date(), 1),
-      title: 'A 3 day event',
-      color: colors.red,
-      actions: this.actions,
-      allDay: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
-      color: colors.yellow,
-      actions: this.actions,
-    },
-    {
-      start: subDays(endOfMonth(new Date()), 3),
-      end: addDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
-      color: colors.blue,
-      allDay: true,
-    },
-    {
-      start: addHours(startOfDay(new Date()), 2),
-      end: addHours(new Date(), 2),
-      title: 'A draggable and resizable event',
-      color: colors.yellow,
-      actions: this.actions,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-  ];
+
+  // events: CalendarEvent[] = [
+  //   {
+  //     start: subDays(startOfDay(new Date()), 1),
+  //     end: addDays(new Date(), 1),
+  //     title: 'A 3 day event',
+  //     color: colors.red,
+  //     actions: this.actions,
+  //     allDay: true,
+  //     resizable: {
+  //       beforeStart: true,
+  //       afterEnd: true,
+  //     },
+  //     draggable: true,
+  //   },
+  //   {
+  //     start: startOfDay(new Date()),
+  //     title: 'An event with no end date',
+  //     color: colors.yellow,
+  //     actions: this.actions,
+  //   },
+  //   {
+  //     start: subDays(endOfMonth(new Date()), 3),
+  //     end: addDays(endOfMonth(new Date()), 3),
+  //     title: 'A long event that spans 2 months',
+  //     color: colors.blue,
+  //     allDay: true,
+  //   },
+  //   {
+  //     start: addHours(startOfDay(new Date()), 2),
+  //     end: addHours(new Date(), 2),
+  //     title: 'A draggable and resizable event',
+  //     color: colors.yellow,
+  //     actions: this.actions,
+  //     resizable: {
+  //       beforeStart: true,
+  //       afterEnd: true,
+  //     },
+  //     draggable: true,
+  //   },
+  // ];
 
   activeDayIsOpen: boolean = true;
 
-  constructor(private modal: NgbModal) {}
+  constructor(public router: Router,
+		public route: ActivatedRoute,
+		public global: Globals,
+		public dialog: MatDialog,
+		public changeDetectorRefs: ChangeDetectorRef,
+		public pickerDialogService: PickerDialogService,
+		public dataService: VisitsService,
+		public errorService: ErrorService,
+		// public petsService: PetsService,
+		// public vetsService: VetsService,
+		public globalPermissionService: GlobalPermissionService)
+    // public authenticationService: AuthenticationService)
+    {
+    // super(router, route, global, dataService, errorService)
+    super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, dataService, errorService)
+	}
+
+
+  ngOnInit() {
+
+    // this.item.forEach(element  => {
+      for (let i = 0 ; i < this.item.length; i++ ) {
+        let element = this.item[i];
+      console.log(addHours(new Date(element.visitDate), 0));
+      var data = {
+        title: element.description + ' (Vet: ' + element.vetsDescriptiveField + ', Owner: ' + element.petsDescriptiveField + ')',
+        start: new Date(element.visitDate),
+        end: addMinutes(new Date(element.visitDate), 30),
+        color: colors.red,
+        draggable: false,
+        actions: this.actions,
+        index: i,
+        resizable: {
+          beforeStart: false,
+          afterEnd: false,
+        },
+      };
+      this.events.push(data);
+    }
+    // });
+  }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
@@ -164,8 +221,22 @@ export class VisitPlannerComponent {
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    this.modalData = { event, action };
-    this.modal.open(this.modalContent, { size: 'lg' });
+    // this.modalData = { event, action };
+    // this.modal.open(this.modalContent, { size: 'lg' });
+    console.log(action);
+    if (action == 'Edited') {
+      var data= event;
+      console.log(event);
+      console.log(this.item[data.index]);
+      let i = this.item[data.index];
+      this.openDetails(this.item[i]);
+    } else if(action == 'Deleted') {
+      var data= event;
+      // console.log(this.item[data.index]);
+      // this.delete(this.item[data.index]);
+      this.deleteEvent(event);
+      console.log(event);
+    }
   }
 
   addEvent(): void {
@@ -183,6 +254,8 @@ export class VisitPlannerComponent {
         },
       },
     ];
+
+    console.log(this.events);
   }
 
   deleteEvent(eventToDelete: CalendarEvent) {
