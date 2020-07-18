@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   iLogin: ILogin = {} as ILogin;
   loading = false;
   submitted = false;
+  odcAuth = false;
   returnUrl: string = 'dashboard';
   constructor(
     private formBuilder: FormBuilder,
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit {
     this.itemForm = this.formBuilder.group({
 
       userName: ['', Validators.required],
-      password: ['', Validators.required]     
+      password: ['', Validators.required]
 
     }, { validators: this.validateEmailAndPassword });
 
@@ -55,11 +56,11 @@ export class LoginComponent implements OnInit {
     /* return   this.authenticationService.postLogin(this.iLogin)
      .pipe(first())
      .subscribe(
-         data => {                  
+         data => {
          return null
          },
          error => {
-         
+
              return { passwordUserNameError: true }
          });*/
   };

@@ -51,7 +51,10 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 		this.itemForm = this.formBuilder.group({
 			description: [''],
 			visitDate: [''],
-			visitTime: [''],
+      visitTime: [''],
+			visitEndDate: [''],
+      visitEndTime: [''],
+      color: [''],
 			petId: ['', Validators.required],
 			petsDescriptiveField: [''],
 			vetId: ['', Validators.required],
@@ -111,9 +114,11 @@ export class VisitsNewComponent extends BaseNewComponent<IVisits> implements OnI
 		this.submitted = true;
 		this.loading = true;
 
-		let newVisit = this.itemForm.getRawValue(); 
+		let newVisit = this.itemForm.getRawValue();
 		newVisit['visitDate'] = this.dataService.combineDateAndTime(newVisit['visitDate'], newVisit['visitTime'])
+		newVisit['visitEndDate'] = this.dataService.combineDateAndTime(newVisit['visitEndDate'], newVisit['visitEndTime'])
 		delete newVisit['visitTime'];
+		delete newVisit['visitEndTime'];
 		this.dataService.create(newVisit)
 			.pipe(first())
 			.subscribe(

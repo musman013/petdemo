@@ -16,6 +16,8 @@ import * as CodeMirror from 'codemirror';
 import { WindowRef } from './WindowRef';
 import sqlFormatter from "sql-formatter";
 import { Globals } from 'projects/fast-code-core/src/public_api';
+import { AddExReportsToDashboardComponent } from "../../modalDialogs/addExReportsToDashboard/addExReportsToDashboard.component";
+
 
 @Component({
   selector: 'app-reports',
@@ -376,7 +378,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     var column = this.measuresChipArray[index].name.substr(this.measuresChipArray[index].name.indexOf(".")+1).toLowerCase();
     measure = `${m}_${column}`;
     queryMeasure = `${this.measuresChipArray[index].name.split(".")[0]}.${measure}`;
-    
+
     console.log(measure);
     console.log(queryMeasure);
     console.log(metakey);
@@ -400,10 +402,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
         this.showSingleValue();
       }
       this.queryParam.order = {
-        
+
       }
     }
-    
+
     this.buildQuery();
     console.log(this.measuresChipArray);
     console.log(this.queryParam);
@@ -499,9 +501,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   addFilterItem(i, v, type) {
     console.log(v.target.value);
+    this.queryParam.filters[i].values = [];
     if (type === 'm') {
       this.queryParam.filters[i].values.push(v.target.value);
-      this.filItemVal = null;
+      // this.filItemVal = null;
     } else {
       this.queryParam.filters[i].values = [v.target.value];
     }
@@ -633,52 +636,100 @@ export class ReportsComponent implements OnInit, OnDestroy {
         title: v.title
       };
     });
-    const dialogRef = this.dialog.open(AddReportsToDashboardComponent, {
-      panelClass: "fc-modal-dialog",
-      data: this.allDashboardsList
-    });
+    if (this.report_id > 0) {
+      console.log('report function edit', this.report_id);
+      const dialogRef = this.dialog.open(AddExReportsToDashboardComponent, {
+        panelClass: "fc-modal-dialog",
+        data: this.allDashboardsList
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (result.type === 'new') {
-          this.dashboard = {
-            userId: 1,
-            title: result.title,
-            description: result.description,
-            reportDetails: [{
-              userId: 1,
-              title: result.chartTitle,
-              description: result.reportdescription,
-              reportType: this.chartType,
-              ctype: this.ctype,
-              query: this.query,
-              reportWidth: result.chartSize
-            }]
-          };
-          this.dashboardService.addNewReporttoNewDashboard(this.dashboard).subscribe(res => {
-            this.allDashboardsData.push(res);
-            this.showMessage('Added report to ' + res.title);
-          });
-        } else {
-          const chartDetails: Dashboard = {
-            id: result.title,
-            userId: 1,
-            reportDetails: [{
-              userId: 1,
-              title: result.chartTitle,
-              description: result.reportdescription,
-              reportType: this.chartType,
-              ctype: this.ctype,
-              query: this.query,
-              reportWidth: result.chartSize
-            }]
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          if (result.type === "new") {
+            const dashboardDetails = {
+              userId: this.report.userId,
+              title: result.title,
+              description: result.description,
+              reportDetails: [
+                {
+                  id: this.report.id,
+                  reportWidth: result.chartSize
+                }
+              ]
+            };
+            this.service
+              .addExistingReportToNewDashboard(dashboardDetails)
+              .subscribe(res => {
+                this.showMessage("Added report to " + res.title);
+              });
+          } else {
+            const dashboardDetails = {
+              id: result.id,
+              userId: this.report.userId,
+              reportDetails: [
+                {
+                  id: this.report.id,
+                  reportWidth: result.chartSize
+                }
+              ]
+            };
+            this.service
+              .addExistingReportToExistingDashboard(dashboardDetails)
+              .subscribe(res => {
+                this.showMessage("Added report to " + res.title);
+              });
           }
-          this.dashboardService.addNewReporttoExistingDashboard(chartDetails).subscribe(res => {
-            this.showMessage('Added report to ' + res.title);
-          });
         }
-      }
-    });
+      });
+    } else {
+      console.log('report function add', this.report_id);
+      const dialogRef = this.dialog.open(AddReportsToDashboardComponent, {
+        panelClass: "fc-modal-dialog",
+        data: this.allDashboardsList
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          if (result.type === 'new') {
+            this.dashboard = {
+              userId: 1,
+              title: result.title,
+              description: result.description,
+              reportDetails: [{
+                userId: 1,
+                title: result.chartTitle,
+                description: result.reportdescription,
+                reportType: this.chartType,
+                ctype: this.ctype,
+                query: this.query,
+                reportWidth: result.chartSize
+              }]
+            };
+            this.dashboardService.addNewReporttoNewDashboard(this.dashboard).subscribe(res => {
+              this.allDashboardsData.push(res);
+              this.showMessage('Added report to ' + res.title);
+            });
+          } else {
+            const chartDetails: Dashboard = {
+              id: result.title,
+              userId: 1,
+              reportDetails: [{
+                userId: 1,
+                title: result.chartTitle,
+                description: result.reportdescription,
+                reportType: this.chartType,
+                ctype: this.ctype,
+                query: this.query,
+                reportWidth: result.chartSize
+              }]
+            }
+            this.dashboardService.addNewReporttoExistingDashboard(chartDetails).subscribe(res => {
+              this.showMessage('Added report to ' + res.title);
+            });
+          }
+        }
+      });
+    }
   }
 
   showMessage(msg): void {

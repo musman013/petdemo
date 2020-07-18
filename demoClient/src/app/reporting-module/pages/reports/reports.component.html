@@ -151,10 +151,10 @@
       </div>
       <div fxFlex="{{filterFieldWidth}}" class="chartoptions">
         <mat-form-field *ngIf="selectedFilter.type === 'number'">
-          <input type="text" (input)="addFilterItem(i,$event,'s')" matInput placeholder="Enter value">
+          <input type="text" (focusout)="addFilterItem(i,$event,'m')" (input)="addFilterItem(i,$event,'s')" matInput placeholder="Enter value">
         </mat-form-field>
         <mat-form-field *ngIf="selectedFilter.type !== 'number'">
-          <input type="text" matInput (keyup.enter)="addFilterItem(i,$event,'m')" [value]="filItemVal"
+          <input type="text" matInput (focusout)="addFilterItem(i,$event,'m')" (keyup.enter)="addFilterItem(i,$event,'m')" [value]="filItemVal"
             placeholder="Enter value">
         </mat-form-field>
       </div>

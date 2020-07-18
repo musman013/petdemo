@@ -188,7 +188,7 @@ export class VisitPlannerComponent extends BaseListComponent<IVisits> implements
         title: element.description + ' (Vet: ' + element.vetsDescriptiveField + ', Owner: ' + element.petsDescriptiveField + ')',
         start: new Date(element.visitDate),
         end: addMinutes(new Date(element.visitDate), 30),
-        color: colors.red,
+        color: element.color,
         draggable: false,
         actions: this.actions,
         index: i,

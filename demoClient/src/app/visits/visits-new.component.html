@@ -22,6 +22,25 @@
           <ngx-timepicker-field [defaultTime]="'12:00 am'" #visitTimePicker formControlName="visitTime">
           </ngx-timepicker-field>
         </div>
+        <mat-form-field>
+          <input formControlName="visitEndDate" matInput [matDatepicker]="visitEndDatePicker" placeholder="Enter visit End Date">
+          <mat-datepicker-toggle matSuffix [for]="visitEndDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #visitEndDatePicker></mat-datepicker>
+        </mat-form-field>
+        <div class="time-container mat-form-field">
+          <label class="lable-inline">Visit End time</label>
+          <ngx-timepicker-field [defaultTime]="'12:00 am'" #visitEndTimePicker formControlName="visitEndTime">
+          </ngx-timepicker-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <input matInput
+          type="color"
+          formControlName="color" placeholder="Color"
+        />
+          </mat-form-field>
+        </div>
 
 
         <mat-form-field *ngFor="let association of parentAssociations">

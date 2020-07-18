@@ -11,7 +11,7 @@
         <h2 class="sub-title">Log In</h2>
       </figcaption>
     </mat-card-title>
-    <mat-card-content>
+    <mat-card-content *ngIf="!odcAuth">
       <form [formGroup]="itemForm" #loginNgForm="ngForm" (ngSubmit)="onSubmit()" class="item-form">
         <mat-form-field>
           <span matPrefix><i class="material-icons">
@@ -47,6 +47,17 @@
           Don't have an account? Register <a href="javascript:;"> here.</a>
         </span>
       </form>
+    </mat-card-content>
+
+    <mat-card-content *ngIf="odcAuth">
+      <p>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs.</p>
+      <mat-card-actions class="item-action text-center">
+        <button name="login" mat-flat-button color="primary" class="btn-submit">
+          Login &nbsp; <i class="material-icons" style="color:#fff; bottom:0;">
+            near_me
+          </i>
+        </button>
+      </mat-card-actions>
     </mat-card-content>
   </mat-card>
 </div>
