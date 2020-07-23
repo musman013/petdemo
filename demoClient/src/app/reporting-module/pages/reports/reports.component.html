@@ -154,7 +154,7 @@
           <input type="text" (input)="addFilterItem(i,$event,'s')" matInput placeholder="Enter value">
         </mat-form-field>
         <mat-form-field *ngIf="selectedFilter.type !== 'number'">
-          <input type="text" matInput (keyup.enter)="addFilterItem(i,$event,'m')" [value]="filItemVal"
+          <input type="text" matInput (input)="addFilterItem(i,$event,'s')" [value]="filItemVal"
             placeholder="Enter value">
         </mat-form-field>
       </div>

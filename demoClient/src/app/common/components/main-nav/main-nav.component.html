@@ -252,10 +252,10 @@
       <span>
 
 
-        <button mat-button [matMenuTriggerFor]="menu" *ngIf="authenticationService.token">
-          <i class="material-icons">account_circle</i>
-          <span>{{authenticationService.decodeToken().sub}}</span>
-        </button>
+        <span [matMenuTriggerFor]="menu" class="profile-menu" *ngIf="authenticationService.token">
+          <mat-icon>account_circle</mat-icon>
+          <span>{{username}}</span>
+        </span>
         <mat-menu #menu="matMenu">
           <button mat-menu-item routerLink="/update-password"><i class="material-icons"
               style="position: relative;top: 7px;">vpn_key</i>&nbsp; Update Password</button>

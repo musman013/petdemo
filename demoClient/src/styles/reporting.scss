@@ -225,23 +225,12 @@
     }
   }
 
-  .share-cancel-btn {
-    opacity: 0.8;
-    float: right;
-    color: #e27e4b
-  }
-
   .mat-chip-list .mat-chip-list-wrapper{
     width: 100%;
     padding-top: 5px;
   }
 
-//// report list styles 
-
-.list-item.active {
-  border-left-color: #e27e4b !important;
-  background-color: #e8edf1;
-}
+//// report list styles
 
 app-schema .mat-expansion-panel-content{
   max-height: 250px;
@@ -255,4 +244,3 @@ app-schema .mat-expansion-panel-spacing{
 app-myreports-main .mat-tab-body-wrapper{
   height: 100%;
 }
-

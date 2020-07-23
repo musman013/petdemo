@@ -137,3 +137,11 @@ mat-expansion-panel-header .material-icons {
 .mat-expansion-panel-content .mat-expansion-panel-content .subnav {
   padding-left: 12px;
 }
+.profile-menu{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 17px;
+}

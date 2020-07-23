@@ -324,6 +324,7 @@ export class BaseListComponent<E> implements OnInit {
         this.items.splice(index, 1);
         this.items = [...this.items];
         this.changeDetectorRefs.detectChanges();
+        this.errorService.showError("Item deleted");
       }
     });
   }

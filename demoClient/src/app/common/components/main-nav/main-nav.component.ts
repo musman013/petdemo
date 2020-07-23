@@ -42,6 +42,7 @@ export class MainNavComponent {
 	isResourceViewer: boolean = false;
 
 	themes = ['default-theme', 'alt-theme'];
+	username = "";
 
 	permissions = {};
 	authEntityList = AuthEntities;
@@ -129,6 +130,7 @@ export class MainNavComponent {
 	}
 
 	setPermissions() {
+		this.username = this.authenticationService.decodeToken().sub;
 		this.allEntities.forEach(entity => {
 			this.permissions[entity] = this.globalPermissionService.hasPermissionOnEntity(entity, "READ");
 		});

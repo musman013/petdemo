@@ -3,6 +3,7 @@
 @import './dynamic-styles.scss';
 @import 'projects/task-app/src/styles/base.mixin.scss';
 @import 'src/flowable_admin/styles/admin_style.mixin.scss';
+@import './reporting-mixin.scss';
 
 
 @include main-nav-mixin($fc-theme,$fontConfig);
@@ -10,4 +11,5 @@
 @include main-style($fc-theme, $fontConfig);
 @include task_app_base($fc-theme);
 @include admin_style($fc-theme);
+@include reporting_mixin($fc-theme, $fontConfig);
 
