@@ -77,6 +77,7 @@ cube(`Pets`, {
 			sql: 'birth_date',
 			type: 'countDistinctApprox'
 		},
+,
 
   },
   
@@ -94,6 +95,11 @@ cube(`Pets`, {
     
     birthDate: {
       sql: `birth_date`,
+      type: `time`
+    }
+  }
+});
+     sql: `birth_date`,
       type: `time`
     }
   }

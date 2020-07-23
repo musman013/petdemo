@@ -101,6 +101,7 @@ cube(`Visits`, {
 			sql: 'visit_date',
 			type: 'countDistinctApprox'
 		},
+,
 
   },
   
@@ -126,6 +127,13 @@ cube(`Visits`, {
       type: `string`
     },
     
+    visitDate: {
+      sql: `visit_date`,
+      type: `time`
+    }
+  }
+});
+   
     visitDate: {
       sql: `visit_date`,
       type: `time`

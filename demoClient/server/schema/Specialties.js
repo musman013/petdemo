@@ -50,6 +50,7 @@ cube(`Specialties`, {
 			sql: 'name',
 			type: 'countDistinctApprox'
 		},
+,
 
   },
   
@@ -62,6 +63,11 @@ cube(`Specialties`, {
     
     name: {
       sql: `name`,
+      type: `string`
+    }
+  }
+});
+,
       type: `string`
     }
   }

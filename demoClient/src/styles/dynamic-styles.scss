@@ -32,7 +32,7 @@
         font-family: mat-font-family($fontConfig, body-1);
 
         // font-family: mat-font-family($config);
-   
+
     }
 
     .sidenav .mat-expansion-indicator::after {
@@ -219,7 +219,7 @@
     .fc-bottom-nav .mat-tab-links {
         display: flex;
         width: 100%;
-        justify-content: space-between;
+        // justify-content: space-between;
     }
 
     .fc-bottom-nav .mat-tab-links .fc-tab-link {
@@ -262,12 +262,12 @@
         background-color: mat-color($fc-primary-color, lighter);
 
         //  outline: 1px solid #000000;
-   
+
     }
 
     .mat-expansion-panel-content:after {
         content: "";
-        background: mat-color($background, background);   
+        background: mat-color($background, background);
     }
 
     .mat-expansion-panel-content .mat-expansion-panel-content:after {

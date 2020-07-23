@@ -30,6 +30,39 @@ cube(`Owners`, {
 			sql: 'city',
 			type: 'countDistinctApprox'
 		},
+		sum_user_id: {
+			sql: 'user_id',
+			type: 'sum'
+		},
+		avg_user_id: {
+			sql: 'user_id',
+			type: 'avg'
+		},
+		min_user_id: {
+			sql: 'user_id',
+			type: 'min'
+		},
+		max_user_id: {
+			sql: 'user_id',
+			type: 'max'
+		},
+		runningTotal_user_id: {
+			sql: 'user_id',
+			type: 'runningTotal'
+		},
+		count_user_id: {
+			sql: 'user_id',
+			type: 'count'
+		},
+		countDistinct_user_id: {
+			sql: 'user_id',
+			type: 'countDistinct'
+		},
+		countDistinctApprox_user_id: {
+			sql: 'user_id',
+			type: 'countDistinctApprox'
+		},
+,
 
 	},
 

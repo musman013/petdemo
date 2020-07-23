@@ -1,4 +1,4 @@
-<div class="create-entry" style="width:650px;">
+<div class="create-entry newjob-pop" >
   <!-- <mat-toolbar class="action-tool-bar" color="primary">
     <button mat-flat-button (click)="onCancel()">
       {{'SCHEDULER-GENERAL.ACTIONS.CANCEL' | translate}} </button>
@@ -90,10 +90,10 @@
                 <!-- Key Column -->
                 <ng-container matColumnDef="key">
                   <th mat-header-cell *matHeaderCellDef> {{'JOB-DATA.KEY' | translate}} </th>
-                  <td mat-cell *matCellDef="let element">                    
+                  <td mat-cell *matCellDef="let element">
                       <input matInput [(ngModel)]="element.dataKey" [ngModelOptions]="{standalone: true}"
                         placeholder="Enter key name">
-                                     
+
                   </td>
                 </ng-container>
 
@@ -101,10 +101,10 @@
                 <ng-container matColumnDef="value">
                   <th mat-header-cell *matHeaderCellDef> {{'JOB-DATA.VALUE' | translate}} </th>
                   <td mat-cell *matCellDef="let element">
-                   
+
                       <input matInput [(ngModel)]="element.dataValue" [ngModelOptions]="{standalone: true}"
                         placeholder="Enter value">
-                   
+
                   </td>
                 </ng-container>
 

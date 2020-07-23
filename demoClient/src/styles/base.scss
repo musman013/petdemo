@@ -18,6 +18,11 @@ $fc-row-height10:80px;
 .mat-table {
     overflow: auto;
 
+    .mat-header-cell {
+      overflow: visible;
+      margin-left: 2px;
+    }
+
     mat-row, mat-header-row, mat-footer-row {
         padding-left: 24px;
         padding-right: 24px;

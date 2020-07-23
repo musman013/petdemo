@@ -6,6 +6,14 @@ cube(`Vets`, {
   },
   
   measures: {
+ube(`Vets`, {
+  sql: `SELECT * FROM sample.vets`,
+  
+  joins: {
+    
+  },
+  
+  measures: {
 
   },
   

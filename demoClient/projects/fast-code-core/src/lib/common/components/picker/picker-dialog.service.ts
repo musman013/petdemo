@@ -40,12 +40,12 @@ export class PickerDialogService {
       data: config, disableClose: true,
       height: '80%',
       width: this.isSmallDeviceOrLess ? this.smallDeviceOrLessDialogSize : this.largerDeviceDialogWidthSize,
-      panelClass: "fc-modal-dialog"
+      panelClass: "picker-modal"
     });
     return this.dialogRef;
     // config.OnClose = this.dialogRef.afterClosed();
     /*this.dialogRef.afterClosed().subscribe(result => {
-      
+
       if(result) {
        // result.userId = this.userId;
        // this.permissionService.update(result, result.id);

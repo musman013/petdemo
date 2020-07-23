@@ -50,6 +50,7 @@ cube(`Types`, {
 			sql: 'name',
 			type: 'countDistinctApprox'
 		},
+,
 
   },
   
@@ -62,6 +63,11 @@ cube(`Types`, {
     
     name: {
       sql: `name`,
+      type: `string`
+    }
+  }
+});
+,
       type: `string`
     }
   }
