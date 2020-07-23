@@ -32,7 +32,7 @@ public class OwnerProfile {
 	private String address;
 	
   	private String city;
-  	
+
   	private String theme;
 
   	private String language;

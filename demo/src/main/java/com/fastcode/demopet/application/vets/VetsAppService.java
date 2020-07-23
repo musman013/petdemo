@@ -90,10 +90,12 @@ public class VetsAppService implements IVetsAppService {
 	public void assignVetRole(Long userId)
 	{
 		RoleEntity role = _roleManager.findByRoleName("ROLE_Vet");
+		if(role !=null && userId !=null) {
 		CreateUserroleInput input = new CreateUserroleInput();
 		input.setRoleId(role.getId());
 		input.setUserId(userId);
 		_userroleAppService.create(input);
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -135,14 +137,14 @@ public class VetsAppService implements IVetsAppService {
 			return null ; 
 
 		UserpreferenceEntity userpreference = _userpreferenceManager.findById(vetsId);
-		FindVetsByIdOutput output=mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
+		FindVetsByIdOutput output = mapper.vetsEntityAndUserEntityToFindVetsByIdOutput(foundVets, foundVets.getUser(), userpreference); 
 		
 		return output;
 	}
 
 	public VetProfile getProfile(FindVetsByIdOutput vet)
 	{
-		return mapper.findVetsByIdOutputToVetProfile(vet);
+		return mapper.findVetsByIdOutputToVetProfile(vet);  
 	}
 	
 	public VetProfile updateVetProfile(FindUserWithAllFieldsByIdOutput user, VetProfile vetProfile)

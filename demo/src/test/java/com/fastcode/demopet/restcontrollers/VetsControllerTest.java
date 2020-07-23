@@ -15,10 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.HashMap;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 
 import org.junit.AfterClass;
@@ -30,19 +33,27 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserByNameOutput;
+import com.fastcode.demopet.application.authorization.user.dto.FindUserWithAllFieldsByIdOutput;
 import com.fastcode.demopet.application.authorization.userrole.UserroleAppService;
 import com.fastcode.demopet.application.vets.VetsAppService;
 import com.fastcode.demopet.application.vets.dto.*;
@@ -112,7 +123,7 @@ public class VetsControllerTest {
 	@AfterClass
 	public static void cleanup() {
 		EntityManager em = emfs.createEntityManager();
-		em.getTransaction().begin();
+		em.getTransaction().begin(); 
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 		em.createNativeQuery("truncate table sample.vets").executeUpdate();
 		em.createNativeQuery("truncate table sample.role").executeUpdate();
@@ -216,16 +227,121 @@ public class VetsControllerTest {
 	@Test
 	public void FindById_IdIsNotValid_ReturnStatusNotFound() throws Exception {
 
-//		mvc.perform(get("/vets/111")
-//				.contentType(MediaType.APPLICATION_JSON))
-//		.andExpect(status().isNotFound());
-		
 		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vets/111")
 					.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
 
+	}   
+	
+	@Test
+	public void GetProfile_VetExists_ReturnLoggedInVetProfile() throws Exception {
+	
+		UserEntity user = Mockito.mock (UserEntity.class);
+		FindVetsByIdOutput currentvet = Mockito.mock(FindVetsByIdOutput.class);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(currentvet).when(vetsAppService).findById(anyLong());
+		
+		mvc.perform(get("/vets/getProfile")
+				.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk());
+	}  
+	
+	@Test
+	public void GetProfile_VetNotExists_ThrowException() throws Exception {
+	
+		UserEntity user = Mockito.mock (UserEntity.class);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(null).when(vetsAppService).findById(anyLong());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(get("/vets/getProfile")
+					.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+	}  
 
-	}    
+	@Test
+	public void UpdateProfile_VetExists_ReturnUpdatedVetProfile() throws Exception {
+	
+		UserEntity user = createUserEntity();
+		user.setUserName("aaa");
+		user = userRepository.save(user);
+		FindVetsByIdOutput currentvet = Mockito.mock(FindVetsByIdOutput.class);
+		FindUserWithAllFieldsByIdOutput currentUser = new FindUserWithAllFieldsByIdOutput();
+		currentUser.setId(1L);
+		currentUser.setIsActive(true);
+		currentUser.setPassword("secret");
+		currentUser.setVersion(0L);
+		
+		VetProfile profile = new VetProfile();
+		profile.setEmailAddress("abc@g.c");
+		profile.setFirstName("u1");
+		profile.setLastName("u2");
+		profile.setUserName("user");
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(profile);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(currentvet).when(vetsAppService).findById(anyLong());
+		Mockito.doReturn(null).when(userAppService).findByEmailAddress(anyString());
+		Mockito.doReturn(null).when(userAppService).findByUserName(anyString());
+		Mockito.doReturn(currentUser).when(userAppService).findWithAllFieldsById(anyLong());
+		
+		mvc.perform(put("/vets/updateProfile")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+		.andExpect(status().isOk());
+	}  
+	
+	@Test
+	public void UpdateProfile_VetDoesNotExists_ThrowException() throws Exception {
+	
+		UserEntity user = createUserEntity();
+	
+		VetProfile profile = new VetProfile();
+		profile.setEmailAddress("abc@g.c");
+		profile.setFirstName("u1");
+		profile.setLastName("u2");
+		profile.setUserName("user");
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(profile);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(null).when(vetsAppService).findById(anyLong());
+	
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/vets/updateProfile")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Not found"));
+	}  
+	
+	@Test
+	public void UpdateProfile_VetExistsWithSameUserName_ThrowException() throws Exception {
+	
+		UserEntity user = createUserEntity();
+		FindVetsByIdOutput currentvet = Mockito.mock(FindVetsByIdOutput.class);
+		FindUserByNameOutput userOutput = new FindUserByNameOutput();
+		userOutput.setId(9L);
+		
+		VetProfile profile = new VetProfile();
+		profile.setEmailAddress("abc@g.c");
+		profile.setFirstName("u1");
+		profile.setLastName("u2");
+		profile.setUserName("user");
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(profile);
+		
+		Mockito.doReturn(user).when(userAppService).getUser();
+		Mockito.doReturn(currentvet).when(vetsAppService).findById(anyLong());
+		Mockito.doReturn(null).when(userAppService).findByEmailAddress(anyString());
+		Mockito.doReturn(userOutput).when(userAppService).findByUserName(anyString());
+		
+		 org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/vets/updateProfile")
+					.contentType(MediaType.APPLICATION_JSON).content(json))
+					.andExpect(status().isOk())).hasCause(new EntityExistsException("There already exists a user with userName = u1"));
+	} 
+	
 	@Test
 	public void CreateVets_VetsDoesNotExist_ReturnStatusOk() throws Exception {
 		

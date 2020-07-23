@@ -81,12 +81,15 @@ public class VisitsController {
 	private Environment env;
 
 	public VisitsController(VisitsAppService visitsAppService, InvoicesAppService invoicesAppService, PetsAppService petsAppService,
-			UserAppService userAppService, LoggingHelper helper) {
+			UserAppService userAppService, OwnersAppService ownerAppService,VetsAppService vetAppService ,StartProcessService processService, LoggingHelper helper) {
 		super();
 		this._visitsAppService = visitsAppService;
 		this._invoicesAppService = invoicesAppService;
-		this._petsAppService = petsAppService;
+		this._petsAppService = petsAppService; 
 		this._userAppService = userAppService;
+		this._ownersAppService = ownerAppService;
+		this._vetsAppService = vetAppService;
+		this._processService = processService;
 		this.logHelper = helper;
 	}
 

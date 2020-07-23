@@ -11,10 +11,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import java.util.HashMap;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,16 +30,27 @@ import org.mockito.Spy;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fastcode.demopet.domain.invoices.*;
 import com.fastcode.demopet.commons.search.*;
+import com.fastcode.demopet.StartProcessService;
+import com.fastcode.demopet.application.authorization.user.UserAppService;
 import com.fastcode.demopet.application.invoices.dto.*;
+import com.fastcode.demopet.application.visits.dto.FindVisitsByIdOutput;
+import com.fastcode.demopet.application.visits.dto.Status;
+import com.fastcode.demopet.application.visits.dto.UpdateVisitStatus;
 import com.fastcode.demopet.domain.model.QInvoicesEntity;
+import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.InvoicesEntity;
+import com.fastcode.demopet.domain.model.OwnersEntity;
+import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.model.VisitsEntity;
 import com.fastcode.demopet.domain.visits.VisitsManager;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
@@ -50,8 +67,14 @@ public class InvoicesAppServiceTest {
 	@Mock
 	private InvoicesManager _invoicesManager;
 	
+	@Mock
+	private UserAppService _userAppService;
+	
     @Mock
 	private VisitsManager  _visitsManager;
+    
+    @Mock 
+	private StartProcessService _processService;
 	
 	@Mock
 	private IInvoicesMapper _mapper;
@@ -62,9 +85,7 @@ public class InvoicesAppServiceTest {
 	@Mock
 	private LoggingHelper logHelper;
 	
-
     private static Long ID=15L;
-    
 	 
 	@Before
 	public void setUp() throws Exception {
@@ -174,7 +195,70 @@ public class InvoicesAppServiceTest {
 		_appService.delete(ID); 
 		verify(_invoicesManager).delete(invoices);
 	}
+
+	@Test
+	public void updateStatus_VisitExistsAndVisitNotesAreNotNull_ReturnUpdatedVisitObject() {
+		
+		InvoicesEntity invoices = new InvoicesEntity();
+		
+		Mockito.when(_invoicesManager.findByProcessInstanceId(anyString())).thenReturn(invoices);
+		Mockito.when(_invoicesManager.update(any(InvoicesEntity.class))).thenReturn(invoices);
+		
+	    Assertions.assertThat(_appService.updateStatus("2", InvoiceStatus.Paid)).isEqualTo(invoices);
+	}
 	
+	@Test
+	public void updateStatus_InvoiceExistsAndUserIsAdmin_ReturnUpdatedInvoice() {
+		
+		VisitsEntity visits = new VisitsEntity();
+		visits.setId(2L);
+		InvoicesEntity invoices = new InvoicesEntity();
+		invoices.setVisits(visits);
+		
+		UserEntity user = new UserEntity();
+		
+		UpdateInvoicesOutput output = new UpdateInvoicesOutput();
+		
+		Mockito.when(_invoicesManager.findById(anyLong())).thenReturn(invoices);
+		Mockito.when(_invoicesManager.update(any(InvoicesEntity.class))).thenReturn(invoices);
+		Mockito.when(_visitsManager.findById(anyLong())).thenReturn(visits);
+		Mockito.when(_userAppService.checkIsAdmin(any(UserEntity.class))).thenReturn(true);
+		Mockito.doNothing().when(_processService).updateInvoiceStatus(anyString(),anyString(), anyString());
+	    Mockito.when(_mapper.invoicesEntityToUpdateInvoicesOutput(any(InvoicesEntity.class))).thenReturn(output);
+	    Assertions.assertThat(_appService.updateStatus(2L,user)).isEqualTo(_mapper.invoicesEntityToUpdateInvoicesOutput(invoices));
+	}
+	
+	@Test
+	public void updateStatus_InvoiceExistsAndUserIsNotAdmin_ReturnUpdatedInvoice() {
+		
+		VisitsEntity visits = new VisitsEntity();
+		visits.setId(2L);
+		
+		PetsEntity pets = new PetsEntity();
+		
+		OwnersEntity owner = new OwnersEntity();
+		
+		InvoicesEntity invoices = new InvoicesEntity();
+		invoices.setVisits(visits);
+		
+		UserEntity user = new UserEntity();
+		user.setId(2L);
+		owner.setUser(user);
+		owner.setId(2L);
+		pets.setOwners(owner);
+		visits.setPets(pets);
+		
+		UpdateInvoicesOutput output = new UpdateInvoicesOutput();
+		
+		Mockito.when(_invoicesManager.findById(anyLong())).thenReturn(invoices);
+		Mockito.when(_invoicesManager.update(any(InvoicesEntity.class))).thenReturn(invoices);
+		Mockito.when(_visitsManager.findById(anyLong())).thenReturn(visits);
+		Mockito.when(_userAppService.checkIsAdmin(any(UserEntity.class))).thenReturn(false);
+		Mockito.doNothing().when(_processService).updateInvoiceStatus(anyString(),anyString(), anyString());
+	    Mockito.when(_mapper.invoicesEntityToUpdateInvoicesOutput(any(InvoicesEntity.class))).thenReturn(output);
+	    Assertions.assertThat(_appService.updateStatus(2L,user)).isEqualTo(_mapper.invoicesEntityToUpdateInvoicesOutput(invoices));
+	}
+
 	@Test
 	public void find_ListIsEmpty_ReturnList() throws Exception {
 
@@ -183,10 +267,7 @@ public class InvoicesAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindInvoicesByIdOutput> output = new ArrayList<>();
 		SearchCriteria search= new SearchCriteria();
-//		search.setType(1);
-//		search.setValue("xyz");
-//		search.setOperator("equals");
-
+		
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());
 		Mockito.when(_invoicesManager.findAll(any(Predicate.class),any(Pageable.class))).thenReturn(foundPage);
 		Assertions.assertThat(_appService.find(search, pageable)).isEqualTo(output);
@@ -202,9 +283,6 @@ public class InvoicesAppServiceTest {
 		Pageable pageable = mock(Pageable.class);
 		List<FindInvoicesByIdOutput> output = new ArrayList<>();
         SearchCriteria search= new SearchCriteria();
-//		search.setType(1);
-//		search.setValue("xyz");
-//		search.setOperator("equals");
 		output.add(_mapper.invoicesEntityToFindInvoicesByIdOutput(invoices));
 		
 		Mockito.when(_appService.search(any(SearchCriteria.class))).thenReturn(new BooleanBuilder());

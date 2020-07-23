@@ -15,7 +15,7 @@ public class FindUserByIdOutput {
     private Boolean isPhoneNumberConfirmed;
     private Date lastLoginTime;
     private Date lockoutEndDateUtc;
-    private String firstName;
+    private String firstName; 
     private String phoneNumber;
     private Long profilePictureId;
     private Boolean isActive;

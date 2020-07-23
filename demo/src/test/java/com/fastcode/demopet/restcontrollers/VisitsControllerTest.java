@@ -2,6 +2,7 @@ package com.fastcode.demopet.restcontrollers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -40,7 +41,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fastcode.demopet.commons.logging.LoggingHelper;
-import com.fastcode.demopet.application.visits.VisitMailUtils;
 import com.fastcode.demopet.application.visits.VisitsAppService;
 import com.fastcode.demopet.application.visits.dto.*;
 import com.fastcode.demopet.domain.irepository.IVisitsRepository;
@@ -55,9 +55,15 @@ import com.fastcode.demopet.domain.model.OwnersEntity;
 import com.fastcode.demopet.domain.model.PetsEntity;
 import com.fastcode.demopet.domain.model.UserEntity;
 import com.fastcode.demopet.domain.model.VetsEntity;
+import com.fastcode.demopet.StartProcessService;
 import com.fastcode.demopet.application.authorization.user.UserAppService;
-import com.fastcode.demopet.application.invoices.InvoicesAppService;    
-import com.fastcode.demopet.application.pets.PetsAppService;    
+import com.fastcode.demopet.application.invoices.InvoicesAppService;
+import com.fastcode.demopet.application.owners.OwnersAppService;
+import com.fastcode.demopet.application.owners.dto.FindOwnersByIdOutput;
+import com.fastcode.demopet.application.pets.PetsAppService;
+import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
+import com.fastcode.demopet.application.vets.VetsAppService;
+import com.fastcode.demopet.application.vets.dto.FindVetsByIdOutput;    
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -95,9 +101,18 @@ public class VisitsControllerTest {
     
     @SpyBean
 	private PetsAppService petsAppService;
+    
+    @SpyBean
+	private OwnersAppService ownersAppService; 
+    
+    @SpyBean
+	private VetsAppService vetsAppService; 
 
 	@SpyBean
 	private LoggingHelper logHelper;
+	
+	@Mock
+	private StartProcessService processService;
 
 	@Mock
 	private Logger loggerMock;
@@ -216,13 +231,13 @@ public class VisitsControllerTest {
   		pets.setName("1");
 		return pets;
 		 
-	}
+	} 
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		final VisitsController visitsController = new VisitsController(visitsAppService,invoicesAppService,petsAppService,userAppService,
-	logHelper);
+				ownersAppService, vetsAppService,processService, logHelper);
 		when(logHelper.getLogger()).thenReturn(loggerMock);
 		doNothing().when(loggerMock).error(anyString());
 
@@ -347,13 +362,10 @@ public class VisitsControllerTest {
 
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		String json = ow.writeValueAsString(visits);
-//		mvc.perform(put("/visits/111").contentType(MediaType.APPLICATION_JSON).content(json))
-//		.andExpect(status().isNotFound());
-		
+
 		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/visits/111")
 				.contentType(MediaType.APPLICATION_JSON).content(json))
 				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("Unable to update. Visits with id=111 not found."));
-
 	}    
 
 	@Test
@@ -386,6 +398,164 @@ public class VisitsControllerTest {
 		visits_repository.delete(de);
 
 	}    
+	
+	@Test
+	public void UpdateStatus_VisitsDoesNotExist_ReturnStatusNotFound() throws Exception {
+		
+		doReturn(null).when(visitsAppService).findById(11L);
+		
+		UpdateVisitStatus visits = new UpdateVisitStatus();
+  		visits.setInvoiceAmount(500L);
+		visits.setStatus(Status.CONFIRMED);
+
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(visits);
+
+		org.assertj.core.api.Assertions.assertThatThrownBy(() ->  mvc.perform(put("/visits/11/changeStatus")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk())).hasCause(new EntityNotFoundException("There does not exist a visits with a id=11"));
+
+	}  
+	 
+	@Test
+	public void UpdateStatus_VisitExistsUserIsVet_ReturnUpdatedVisit() throws Exception {
+	
+		VisitsEntity entity =  createNewEntity();
+		PetsEntity pets = new PetsEntity();
+		pets.setBirthDate(new Date());
+		pets.setId(5L);
+  		pets.setName("5");
+		pets=petsRepository.save(pets);
+		entity.setPets(pets);
+		entity = visits_repository.save(entity);
+		
+        FindVisitsByIdOutput foundVisit = new FindVisitsByIdOutput();
+        foundVisit.setId(entity.getId());
+        foundVisit.setStatus(Status.CONFIRMED);
+        foundVisit.setPetId(pets.getId());
+        
+        FindPetsByIdOutput pet = new FindPetsByIdOutput();
+        pet.setId(pets.getId());
+        pet.setOwnerId(5L);
+        doReturn(foundVisit).when(visitsAppService).findById(11L);
+        
+        UserEntity user = new UserEntity();
+        user.setId(10L);
+        
+        FindVetsByIdOutput vet = new FindVetsByIdOutput();
+        vet.setId(10L);
+
+		doReturn(user).when(userAppService).getUser();
+		doReturn(foundVisit).when(visitsAppService).findById(anyLong());
+		doReturn(pet).when(petsAppService).findById(anyLong());
+		doReturn(null).when(ownersAppService).findById(anyLong());
+		doReturn(vet).when(vetsAppService).findById(anyLong());
+		doReturn(false).when(userAppService).checkIsAdmin(any(UserEntity.class));
+		
+		UpdateVisitStatus visits = new UpdateVisitStatus();
+  		visits.setInvoiceAmount(500L);
+		visits.setStatus(Status.COMPLETED);
+
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(visits);
+
+		mvc.perform(put("/visits/"+entity.getId()+"/changeStatus")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());
+	}  
+	
+	@Test
+	public void UpdateStatus_VisitExistsUserIsOwner_ReturnUpdatedVisit() throws Exception {
+	
+		VisitsEntity entity =  createNewEntity();
+		PetsEntity pets = new PetsEntity();
+		pets.setBirthDate(new Date());
+		pets.setId(5L);
+  		pets.setName("5");
+		pets=petsRepository.save(pets);
+		entity.setPets(pets);
+		entity = visits_repository.save(entity);
+		
+        FindVisitsByIdOutput foundVisit = new FindVisitsByIdOutput();
+        foundVisit.setId(entity.getId());
+        foundVisit.setStatus(Status.CREATED);
+        foundVisit.setPetId(pets.getId());
+        
+        FindPetsByIdOutput pet = new FindPetsByIdOutput();
+        pet.setId(pets.getId());
+        pet.setOwnerId(10L);
+        doReturn(foundVisit).when(visitsAppService).findById(11L);
+        
+        FindOwnersByIdOutput owner = new FindOwnersByIdOutput();
+        owner.setId(10L);
+        
+        UserEntity user = new UserEntity();
+        user.setId(10L);
+        
+		doReturn(user).when(userAppService).getUser();
+		doReturn(foundVisit).when(visitsAppService).findById(anyLong());
+		doReturn(pet).when(petsAppService).findById(anyLong());
+		doReturn(owner).when(ownersAppService).findById(anyLong());
+		doReturn(null).when(vetsAppService).findById(anyLong());
+		doReturn(false).when(userAppService).checkIsAdmin(any(UserEntity.class));
+		
+		UpdateVisitStatus visits = new UpdateVisitStatus();
+  		visits.setInvoiceAmount(500L);
+		visits.setStatus(Status.CONFIRMED);
+
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(visits);
+
+		mvc.perform(put("/visits/"+entity.getId()+"/changeStatus")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());
+	}  
+	
+	@Test
+	public void UpdateStatus_VisitExistsUserIsAdmin_ReturnUpdatedVisit() throws Exception {
+	
+		VisitsEntity entity =  createNewEntity();
+		PetsEntity pets = new PetsEntity();
+		pets.setBirthDate(new Date());
+		pets.setId(5L);
+  		pets.setName("5");
+		pets=petsRepository.save(pets);
+		entity.setPets(pets);
+		entity = visits_repository.save(entity);
+		
+        FindVisitsByIdOutput foundVisit = new FindVisitsByIdOutput();
+        foundVisit.setId(entity.getId());
+        foundVisit.setStatus(Status.CREATED);
+        foundVisit.setPetId(pets.getId());
+        
+        FindPetsByIdOutput pet = new FindPetsByIdOutput();
+        pet.setId(pets.getId());
+        pet.setOwnerId(5L);
+        doReturn(foundVisit).when(visitsAppService).findById(11L);
+        
+        UserEntity user = new UserEntity();
+        user.setId(10L);
+
+		doReturn(user).when(userAppService).getUser();
+		doReturn(foundVisit).when(visitsAppService).findById(anyLong());
+		doReturn(pet).when(petsAppService).findById(anyLong());
+		doReturn(null).when(ownersAppService).findById(anyLong());
+		doReturn(null).when(vetsAppService).findById(anyLong());
+		doReturn(true).when(userAppService).checkIsAdmin(any(UserEntity.class));
+		
+		UpdateVisitStatus visits = new UpdateVisitStatus();
+  		visits.setInvoiceAmount(500L);
+		visits.setStatus(Status.CONFIRMED);
+
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json = ow.writeValueAsString(visits);
+
+		mvc.perform(put("/visits/"+entity.getId()+"/changeStatus")
+				.contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());
+	}  
+	
+	
 	@Test
 	public void FindAll_SearchIsNotNullAndPropertyIsValid_ReturnStatusOk() throws Exception {
 

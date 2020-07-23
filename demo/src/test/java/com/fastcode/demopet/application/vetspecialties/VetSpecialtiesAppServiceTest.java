@@ -73,7 +73,7 @@ public class VetSpecialtiesAppServiceTest {
     private VetSpecialtiesId vetSpecialtiesId;
     
     private static Long ID=15L;
-	 
+    
 	@Before
 	public void setUp() throws Exception {
 

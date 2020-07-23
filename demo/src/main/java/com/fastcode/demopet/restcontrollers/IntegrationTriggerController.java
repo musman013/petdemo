@@ -1,11 +1,7 @@
 package com.fastcode.demopet.restcontrollers;
 
-import com.fastcode.demopet.application.invoices.IInvoicesAppService;
-import com.fastcode.demopet.application.pets.dto.FindPetsByIdOutput;
 import com.fastcode.demopet.domain.invoices.IInvoicesManager;
 import com.fastcode.demopet.domain.model.InvoicesEntity;
-
-import javassist.expr.NewArray;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

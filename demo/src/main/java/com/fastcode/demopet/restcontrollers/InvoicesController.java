@@ -70,7 +70,6 @@ public class InvoicesController {
     _invoicesAppService.delete(Long.valueOf(id));
     }
     
-	
 	// ------------ Update invoices ------------
     @PreAuthorize("hasAnyAuthority('INVOICESENTITY_UPDATE')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -83,6 +82,7 @@ public class InvoicesController {
     	
 	    return new ResponseEntity(_invoicesAppService.update(Long.valueOf(id),invoices), HttpStatus.OK);
 	}
+    
     @PreAuthorize("hasAnyAuthority('INVOICESENTITY_READ')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<FindInvoicesByIdOutput> findById(@PathVariable String id) {

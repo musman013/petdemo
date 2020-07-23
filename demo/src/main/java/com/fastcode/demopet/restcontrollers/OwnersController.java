@@ -77,10 +77,8 @@ public class OwnersController {
 		
 		UserEntity user = _userAppService.getUser();
 		FindOwnersByIdOutput currentowner = _ownersAppService.findById(user.getId());
-		if(currentowner == null)
-		{
-			return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.NOT_FOUND);
-		}
+		Optional.ofNullable(currentowner).orElseThrow(() -> new EntityNotFoundException(String.format("Not found")));
+
 		return new ResponseEntity(_ownersAppService.getProfile(currentowner), HttpStatus.OK);
 		
 	}
@@ -90,25 +88,22 @@ public class OwnersController {
 		UserEntity user = _userAppService.getUser();
 
 		FindOwnersByIdOutput currentowner = _ownersAppService.findById(user.getId());
-		if(currentowner == null)
-		{
-			return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.NOT_FOUND);
-		}
-		
+		Optional.ofNullable(currentowner).orElseThrow(() -> new EntityNotFoundException(String.format("Not found")));
+
 		FindUserByNameOutput userOutput = _userAppService.findByEmailAddress(ownerProfile.getEmailAddress());
 		if(userOutput != null && userOutput.getId() != user.getId())
 		{
-			logHelper.getLogger().error("There already exists a user with a email=%s", user.getEmailAddress());
+			logHelper.getLogger().error("There already exists a user with a email = %s", user.getEmailAddress());
 			throw new EntityExistsException(
-					String.format("There already exists a user with a email=%s", user.getEmailAddress()));
+					String.format("There already exists a user with a email = %s", user.getEmailAddress()));
 		}
 		
 		userOutput = _userAppService.findByUserName(ownerProfile.getUserName());
 		if(userOutput != null && userOutput.getId() !=user.getId())
 		{
-			logHelper.getLogger().error("There already exists a user with userName =%s", user.getUserName());
+			logHelper.getLogger().error("There already exists a user with userName = %s", user.getUserName());
 			throw new EntityExistsException(
-					String.format("There already exists a user with userName =%s", user.getUserName()));
+					String.format("There already exists a user with userName = %s", user.getUserName()));
 		}
 		
 		FindUserWithAllFieldsByIdOutput currentUser = _userAppService.findWithAllFieldsById(user.getId());
@@ -153,8 +148,6 @@ public class OwnersController {
     
     }
     
-	
-
 	// ------------ Update owners ------------
     @PreAuthorize("hasAnyAuthority('OWNERSENTITY_UPDATE')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)

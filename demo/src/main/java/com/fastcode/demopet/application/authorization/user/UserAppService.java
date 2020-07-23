@@ -100,7 +100,7 @@ public class UserAppService implements IUserAppService {
 	}
     
     @Transactional(propagation = Propagation.REQUIRED)
-   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) {
+   	public UserpreferenceEntity createDefaultUserPreference(UserEntity user) { 
     	
     	UserpreferenceEntity userpreference = new UserpreferenceEntity();
     	userpreference.setTheme("default-theme");
@@ -239,7 +239,7 @@ public class UserAppService implements IUserAppService {
 		if (foundUser == null) {
 			return null;
 		}
-	
+	 
 		return  mapper.userEntityToFindUserByNameOutput(foundUser);
 	}
 	
@@ -423,7 +423,7 @@ public class UserAppService implements IUserAppService {
 					builder.and(user.isEmailConfirmed.eq(Boolean.parseBoolean(details.getValue().getSearchValue())));
 				else if(details.getValue().getOperator().equals("notEqual") && (details.getValue().getSearchValue().equalsIgnoreCase("true") || details.getValue().getSearchValue().equalsIgnoreCase("false")))
 					builder.and(user.isEmailConfirmed.ne(Boolean.parseBoolean(details.getValue().getSearchValue())));
-			}
+			} 
 			if(details.getKey().replace("%20","").trim().equals("isLockoutEnabled")) {
 				if(details.getValue().getOperator().equals("equals") && (details.getValue().getSearchValue().equalsIgnoreCase("true") || details.getValue().getSearchValue().equalsIgnoreCase("false")))
 					builder.and(user.isLockoutEnabled.eq(Boolean.parseBoolean(details.getValue().getSearchValue())));
