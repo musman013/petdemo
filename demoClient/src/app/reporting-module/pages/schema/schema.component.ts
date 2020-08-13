@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SchemaFileData } from '../../models/schema.model';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MainService } from '../../services/main.service';
 import { MatAccordion } from '@angular/material';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-schema',
@@ -11,14 +12,14 @@ import { MatAccordion } from '@angular/material';
   styleUrls: ['./schema.component.scss']
 })
 export class SchemaComponent implements OnInit {
-  @ViewChild(MatAccordion,{static:false}) accordion: MatAccordion;
+  @ViewChild(MatAccordion, { static: false }) accordion: MatAccordion;
   allSchemas = [];
   listFlexWidth = 30;
   allData = {};
   allValues = [];
   allFiles: Array<SchemaFileData> = [];
   fileContent: SchemaFileData = {
-    content: 'Click on schema file in files tab to edit schema.',
+    content: this.translate.instant('REPORTING.LABELS.REPORT.FILE-CONTENT-TITLE'),
     absPath: '',
     fileName: ''
   };
@@ -26,7 +27,12 @@ export class SchemaComponent implements OnInit {
   schemaFormGroup: FormGroup;
   selectedSchemas = [];
 
-  constructor(private service: MainService, private fb: FormBuilder, private _snackBar: MatSnackBar) {
+  constructor(
+    private service: MainService,
+    private fb: FormBuilder,
+    private _snackBar: MatSnackBar,
+    private translate: TranslateService
+  ) {
     this.schemaFormGroup = this.fb.group({
       schemaList: this.fb.array([])
     });
@@ -45,67 +51,65 @@ export class SchemaComponent implements OnInit {
     this.getAllSchemaFiles();
   }
 
-  getAllDbTables(){
-    this.service.getDbTablesList().subscribe( res => {
+  getAllDbTables() {
+    this.service.getDbTablesList().subscribe(res => {
       this.allSchemas = Object.keys(res.tablesSchema);
-      for(const k of this.allSchemas){
+      for (const k of this.allSchemas) {
         this.allData[k] = Object.keys(res.tablesSchema[k]);
         this.allValues.push(...Object.keys(res.tablesSchema[k]));
       }
-      for(let val of Object.keys(this.allData)){
-        for(let v of this.allData[val]){
+      for (let val of Object.keys(this.allData)) {
+        for (let v of this.allData[val]) {
           this.addSchemas();
         }
       }
     });
   }
 
-  getAllSchemaFiles(){
-    this.service.getSchemaFilesList().subscribe( res => {
-      for(let v of Object.values(res.files)){
+  getAllSchemaFiles() {
+    this.service.getSchemaFilesList().subscribe(res => {
+      for (let v of Object.values(res.files)) {
         this.allFiles[v.fileName] = v;
       }
     });
   }
 
-  checkSelectedList(i,s,t, e){
-    if(e.checked){
-      this.selectedSchemas.push(s + '.'+ t);
-    }else{
-      this.selectedSchemas.splice(this.selectedSchemas.indexOf(s + '.'+ t),1);
+  checkSelectedList(i, s, t, e) {
+    if (e.checked) {
+      this.selectedSchemas.push(s + '.' + t);
+    } else {
+      this.selectedSchemas.splice(this.selectedSchemas.indexOf(s + '.' + t), 1);
     }
   }
 
-  onClickGenerateSchema(){
+  onClickGenerateSchema() {
     const tablesList = {
-      tables:this.selectedSchemas
+      tables: this.selectedSchemas
     };
     this.service.generateSchema(tablesList).subscribe(res => {
       this.service.generateAggregatedMeasures().subscribe(res2 => {
-        console.log("aggregations created");  
       });
-      for(let v of Object.values(res.files)){
+      for (let v of Object.values(res.files)) {
         this.allFiles[v.fileName] = v;
       }
-      this.openDialog('Schema generated successfully!');
+      this.showMessage(this.translate.instant('REPORTING.MESSAGES.SCHEMA-GENERATED'));
     });
   }
 
-  showFile(f: SchemaFileData){
-    console.log(f.fileName);
+  showFile(f: SchemaFileData) {
     this.fileContent = f;
     this.postContent = f.content;
   }
 
-  onClickUpdateSchema(){
+  onClickUpdateSchema() {
     this.fileContent.content = this.postContent;
-    this.service.updateSchemaFile(this.fileContent).subscribe( res => {
+    this.service.updateSchemaFile(this.fileContent).subscribe(res => {
       this.getAllSchemaFiles();
-      this.openDialog('Schema file updated successfully!');
+      this.showMessage(this.translate.instant('REPORTING.MESSAGES.SCHEMA-FILE-UPDATED'));
     });
   }
 
-  openDialog(msg): void {
+  showMessage(msg): void {
     this._snackBar.open(msg, 'close', {
       duration: 2000,
     });

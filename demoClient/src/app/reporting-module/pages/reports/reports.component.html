@@ -5,14 +5,14 @@
 <mat-expansion-panel [expanded]="true" class="criteria-panel">
   <mat-expansion-panel-header>
     <mat-panel-title>
-      Report criteria
+      {{'REPORTING.LABELS.REPORT.CRITERIA' | translate}}
     </mat-panel-title>
   </mat-expansion-panel-header>
   <!-- <mat-card class="chart-block"> -->
   <div fxLayout="row wrap" fxLayoutGap="20">
     <div fxFlex="{{measureCriteriaFieldWidth}}" appDropdown>
       <mat-form-field class="chartoptions">
-        <mat-label>Measure</mat-label>
+        <mat-label>{{'REPORTING.LABELS.REPORT.MEASURE' | translate}}</mat-label>
         <mat-select>
           <mat-option class="options" *ngFor="let m of tableColumns" (click)="setMeasure(m)">
             {{m.name}}
@@ -28,12 +28,12 @@
           <span style="margin-right: 10px;">{{measure.name}}</span>
           <mat-form-field class="aggregate-measure">
             <mat-label style="font-size: medium;">
-              Aggregations
+              {{'REPORTING.LABELS.REPORT.AGGREGATIONS' | translate}}
             </mat-label>
             <mat-select style="font-size: medium;" [(value)]="measure.selectedAggregation">
-              <mat-option *ngFor="let aggregate of measure.aggregation" [value]="aggregate"
-                (click)="getMeasure(aggregate,i)">
-                {{aggregate}}
+              <mat-option *ngFor="let aggregate of measure.aggregation" [value]="aggregate.value"
+                (click)="getMeasure(aggregate.value,i)">
+                {{aggregate?.label}}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -53,7 +53,7 @@
     </div> -->
     <div fxFlex="{{criteriaFieldWidth}}" appDropdown>
       <mat-form-field class="chartoptions">
-        <mat-label>Dimensions</mat-label>
+        <mat-label>{{'REPORTING.LABELS.REPORT.DIMENSIONS' | translate}}</mat-label>
         <mat-select>
           <mat-option class="options" *ngFor="let d of dimensions" (click)="getDimension(d)">
             {{d.title}}
@@ -81,9 +81,10 @@
     </div> -->
     <div fxFlex="{{criteriaFieldWidth}}" appDropdown>
       <mat-form-field class="chartoptions">
-        <mat-label>Time</mat-label>
+        <mat-label>{{'REPORTING.LABELS.REPORT.TIME' | translate}}</mat-label>
         <mat-select [(ngModel)]="timeFilter">
-          <mat-option (click)="getTimeFilter('')" value="">No filter</mat-option>
+          <mat-option (click)="getTimeFilter('')" value="">{{'REPORTING.LABELS.REPORT.NO-FILTER' | translate}}
+          </mat-option>
           <mat-option class="options" *ngFor="let dt of dataTime" (click)="getTimeFilter(dt.name)" [value]="dt.name">
             {{dt.title}}
           </mat-option>
@@ -95,18 +96,18 @@
       <mat-form-field *ngIf="queryParam.timeDimensions.length>0" class="chartoptions">
         <mat-label>for</mat-label>
         <mat-select [(ngModel)]="timeFilterFor" (selectionChange)="getTimeFilterFor($event)">
-          <mat-option *ngFor="let filFor of timeFilterForList" [value]="filFor">
-            {{filFor}}
+          <mat-option *ngFor="let filFor of timeFilterForList" [value]="filFor.value">
+            {{filFor.label}}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
     <div fxFlex="{{timeValueFieldWidth}}" appDropdown>
       <mat-form-field *ngIf="queryParam.timeDimensions.length>0" class="chartoptions">
-        <mat-label>by</mat-label>
+        <mat-label>{{'REPORTING.LABELS.REPORT.BY' | translate}}</mat-label>
         <mat-select [(ngModel)]="timeFilterBy" (selectionChange)="getTimeFilterBy($event)">
-          <mat-option *ngFor="let filBy of timeFilterByList" [value]="filBy">
-            {{filBy}}
+          <mat-option *ngFor="let filBy of timeFilterByList" [value]="filBy.value">
+            {{filBy.label}}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -115,7 +116,7 @@
   <div fxLayout fxLayoutGap="20">
     <div fxFlex="{{criteriaFieldWidth}}" class="chartoptions" appDropdown>
       <mat-form-field>
-        <mat-label>Filters</mat-label>
+        <mat-label>{{'REPORTING.LABELS.REPORT.FILTERS' | translate}}</mat-label>
         <mat-select>
           <mat-option class="options" *ngFor="let fil of filters" (click)="selectFilter(fil)">
             {{fil.title}}
@@ -134,7 +135,7 @@
       </div>
       <div fxFlex="{{filterFieldWidth}}" class="chartoptions">
         <mat-form-field *ngIf="selectedFilter.type === 'number'">
-          <mat-label>Select Operator</mat-label>
+          <mat-label>{{'REPORTING.LABELS.REPORT.SELECT-OPERATOR' | translate}}</mat-label>
           <mat-select (selectionChange)="selectOperator(i,$event,selectedFilter.dimension)">
             <mat-option class="options" *ngFor="let fns of filtersNonStrings | keyvalue: asIsOrder" [value]="fns.key">
               {{fns.value}}
@@ -142,7 +143,7 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field *ngIf="selectedFilter.type !== 'number'">
-          <mat-label>Select Operator</mat-label>
+          <mat-label>{{'REPORTING.LABELS.REPORT.SELECT-OPERATOR' | translate}}</mat-label>
           <mat-select (selectionChange)="selectOperator(i,$event,selectedFilter.dimension)">
             <mat-option class="options" *ngFor="let fs of filtersStrings | keyvalue: asIsOrder" [value]="fs.key">
               {{fs.value}}</mat-option>
@@ -151,11 +152,12 @@
       </div>
       <div fxFlex="{{filterFieldWidth}}" class="chartoptions">
         <mat-form-field *ngIf="selectedFilter.type === 'number'">
-          <input type="text" (input)="addFilterItem(i,$event,'s')" matInput placeholder="Enter value">
+          <input type="text" (input)="addFilterItem(i,$event,'s')" matInput
+            placeholder="{{'REPORTING.LABELS.REPORT.ENTER-VALUE' | translate}}">
         </mat-form-field>
         <mat-form-field *ngIf="selectedFilter.type !== 'number'">
           <input type="text" matInput (input)="addFilterItem(i,$event,'s')" [value]="filItemVal"
-            placeholder="Enter value">
+            placeholder="{{'REPORTING.LABELS.REPORT.ENTER-VALUE' | translate}}">
         </mat-form-field>
       </div>
     </div>
@@ -180,56 +182,59 @@
       </button>
       <mat-menu #chartsize="matMenu">
         <button mat-menu-item (click)="showLineChart()">
-          <mat-icon>show_chart</mat-icon>Line
+          <mat-icon>show_chart</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.LINE' | translate}}
         </button>
         <button mat-menu-item (click)="showAreaChart()">
-          <mat-icon>multiline_chart</mat-icon>Area
+          <mat-icon>multiline_chart</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.AREA' | translate}}
         </button>
         <button mat-menu-item (click)="showBarChart()">
-          <mat-icon>bar_chart</mat-icon>Bar
+          <mat-icon>bar_chart</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.BAR' | translate}}
         </button>
         <button mat-menu-item (click)="showStackedBarChart()">
-          <mat-icon>insert_chart</mat-icon>Stacked Bar
+          <mat-icon>insert_chart</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.STACKED-BAR' | translate}}
         </button>
         <button mat-menu-item (click)="showPieChart()">
-          <mat-icon>pie_chart</mat-icon>Pie
+          <mat-icon>pie_chart</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.PIE' | translate}}
         </button>
         <button mat-menu-item (click)="showDoughnutChart()">
-          <mat-icon>donut_large</mat-icon>Doughnut
+          <mat-icon>donut_large</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.DONUT' | translate}}
         </button>
         <button mat-menu-item (click)="showPolarAreaChart()">
-          <mat-icon>support</mat-icon>Polar Area
+          <mat-icon>support</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.POLAR-AREA' | translate}}
         </button>
         <button mat-menu-item (click)="showTable()">
-          <mat-icon>table_chart</mat-icon>Table
+          <mat-icon>table_chart</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.TABLE' | translate}}
         </button>
         <button mat-menu-item (click)="showSingleValue()">
-          <mat-icon>format_list_numbered</mat-icon>Number
+          <mat-icon>format_list_numbered</mat-icon>{{'REPORTING.LABELS.REPORT.GRAPHS.NUMBER' | translate}}
         </button>
       </mat-menu>
     </div>
     <div class="chartoptions">
-      <button mat-stroked-button color="primary" (click)="showReport()">Report</button>
+      <button mat-stroked-button color="primary"
+        (click)="showReport()">{{'REPORTING.LABELS.REPORT.REPORT' | translate}}</button>
     </div>
     <div class="chartoptions" *ngIf="devEnvironment">
-      <button mat-stroked-button color="primary" (click)="showJsonQuery()">JSON Query</button>
+      <button mat-stroked-button color="primary"
+        (click)="showJsonQuery()">{{'REPORTING.LABELS.REPORT.JSON-QUERY' | translate}}</button>
     </div>
     <div class="chartoptions" *ngIf="devEnvironment">
-      <button mat-stroked-button color="primary" (click)="showSqlQuery()">SQL</button>
+      <button mat-stroked-button color="primary"
+        (click)="showSqlQuery()">{{'REPORTING.LABELS.REPORT.SQL-QUERY' | translate}}</button>
     </div>
     <div class="chartoptions">
-      <button mat-stroked-button color="primary" [disabled]="addToDashStatus" (click)="addReporttoDashboardDialog()">Add
-        to dashboard</button>
+      <button mat-stroked-button color="primary" [disabled]="addToDashStatus"
+        (click)="addReporttoDashboardDialog()">{{'REPORTING.LABELS.ADD-TO-DASHBOARD-TITLE' | translate}}</button>
     </div>
     <div class="chartoptions">
-      <button mat-stroked-button color="primary" [disabled]="addToDashStatus" (click)="saveReportDialog()">Save
-        Report</button>
+      <button mat-stroked-button color="primary" [disabled]="addToDashStatus"
+        (click)="saveReportDialog()">{{'REPORTING.LABELS.REPORT.SAVE' | translate}}</button>
     </div>
   </div>
   <app-chart [hidden]="selectedView != 'report'" [ctype]="ctype" [chartType]="chartType" [query]="query"
     [title]="title"></app-chart>
   <div [hidden]="selectedView != 'json'" *ngIf="jsonQuery!==''" class="m-10">
-    <h3 class="m-10">JSON Query</h3>
+    <h3 class="m-10">{{'REPORTING.LABELS.REPORT.JSON-QUERY' | translate}}</h3>
     <pre class="m-10">
       <code>
         {{jsonQuery}}
@@ -237,7 +242,7 @@
     </pre>
   </div>
   <div [hidden]="selectedView != 'sql'" class="m-10">
-    <h3 class="m-10">Sql Query</h3>
+    <h3 class="m-10">{{'REPORTING.LABELS.REPORT.SQL-QUERY' | translate}}</h3>
     <pre class="m-10">
       <code>
         {{sqlQuery}}
@@ -247,4 +252,4 @@
     </pre>
   </div>
 </mat-card>
-<h4 *ngIf="query==undefined" class="text-center my-30">Select measures to view chart!</h4>
+<h4 *ngIf="query==undefined" class="text-center my-30">{{'REPORTING.MESSAGES.SELECT-MEASURE-MESSAGE' | translate}}</h4>

@@ -16,36 +16,31 @@
         <mat-menu #menu="matMenu">
           <button mat-menu-item *ngIf="!report.sharedWithMe || report.editable" (click)="editReport(report.id)">
             <mat-icon class="menu-icon">edit</mat-icon>
-            Edit
+            {{'GENERAL.ACTIONS.EDIT' | translate}}
           </button>
           <button mat-menu-item *ngIf="report.sharedWithMe && !report.isResetted" (click)="resetReport(report.id)">
             <mat-icon class="menu-icon">refresh</mat-icon>
-            Reset
+            {{'REPORTING.LABELS.RESET' | translate}}
           </button>
           <button mat-menu-item *ngIf="!report.isRefreshed && report.sharedWithMe &&
           report.ownerSharingStatus && report.recipientSharingStatus" (click)="refreshReport(report.id)">
             <mat-icon class="menu-icon">sync</mat-icon>
-            Refresh
+            {{'REPORTING.LABELS.REFRESH' | translate}}
           </button>
           <button mat-menu-item *ngIf="!report.sharedWithMe && !report.isPublished"
             (click)="publishDashboard(report.id)">
             <mat-icon class="menu-icon">publish</mat-icon>
-            Publish
+            {{'REPORTING.LABELS.PUBLISH' | translate}}
           </button>
           <button mat-menu-item *ngIf="!report.sharedWithMe" (click)="share()">
             <mat-icon class="menu-icon">people</mat-icon>
-            Share
+            {{'REPORTING.LABELS.SHARE' | translate}}
           </button>
           <button mat-menu-item (click)="deleteReport(report)">
             <mat-icon class="menu-icon">delete</mat-icon>
-            delete
+            {{'GENERAL.ACTIONS.DELETE' | translate}}
           </button>
         </mat-menu>
-
-        <!-- <button color="primary" (click)="share()" mat-stroked-button>
-              <mat-icon>people</mat-icon>&nbsp;Share</button>
-            <button color="primary" [routerLink]="['/report/preview/',report.id]" class="mat-stroked-button mat-button-base mat-primary">Preview</button>
-            <button color="primary" (click)="updateDashboard()" class="mat-stroked-button mat-button-base mat-primary">Save</button> -->
       </div>
     </div>
     <div class="innerChartBlock">

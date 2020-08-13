@@ -12,7 +12,7 @@ export class UpdateDashboardComponent  {
   choosedashboard = 'new';
   dashboard = {
     title: '',
-    description: 'Reports'
+    description: ''
   }
   response = {}
   constructor(

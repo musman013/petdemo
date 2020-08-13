@@ -17,6 +17,7 @@ import * as CodeMirror from 'codemirror';
 import { WindowRef } from './WindowRef';
 import sqlFormatter from "sql-formatter";
 import { Globals } from 'projects/fast-code-core/src/public_api';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-reports',
@@ -38,7 +39,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   allDashboardsList = [];
   allDashboardsData: IDashboard[] = [];
 
-  title = 'Untitle chart';
+  title = this.translate.instant('REPORTING.LABELS.REPORT.UNTITLED');
   metadata: Array<MetaContent>;
   reOrderMeta = {};
   measures: Array<Measures> = [];
@@ -59,24 +60,145 @@ export class ReportsComponent implements OnInit, OnDestroy {
   timeFilterBy = '';
   filItemVal = '';
   selected = '';
-  selectedChart = 'Select chart';
+  selectedChart = this.translate.instant('REPORTING.LABELS.REPORT.SELECT-CHART');
   addToDashStatus = false;
   report_id = -1;
   report: IReport;
   jsonQuery = "";
   sql = "";
   devEnvironment = true;
-  aggregations = ['count','countDistinct','countDistinctApprox','sum','avg','min','max'];
-  timeFilterForList = ['All time', 'Today', 'Yesterday', 'This week', 'This month', 'This quarter', 'This year', 'Last 7 days',
-    'Last 30 days', 'Last week', 'Last month', 'Last quarter', 'Last year'];
-  timeFilterByList = ['w/o grouping', 'Hour', 'Day', 'Week', 'Month', 'Year'];
+
+  aggregations = [
+    {
+      value: 'count',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.COUNT')
+    },
+    {
+      value: 'countDistinct',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.COUNT-DISTINCT')
+    },
+    {
+      value: 'countDistinctApprox',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.COUNT-DISTINCT-APPROX')
+    },
+    {
+      value: 'min',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.MIN')
+    },
+    {
+      value: 'max',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.MAX')
+    },
+    {
+      value: 'sum',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.SUM')
+    },
+    {
+      value: 'avg',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.AGGREGATIONS-OPTIONS.AVG')
+    }
+  ];
+  generalAggregations = _.clone(this.aggregations);
+  timeAggregations = this.aggregations.slice(0, 5);
+  stringAggregations = this.aggregations.slice(0, 3);
+
+  timeFilterForList = [
+    {
+      value: 'All time',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.ALL-TIME')
+    },
+    {
+      value: 'Today',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.TODAY')
+    },
+    {
+      value: 'Yesterday',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.YESTERDAY')
+    },
+    {
+      value: 'This week',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.THIS-WEEK')
+    },
+    {
+      value: 'This month',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.THIS-MONTH')
+    },
+    {
+      value: 'This quarter',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.THIS-QUARTER')
+    },
+    {
+      value: 'This year',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.THIS-YEAR')
+    },
+    {
+      value: 'Last 7 days',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.LAST-7-DAYS')
+    },
+    {
+      value: 'Last 30 days',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.LAST-30-DAYS')
+    },
+    {
+      value: 'Last week',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.LAST-WEEK')
+    },
+    {
+      value: 'Last month',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.LAST-MONTH')
+    },
+    {
+      value: 'Last quarter',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.LAST-QUARTER')
+    },
+    {
+      value: 'Last year',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-FOR-LIST-OPTIONS.LAST-YEAR')
+    }
+  ];
+  timeFilterByList = [
+    {
+      value: 'w/o grouping',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-BY-LIST.W-O-GROUPING')
+    },
+    {
+      value: 'Hour',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-BY-LIST.HOUR')
+    },
+    {
+      value: 'Day',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-BY-LIST.DAY')
+    },
+    {
+      value: 'Week',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-BY-LIST.WEEK')
+    },
+    {
+      value: 'Month',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-BY-LIST.MONTH')
+    },
+    {
+      value: 'Year',
+      label: this.translate.instant('REPORTING.LABELS.REPORT.TIME-FILTER-BY-LIST.YEAR')
+    }
+  ];
+  generalFilters = {
+    equals: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-GENERAL.EQUALS'),
+    notEquals: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-GENERAL.NOT-EQUALS'),
+    set: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-GENERAL.SET'),
+    notSet: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-GENERAL.NOT-SET'),
+  }
   filtersNonStrings = {
-    equals: 'equals', notEquals: 'does not equal', set: 'is set',
-    notSet: 'is not set', gt: '>', gte: '>=', lt: '<', lte: '<='
+    ... this.generalFilters,
+    gt: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-NON-STRINGS.GT'),
+    gte: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-NON-STRINGS.GTE'),
+    lt: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-NON-STRINGS.LT'),
+    lte: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-NON-STRINGS.LTE'),
   };
   filtersStrings = {
-    contains: 'contains', notContains: 'does not contain', equals: 'equals',
-    notEquals: 'does not equal', set: 'is set', notSet: 'is not set'
+    ... this.generalFilters,
+    contains: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-STRINGS.CONTAINS'),
+    notContains: this.translate.instant('REPORTING.LABELS.REPORT.FILTERS-STRINGS.NOT-CONTAINS'),
   };
 
   queryParam = {
@@ -84,21 +206,18 @@ export class ReportsComponent implements OnInit, OnDestroy {
     dimensions: [],
     timeDimensions: [],
     filters: [],
-    order:{}
+    order: {}
   };
-  generalAggregations = ['count','countDistinct','countDistinctApprox','sum','avg','min','max'];
-  timeAggregations = ['count','countDistinct','countDistinctApprox','min','max'];
-  stringAggregations = ['count','countDistinct','countDistinctApprox'];
   sqlDoc;
   sqlViewer;
-  @ViewChild('sqlViewer', {static: false}) set content(content: ElementRef) {
-    if(content) { // initially setter gets called with undefined
-      if(!this.sqlViewer){
+  @ViewChild('sqlViewer', { static: false }) set content(content: ElementRef) {
+    if (content) { // initially setter gets called with undefined
+      if (!this.sqlViewer) {
         this.sqlViewer = content;
         this.setCodeMirror();
       }
     }
- };
+  };
   constructor(
     private service: MainService,
     private reportService: ReportService,
@@ -108,15 +227,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cubejs: CubejsClient,
     private winRef: WindowRef,
-    private global: Globals
-    ) { }
+    private global: Globals,
+    private translate: TranslateService,
+  ) { }
 
   ngOnInit() {
     this.manageScreenResizing();
     this.report_id = +this.route.snapshot.paramMap.get('id');
     this.route.params.subscribe(params => {
       this.report_id = params['id'];
-      console.log(`subscribed param : ${this.report_id}`);
     })
     this.getMetaData();
     this.dashboardService.getAll([], 0, 1000).subscribe(res => {
@@ -132,7 +251,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   filterRowWidth = 60;
   manageScreenResizing() {
     this.global.isSmallDevice$.subscribe(value => {
-      if(value){
+      if (value) {
         this.filterFieldWidth = 100;
         this.aggregationFieldWidth = 100;
         this.timeValueFieldWidth = 100;
@@ -142,7 +261,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       }
     });
     this.global.isMediumDevice$.subscribe(value => {
-      if(value){
+      if (value) {
         this.filterFieldWidth = 33;
         this.aggregationFieldWidth = 50;
         this.timeValueFieldWidth = 50;
@@ -152,7 +271,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       }
     });
     this.global.isLargeDevice$.subscribe(value => {
-      if(value){
+      if (value) {
         this.filterFieldWidth = 33;
         this.aggregationFieldWidth = 10;
         this.timeValueFieldWidth = 15;
@@ -163,7 +282,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getMetaData(){
+  getMetaData() {
     this.service.getMetaData().subscribe(
       (res) => {
         this.metadata = res.cubes;
@@ -179,14 +298,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
           //   this.segments.push(...JSON.parse(JSON.stringify(m.segments)));
           // }
         }
-        for(var d of this.dimensions){
-          this.tableColumns.push({name: d.title,type: d.type});
+        for (var d of this.dimensions) {
+          this.tableColumns.push({ name: d.title, type: d.type });
         }
-        console.log(this.dimensions);
-        console.log(this.measures);
-        console.log(this.tableColumns);
         this.dataTime = this.dimensions.filter(x => x.type === 'time');
-        console.log(this.dataTime)
         this.filters.push(...JSON.parse(JSON.stringify(this.measures)));
         this.filters.push(...JSON.parse(JSON.stringify(this.dimensions)));
         if (this.report_id >= 0) {
@@ -203,7 +318,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   getReport() {
-    console.log(this.report_id);
     this.reportService.getById(this.report_id).subscribe(report => {
       this.report = report;
       this.updateReportInfo();
@@ -223,31 +337,32 @@ export class ReportsComponent implements OnInit, OnDestroy {
     if (this.report.query.timeDimensions.length > 0) {
       this.timeFilter = this.report.query.timeDimensions[0].dimension;
       this.timeFilterFor = "All time";
-      this.timeFilterBy = this.timeFilterByList[this.timeFilterByList.findIndex(x => x.toLowerCase() == this.report.query.timeDimensions[0].granularity)];
+      // this.timeFilterBy = this.timeFilterByList[this.timeFilterByList.findIndex(x => x.toLowerCase() == this.report.query.timeDimensions[0].granularity)];
+      this.timeFilterBy = this.getTimeFilterByObj(this.report.query.timeDimensions[0].granularity);
     }
-    for(var i = 0; i < this.queryParam.measures.length; i++){
+    for (var i = 0; i < this.queryParam.measures.length; i++) {
       var meta = this.queryParam.measures[i].split(".")[0];
-      var aggregatedString = this.queryParam.measures[i].substr(this.queryParam.measures[i].indexOf(".")+1);
+      var aggregatedString = this.queryParam.measures[i].substr(this.queryParam.measures[i].indexOf(".") + 1);
       var aggregate = aggregatedString.split("_")[0];
-      var title = aggregatedString.substr(aggregatedString.indexOf("_")+1);
-      title = title.replace(/_/g," ");
-      title = title.toLowerCase().split(" ").map((s)=> s.charAt(0).toUpperCase()+s.substr(1)).join(" ");
-      console.log(title);
-      console.log(aggregate);
-      var dimension = this.tableColumns[this.tableColumns.findIndex(s=>s.name === (`${meta} ${title}`))];
-      console.log(dimension);
-      if(dimension.type == "string"){
+      var title = aggregatedString.substr(aggregatedString.indexOf("_") + 1);
+      title = title.replace(/_/g, " ");
+      title = title.toLowerCase().split(" ").map((s) => s.charAt(0).toUpperCase() + s.substr(1)).join(" ");
+      var dimension = this.tableColumns[this.tableColumns.findIndex(s => s.name === (`${meta} ${title}`))];
+      if (dimension.type == "string") {
         this.aggregations = this.stringAggregations
-      }else if(dimension.type == "time"){
+      } else if (dimension.type == "time") {
         this.aggregations = this.timeAggregations;
-      }else{
+      } else {
         this.aggregations = this.generalAggregations;
       }
-      var chipTitle = `${meta}.${title.replace(/ /g,"_")}`;
-      console.log(chipTitle,aggregate.charAt(0).toUpperCase() + aggregate.slice(1));
-      this.measuresChipArray.push({name:chipTitle,aggregation:this.aggregations,selectedAggregation:aggregate});
+      var chipTitle = `${meta}.${title.replace(/ /g, "_")}`;
+      this.measuresChipArray.push({ name: chipTitle, aggregation: this.aggregations, selectedAggregation: aggregate });
     }
-    console.log(this.measuresChipArray);
+  }
+
+  getTimeFilterByObj(value: string) {
+    let tfb = this.timeFilterByList.filter(x => x.value.toLowerCase() == value);
+    return tfb.length > 0 ? tfb[0].value : '';
   }
 
   initializeReport() {
@@ -266,33 +381,22 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.measuresChipArray = [];
     this.selectedTableColumn = undefined;
     this.query = undefined;
-    this.title = 'Untitle chart';
+    this.title = this.translate.instant('REPORTING.LABELS.REPORT.UNTITLED');;
     this.timeFilter = '';
     this.timeFilterFor = '';
     this.timeFilterBy = '';
-    this.selectedChart = 'Select chart';
+    this.selectedChart = this.translate.instant('REPORTING.LABELS.REPORT.SELECT-CHART');;
     this.queryParam = {
       measures: [],
       dimensions: [],
       timeDimensions: [],
       filters: [],
-      order:{}
+      order: {}
     };
   }
 
   ngOnDestroy() {
   }
-
-  // showChart(chartType) {
-  //   if(chartType === 'area'){
-  //     this.chartType = 'line';
-  //     this.ctype = chartType;
-  //   } else{
-  //     this.chartType = chartType;
-  //     this.ctype = chartType;
-  //   }
-  //   this.resetDimentions('Line');
-  // }
 
   showLineChart() {
     this.chartType = 'line';
@@ -351,37 +455,32 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.buildQuery();
   }
 
-  setMeasure(m){
+  setMeasure(m) {
     this.selectedTableColumn = m;
-    console.log(this.selectedTableColumn);
-    if(this.selectedTableColumn.type == 'string'){
+    if (this.selectedTableColumn.type == 'string') {
       this.aggregations = this.stringAggregations;
-    }else if(this.selectedTableColumn.type == 'time'){
+    } else if (this.selectedTableColumn.type == 'time') {
       this.aggregations = this.timeAggregations;
-    }else{
+    } else {
       this.aggregations = this.generalAggregations;
     }
     const metakey = this.selectedTableColumn.name.split(" ")[0];
-    var chipMeasure = `${metakey}.${this.selectedTableColumn.name.substr(this.selectedTableColumn.name.indexOf(" ")+1).replace(/ /g,"_")}`;
-    if(this.measuresChipArray.includes(chipMeasure) === false){
-      console.log(chipMeasure);
-      this.measuresChipArray.push({name:chipMeasure,aggregation:this.aggregations,selectedAggregation:''});
+    var chipMeasure = `${metakey}.${this.selectedTableColumn.name.substr(this.selectedTableColumn.name.indexOf(" ") + 1).replace(/ /g, "_")}`;
+    if (this.measuresChipArray.includes(chipMeasure) === false) {
+      this.measuresChipArray.push({ name: chipMeasure, aggregation: this.aggregations, selectedAggregation: 'count' });
+      this.getMeasure('count', this.measuresChipArray.length - 1);
     }
   }
 
-  getMeasure(m,index) {
-    console.log(m,index);
+  getMeasure(m, index) {
     var measure = ''
     var queryMeasure = '';
     const metakey = this.measuresChipArray[index].name.split(".")[0];
-    var column = this.measuresChipArray[index].name.substr(this.measuresChipArray[index].name.indexOf(".")+1).toLowerCase();
+    var column = this.measuresChipArray[index].name.substr(this.measuresChipArray[index].name.indexOf(".") + 1).toLowerCase();
     measure = `${m}_${column}`;
     queryMeasure = `${this.measuresChipArray[index].name.split(".")[0]}.${measure}`;
-    
-    console.log(measure);
-    console.log(queryMeasure);
-    console.log(metakey);
-    if(this.queryParam.measures[index]){
+
+    if (this.queryParam.measures[index]) {
       this.queryParam.measures[index] = queryMeasure;
       this.measuresChipArray[index].selectedAggregation = m
     }
@@ -400,22 +499,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
       } else {
         this.showSingleValue();
       }
-      this.queryParam.order = {
-        
-      }
+      this.queryParam.order = {}
     }
-    
+
     this.buildQuery();
-    console.log(this.measuresChipArray);
-    console.log(this.queryParam);
   }
 
   removeMeasure(i) {
-    console.log(i);
-    this.measuresChipArray.splice(i,1);
-    console.log(this.queryParam.measures);
+    this.measuresChipArray.splice(i, 1);
     this.queryParam.measures.splice(i, 1);
-    console.log(this.queryParam.measures);
     if (this.queryParam.measures.length > 0) {
       this.buildQuery();
     } else {
@@ -432,6 +524,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.buildQuery();
     }
   }
+
   removeDimension(i) {
     this.queryParam.dimensions.splice(i, 1);
     this.buildQuery();
@@ -478,20 +571,20 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   selectFilter(f) {
-    console.log(f);
     this.selectedFilters.push({
       dimension: f.name,
       type: f.type
     });
     this.queryParam.filters.push({});
   }
+
   selectOperator(i, e, dim) {
     this.queryParam.filters[i].dimension = dim;
     this.queryParam.filters[i].operator = e.source.value;
     this.queryParam.filters[i].values = [];
-    console.log(this.queryParam);
     // this.buildQuery();
   }
+
   removeFilter(i) {
     this.selectedFilters.splice(i, 1);
     this.queryParam.filters.splice(i, 1);
@@ -499,14 +592,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   addFilterItem(i, v, type) {
-    console.log(v.target.value);
     if (type === 'm') {
       this.queryParam.filters[i].values.push(v.target.value);
       this.filItemVal = null;
     } else {
       this.queryParam.filters[i].values = [v.target.value];
     }
-    console.log(this.queryParam);
     this.buildQuery();
   }
 
@@ -517,13 +608,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   buildQuery() {
     this.query = _.clone(this.queryParam);
-    console.log(this.query);
   }
 
   selectedView: string = 'report';
   sqlQuery: string;
 
-  showReport(){
+  showReport() {
     this.selectedView = 'report';
   }
 
@@ -542,7 +632,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     });
   }
 
-  setCodeMirror(){
+  setCodeMirror() {
     const mime = 'text/x-mariadb';
     const currentWindow = this.winRef.nativeWindow;
     // get mime type
@@ -566,17 +656,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return 1;
   }
 
-  // addToDashBoard() {
-  //   const graphInfo = {
-  //     chartType: this.chartType,
-  //     ctype: this.ctype,
-  //     query: this.query,
-  //     chartWidth: 'smallchart'
-  //   };
-  //   this.service.saveToDashboard(graphInfo);
-  // }
-
-  refreshChart(){
+  refreshChart() {
     this.buildQuery();
   }
 
@@ -611,13 +691,13 @@ export class ReportsComponent implements OnInit, OnDestroy {
           this.reportService.update(this.report, this.report_id).subscribe(res => {
             this.report = res;
             this.updateReportInfo();
-            this.showMessage(`Report updated as ${res.title}`);
+            this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.UPDATED'));
           });
         }
         else {
           this.reportService.create(this.report).subscribe(res => {
-            if(res){
-              this.showMessage('Report saved as ' + res.title);
+            if (res) {
+              this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.CREATED'));
               this.report = res;
               this.updateReportInfo();
             }
@@ -635,7 +715,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
       };
     });
     if (this.report_id > 0) {
-      console.log('report function edit', this.report_id);
       const dialogRef = this.dialog.open(AddExReportsToDashboardComponent, {
         panelClass: "fc-modal-dialog",
         data: this.allDashboardsList
@@ -658,7 +737,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             this.dashboardService
               .addExistingReportToNewDashboard(dashboardDetails)
               .subscribe(res => {
-                this.showMessage("Added report to " + res.title);
+                this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.ADDED-TO')} ${res.title}`);
               });
           } else {
             const dashboardDetails = {
@@ -674,13 +753,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
             this.dashboardService
               .addExistingReportToExistingDashboard(dashboardDetails)
               .subscribe(res => {
-                this.showMessage("Added report to " + res.title);
+                this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.ADDED-TO')} ${res.title}`);
               });
           }
         }
       });
     } else {
-      console.log('report function add', this.report_id);
       const dialogRef = this.dialog.open(AddReportsToDashboardComponent, {
         panelClass: "fc-modal-dialog",
         data: this.allDashboardsList
@@ -704,7 +782,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
             };
             this.dashboardService.addNewReporttoNewDashboard(this.dashboard).subscribe(res => {
               this.allDashboardsData.push(res);
-              this.showMessage('Added report to ' + res.title);
+              this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.ADDED-TO')} ${res.title}`);
             });
           } else {
             const chartDetails: Dashboard = {
@@ -719,58 +797,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
               }]
             }
             this.dashboardService.addNewReporttoExistingDashboard(chartDetails).subscribe(res => {
-              this.showMessage('Added report to ' + res.title);
+              this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.ADDED-TO')} ${res.title}`);
             });
           }
         }
       });
     }
-    // const dialogRef = this.dialog.open(AddReportsToDashboardComponent, {
-    //   panelClass: "fc-modal-dialog",
-    //   data: this.allDashboardsList
-    // });
-
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     if (result.type === 'new') {
-    //       this.dashboard = {
-    //         userId: 1,
-    //         title: result.title,
-    //         description: result.description,
-    //         reportDetails: [{
-    //           userId: 1,
-    //           title: result.chartTitle,
-    //           description: result.reportdescription,
-    //           reportType: this.chartType,
-    //           ctype: this.ctype,
-    //           query: this.query,
-    //           reportWidth: result.chartSize
-    //         }]
-    //       };
-    //       this.dashboardService.addNewReporttoNewDashboard(this.dashboard).subscribe(res => {
-    //         this.allDashboardsData.push(res);
-    //         this.showMessage('Added report to ' + res.title);
-    //       });
-    //     } else {
-    //       const chartDetails: Dashboard = {
-    //         id: result.title,
-    //         userId: 1,
-    //         reportDetails: [{
-    //           userId: 1,
-    //           title: result.chartTitle,
-    //           description: result.reportdescription,
-    //           reportType: this.chartType,
-    //           ctype: this.ctype,
-    //           query: this.query,
-    //           reportWidth: result.chartSize
-    //         }]
-    //       }
-    //       this.dashboardService.addNewReporttoExistingDashboard(chartDetails).subscribe(res => {
-    //         this.showMessage('Added report to ' + res.title);
-    //       });
-    //     }
-    //   }
-    // });
   }
 
   showMessage(msg): void {

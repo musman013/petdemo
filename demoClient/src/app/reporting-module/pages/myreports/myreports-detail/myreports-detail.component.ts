@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
-import { Report } from "../../../models/dashboard.model";
-import { MainService } from "../../../services/main.service";
 import { MatSnackBar, MatDialog, MatDialogRef } from "@angular/material";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IReport } from '../../reports/Ireport';
 import { ReportService } from '../../reports/report.service';
 import { ConfirmDialogComponent } from 'projects/fast-code-core/src/public_api';
+import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: "app-myreports-detail",
   templateUrl: "./myreports-detail.component.html",
@@ -33,13 +33,13 @@ export class MyreportsDetailComponent implements OnInit {
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private translate: TranslateService,
+  ) { }
 
   ngOnInit() {
     this.report_id = +this.route.snapshot.paramMap.get("id");
     if (this.report_id >= 0) {
-      console.log(this.report_id);
       this.reportService.getById(this.report_id).subscribe(report => {
         this.report = report;
       });
@@ -47,7 +47,6 @@ export class MyreportsDetailComponent implements OnInit {
   }
 
   editReport(id) {
-    console.log(id);
     this.router.navigate([`reporting/reports/${id}`]);
   }
 
@@ -77,7 +76,7 @@ export class MyreportsDetailComponent implements OnInit {
     this.confirmDialogRef.afterClosed().subscribe(action => {
       if (action) {
         this.reportService.refresh(id).subscribe(res => {
-          this.showMessage("Report refreshed");
+          this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.REFRESHED'));
         });
       }
     });
@@ -94,7 +93,7 @@ export class MyreportsDetailComponent implements OnInit {
       if (action) {
         this.reportService.delete(report.id).subscribe(res => {
           this.items = this.items.filter(v => v.id !== report.id);
-          this.showMessage("Deleted report!");
+          this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.DELETED'));
           this.router.navigate(['reporting/myreports'])
         });
       }

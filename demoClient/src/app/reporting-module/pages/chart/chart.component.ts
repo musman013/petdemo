@@ -1,8 +1,9 @@
-import {Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { CubejsClient } from '@cubejs-client/ngx';
 import moment from 'moment';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-chart',
@@ -16,9 +17,9 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input() query;
   @Input() title;
 
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
-  constructor(private cubejs: CubejsClient) {}
+  constructor(private cubejs: CubejsClient, private translate: TranslateService) { }
 
   error = '';
   private ready = false;
@@ -93,7 +94,7 @@ export class ChartComponent implements OnInit, OnChanges {
   private capitalize = ([first, ...rest]) =>
     first.toUpperCase() + rest.join('').toLowerCase()
 
-  
+
   setLineChartData() {
     this.chartOptions = {
       ...this.chartOptions,
@@ -166,42 +167,18 @@ export class ChartComponent implements OnInit, OnChanges {
   }
 
   commonSetup(resultSet) {
-    // console.log(resultSet);
-    // console.log(resultSet.chartPivot().map(this.dateFormatter));
-    // console.log(resultSet.seriesNames());
-    // console.log(resultSet.tablePivot());
-    // console.log(resultSet.tableColumns());
-    // console.log(resultSet.totalRow());
-    // console.log(resultSet.categories());
-    // console.log(resultSet.series());
-    // this.chartLabels = resultSet.chartPivot().map(this.dateFormatter);
-    // this.chartData = resultSet.seriesNames().map(({ key, title }) => ({
-    //   data: resultSet.chartPivot().map(element => element[key]),
-    //   label: this.capitalize(title.split(',')[0])
-    // }));
-
-
-
-    // let series = resultSet.series();
-    // series[0].series = series[0].series.sort(function(a, b){return a.value - b.value});
-    // this.chartLabels = series[0].series.map(c => c.category);
-    // this.chartData = series.map((s, index) => ({
-    //     label: s.title,
-    //     data: s.series.map(r => r.value)
-    //   }));
-
     this.chartLabels = resultSet.categories().map(c => c.category);
     this.chartData = resultSet.series().map((s, index) => ({
-        label: s.title,
-        data: s.series.map(r => r.value)
-      }));
+      label: s.title,
+      data: s.series.map(r => r.value)
+    }));
   }
 
-  convertCols(r){
+  convertCols(r) {
     return r.map(v => v.key);
   }
 
-  tableSetup(resultSet){
+  tableSetup(resultSet) {
     this.chartLabels = resultSet.tableColumns();
     this.chartData = resultSet.tablePivot();
     this.displayedColumns = this.chartLabels;
@@ -211,7 +188,7 @@ export class ChartComponent implements OnInit, OnChanges {
   }
 
   resultChanged(resultSet) {
-    if(this.chartType === 'table'){
+    if (this.chartType === 'table') {
       this.tableSetup(resultSet);
       this.table = true;
       this.ready = true;
@@ -223,7 +200,7 @@ export class ChartComponent implements OnInit, OnChanges {
         this.setPieChartData();
       } else if (this.chartType === 'stackedBar' || this.chartType === 'bar') {
         let stacked = true;
-        if(this.chartType === 'bar'){
+        if (this.chartType === 'bar') {
           stacked = false;
         }
         this.setStackedBarChartData(stacked);
@@ -237,19 +214,19 @@ export class ChartComponent implements OnInit, OnChanges {
     }
   }
 
-  loadChart(){
+  loadChart() {
     this.error = '';
-    this.cubejs.load(this.query).subscribe(this.resultChanged,this.errorHandler);
-  } 
+    this.cubejs.load(this.query).subscribe(this.resultChanged, this.errorHandler);
+  }
 
-  decideChart(result){
+  decideChart(result) {
     this.resultChanged(result);
   }
 
-  errorHandler(error){
+  errorHandler(error) {
     this.error = error.toString();
   }
-  
+
   ngOnInit() {
     this.decideChart = this.decideChart.bind(this);
     this.errorHandler = this.errorHandler.bind(this);
@@ -259,19 +236,17 @@ export class ChartComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.showChart = this.chartType !== 'singleValue' && this.chartType !== 'table';
-    // console.log(this.showChart);
     if (changes.hasOwnProperty('query')) {
-      if(Object.keys(changes.query.currentValue).length > 0){
+      if (Object.keys(changes.query.currentValue).length > 0) {
         this.query = changes.query.currentValue;
         if (changes.query.previousValue !== undefined) {
-          this.chartData = [{data: []}];
-          // console.log('working');
+          this.chartData = [{ data: [] }];
           this.loadChart();
         }
-      } else{
+      } else {
         this.title = '';
         this.showChart = false;
-        this.chartData = 'Select measures to view chart!';
+        this.chartData = this.translate.instant('REPORTING.MESSAGES.SELECT-MEASURE-MESSAGE');
       }
     }
   }

@@ -5,6 +5,7 @@ import { IReport } from '../../reports/ireport';
 import { ErrorService, listProcessingType } from 'projects/fast-code-core/src/public_api';
 import { take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface PeriodicElement {
   Title: string;
@@ -13,85 +14,13 @@ export interface PeriodicElement {
   Owner: string;
   SharingStatus: boolean;
 }
-const ELEMENT_DATA: PeriodicElement[] = [
-  {
-    position: 1,
-    Title: "Hydrogen",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 2,
-    Title: "Helium",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 3,
-    Title: "Lithium",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 4,
-    Title: "Beryllium",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 5,
-    Title: "Boron",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 6,
-    Title: "Carbon",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 7,
-    Title: "Nitrogen",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: false
-  },
-  {
-    position: 8,
-    Title: "Oxygen",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: false
-  },
-  {
-    position: 9,
-    Title: "Fluorine",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  },
-  {
-    position: 10,
-    Title: "Neon",
-    Description: "This is description",
-    Owner: "Usman",
-    SharingStatus: true
-  }
-];
 
 @Component({
-  selector: 'app-myreports-list',
-  templateUrl: './myreports-list.component.html',
-  styleUrls: ['./myreports-list.component.scss']
+  selector: 'app-shared-reports',
+  templateUrl: './shared-reports.component.html',
+  styleUrls: ['./shared-reports.component.scss']
 })
-export class MyreportsListComponent implements OnInit {
+export class SharedReportsComponent implements OnInit {
   displayedColumns: string[] = [
     "Title",
     "Description",
@@ -107,7 +36,8 @@ export class MyreportsListComponent implements OnInit {
   constructor(
     private router: Router,
     private reportService: ReportService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -122,8 +52,8 @@ export class MyreportsListComponent implements OnInit {
   reportDetails(report: IReport) {
     this.router.navigate([`reporting/myreports/edit/${report.id}`]);
   }
-  deleteReport(report: IReport) {
 
+  deleteReport(report: IReport) {
   }
 
   changeRecipientSharingStatus(report: IReport) {
@@ -131,9 +61,9 @@ export class MyreportsListComponent implements OnInit {
       .pipe(take(1))
       .subscribe(res => {
         if (res) {
-          this.errorService.showError("Status changed");
+          this.errorService.showError(this.translate.instant('REPORTING.MESSAGES.STATUS-CHANGED'));
         } else {
-          this.errorService.showError("An error occurred");
+          this.errorService.showError(this.translate.instant('REPORTING.MESSAGES.ERROR-OCCURRED'));
         }
       })
   }
@@ -233,7 +163,7 @@ export class MyreportsListComponent implements OnInit {
       },
       error => {
         this.isLoadingResults = false;
-        this.errorService.showError("An error occured while fetching results");
+        this.errorService.showError(this.translate.instant('REPORTING.MESSAGES.ERROR-FETCHING-RESULT'));
       }
     )
   }

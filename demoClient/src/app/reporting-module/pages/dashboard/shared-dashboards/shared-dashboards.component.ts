@@ -2,23 +2,22 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef} from '@angular/material';
 import { MainService } from '../../../services/main.service';
-import { ConfirmDialogComponent } from '../../../../../../projects/fast-code-core/src/lib/common/components/confirm-dialog/confirm-dialog.component';
 import { DashboardService } from '../dashboard.service';
 import { IDashboard } from '../Idashboard';
 import { take } from 'rxjs/operators';
-import { ErrorService } from 'projects/fast-code-core/src/public_api';
+import { ErrorService, ConfirmDialogComponent } from 'projects/fast-code-core/src/public_api';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: "app-dashboard-list",
-  templateUrl: "./dashboard-list.component.html",
-  styleUrls: ["./dashboard-list.component.scss"]
+  selector: "app-shared-dashboards",
+  templateUrl: "./shared-dashboards.component.html",
+  styleUrls: ["./shared-dashboards.component.scss"]
 })
-export class DashboardListComponent implements OnInit {
+export class SharedDashboardsComponent implements OnInit {
   deleteDialogRef: MatDialogRef<ConfirmDialogComponent>;
   dashboards: IDashboard[];
   isLoading: boolean = true;
   displayedColumns: string[] = [
-    "Id",
     "Title",
     "Description",
     "Owner",
@@ -31,7 +30,8 @@ export class DashboardListComponent implements OnInit {
     public dialog: MatDialog,
     public service: MainService,
     public dashboardService: DashboardService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private translate: TranslateService,
     ) {
 
   }
@@ -57,7 +57,7 @@ export class DashboardListComponent implements OnInit {
 
     this.deleteDialogRef.afterClosed().pipe(take(1)).subscribe(action => {
       if (action) {
-        this.service.deleteDashboard(dashboard.id);
+        this.dashboardService.delete(dashboard.id);
       }
     });
   }
@@ -67,9 +67,9 @@ export class DashboardListComponent implements OnInit {
       .pipe(take(1))
       .subscribe(res => {
         if (res) {
-          this.errorService.showError("Status changed");
+          this.errorService.showError(this.translate.instant('REPORTING.MESSAGES.STATUS-CHANGED'));
         } else {
-          this.errorService.showError("An error occurred");
+          this.errorService.showError(this.translate.instant('REPORTING.MESSAGES.ERROR-OCCURRED'));
         }
       })
   }

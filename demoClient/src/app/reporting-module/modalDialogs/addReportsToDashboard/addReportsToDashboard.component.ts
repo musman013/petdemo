@@ -12,12 +12,12 @@ export class AddReportsToDashboardComponent  {
   choosedashboard = 'new';
   dashboard = {
     title: '',
-    description: 'Dashboard'
+    description: ''
   }
   report = {
     title: '',
     width: 'mediumchart',
-    description: 'Reports'
+    description: ''
   }
   response = {}
   constructor(

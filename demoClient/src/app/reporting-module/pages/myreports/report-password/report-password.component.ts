@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-report-password',
@@ -19,12 +19,12 @@ export class ReportPasswordComponent {
   constructor(
     public dialogRef: MatDialogRef<ReportPasswordComponent>,
     public snackBar: MatSnackBar,
-    private router: Router,
+    public translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
     if (this.data.type == 'Password') {
-      this.title = "Password";
+      this.title = this.translate.instant('REPORTING.LABELS.PASSWORD');
     } else {
-      this.title = "Set Password";
+      this.title = this.translate.instant('REPORTING.LABELS.SET-PASSWORD');
     }
   }
 
@@ -38,7 +38,6 @@ export class ReportPasswordComponent {
 
   confirmPassword(value: string): void {
     if (this.data.type == 'setPassword') {
-      console.log(value);
       if (value == this.reportpassword) {
         this.confirmation = true;
         this.disableOk = false;

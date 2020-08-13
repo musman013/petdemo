@@ -2,12 +2,12 @@
   <div class="schema-left-panel" fxFlex.gt-xs="35" fxFlex.gt-sm="25" fxFlex.gt-md="25" fxLayout="column">
     <button mat-raised-button color="primary" fxFlexAlign="center" fxFlexOffset="20px" (click)="onClickGenerateSchema()"
       [disabled]="selectedSchemas.length<1">
-      <mat-icon>settings</mat-icon> Generate Schema
+      <mat-icon>settings</mat-icon> {{'REPORTING.LABELS.REPORT.GENERATE-SCHEMA' | translate}}
     </button>
     <mat-tab-group fxFlexOffset="20px" style="height: calc(100% - 76px);">
       <mat-tab class="schema-tabs">
         <ng-template mat-tab-label>
-          Tables List
+          {{'REPORTING.LABELS.REPORT.TABLES-LIST' | translate}}
         </ng-template>
         <form [formGroup]="schemaFormGroup">
 
@@ -27,34 +27,15 @@
                   </mat-list-item>
                 </mat-list>
 
-
               </mat-expansion-panel>
             </ng-container>
           </mat-accordion>
-
-          <!-- <mat-list>
-            <ng-container *ngFor="let s of allSchemas">
-              <mat-list-item class="dbname" appSchemadropdown>{{s}}</mat-list-item>
-              <mat-list style="margin-left:15px;" formArrayName="schemaList">
-                <mat-list-item *ngFor="let table of allData[s]; let i = index;">
-                  <mat-checkbox (change)="checkSelectedList(i, s, table, $event)" class="example-margin" value="table"
-                    [formControlName]="i">{{table}}</mat-checkbox>
-                </mat-list-item>
-              </mat-list>
-            </ng-container>
-          </mat-list> -->
         </form>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>
-          Files
+          {{'REPORTING.LABELS.REPORT.FILES' | translate}}
         </ng-template>
-        <!-- <mat-list>
-          <mat-list-item class="schema-file-list-item" *ngFor="let file of allFiles | keyvalue"
-            (click)="showFile(file.value)">
-            {{file.value.fileName}}
-          </mat-list-item>
-        </mat-list> -->
         <div fxLayout fxLayoutGap="20" class="list-container">
           <div fxLayout="column" class="report-list">
             <div class="list">
@@ -79,12 +60,11 @@
     </mat-tab-group>
   </div>
 
-
   <div class="schema-right-panel" fxFlex.gt-xs="65" fxFlex.gt-sm="75" fxFlex.gt-md="75" fxLayout="column"
     fxLayoutAlign="start">
     <button mat-raised-button color="primary" fxFlexAlign="end" fxFlexOffset="0px" (click)="onClickUpdateSchema()"
       [disabled]="!fileContent.fileName">
-      <mat-icon>settings</mat-icon> Update
+      <mat-icon>settings</mat-icon> {{'GENERAL.ACTIONS.UPDATE' | translate}}
     </button>
     <div class="schema-file" fxFlexOffset="20px" contenteditable="true" (input)="postContent = $event.target.innerText">
       {{fileContent.content}}

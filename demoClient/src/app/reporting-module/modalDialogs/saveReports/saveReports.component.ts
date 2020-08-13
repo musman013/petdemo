@@ -12,7 +12,7 @@ export class SaveReportsComponent  {
   choosedashboard = 'new';
   report = {
     title: '',
-    description: 'Reports'
+    description: ''
   }
   response = {}
   constructor(

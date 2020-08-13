@@ -18,9 +18,8 @@ export class ShareComponent implements OnInit {
     public userService: UserService,
     public roleService: RoleService
   ) {
-    console.log(this.data)
-   }
-    
+  }
+
   shareData = {
     users: [],
     roles: []
@@ -32,34 +31,32 @@ export class ShareComponent implements OnInit {
   ngOnInit() {
   }
 
-  cancel(){
+  cancel() {
     this.dialogRef.close(null);
   }
 
-  select(){
+  select() {
     this.dialogRef.close(this.shareData);
   }
 
-  userServiceMethod = (parentId: any, searchText, offset: number, limit: number)=>{
-    if(this.data.type == sharingType.Share)
+  userServiceMethod = (parentId: any, searchText, offset: number, limit: number) => {
+    if (this.data.type == sharingType.Share)
       return this.userService.getAvailableAssociations(this.data.resource, this.data.id, searchText, offset, limit)
     return this.userService.getAssociations(this.data.resource, this.data.id, searchText, offset, limit)
   }
 
-  roleServiceMethod = (parentId: any, searchText, offset: number, limit: number)=>{
-    if(this.data.type == sharingType.Share)
+  roleServiceMethod = (parentId: any, searchText, offset: number, limit: number) => {
+    if (this.data.type == sharingType.Share)
       return this.roleService.getAvailableAssociations(this.data.resource, parentId, searchText, offset, limit)
     return this.roleService.getAssociations(this.data.resource, parentId, searchText, offset, limit)
   }
 
-  userSelectionUpdated(data){
+  userSelectionUpdated(data) {
     this.shareData['users'] = data;
-    console.log(this.shareData);
   }
 
-  selectionUpdated(data, key){
+  selectionUpdated(data, key) {
     this.shareData[key] = data;
-    console.log(this.shareData);
   }
-  
+
 }

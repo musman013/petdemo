@@ -17,7 +17,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
       const id = params.get("id");
       this.dashboardService.getById(id).subscribe(res => {
         this.dashboard = res;
-        console.log(this.dashboard);
       });
     });
   }
@@ -26,7 +25,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.router.navigate([`reporting/dashboard/edit/${id}`]);
   }
   ngOnDestroy(){
-
   }
 
 }

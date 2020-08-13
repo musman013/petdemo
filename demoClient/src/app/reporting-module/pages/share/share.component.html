@@ -2,7 +2,7 @@
 	<a name="cancel" href="javascript:void(0)" (click)="cancel()" class="share-cancel-btn"><i
 			class="material-icons">cancel</i></a>
 	<mat-tab-group class="share-tab-group">
-		<mat-tab label="Users">
+		<mat-tab label="{{'REPORTING.LABELS.USERS' | translate}}">
 			<app-share-picker 
 				[displayField]="userDescriptiveField"
 				[resourceObjectId]="data.id"
@@ -11,7 +11,7 @@
 				(selectionUpdated)="selectionUpdated($event, 'users')">
 			</app-share-picker>
 		</mat-tab>
-		<mat-tab label="Roles">
+		<mat-tab label="{{'REPORTING.LABELS.ROLES' | translate}}">
 			<app-share-picker
 				[displayField]="roleDescriptiveField"
 				[resourceObjectId]="data.id"
@@ -22,5 +22,5 @@
 		</mat-tab>
 	</mat-tab-group>
 
-	<button name="save" mat-raised-button color="primary" class="select-btn" (click)="select()">Select</button>
+	<button name="save" mat-raised-button color="primary" class="select-btn" (click)="select()">{{'GENERAL.ACTIONS.SELECT' | translate}}</button>
 </div>

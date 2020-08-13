@@ -1,9 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
-import { MainService } from "../../services/main.service";
-import { MatInputModule, MatSnackBar, MatDialog, MatDialogRef, getMatAutocompleteMissingPanelError } from "@angular/material";
+import { MatSnackBar, MatDialog, MatDialogRef } from "@angular/material";
 import { ActivatedRoute, Router } from "@angular/router";
 import * as _ from 'lodash';
-import { Report, Dashboard } from "../../models/dashboard.model";
 import { AddExReportsToDashboardComponent } from "../../modalDialogs/addExReportsToDashboard/addExReportsToDashboard.component";
 import { Globals, BaseListComponent, PickerDialogService, ErrorService, ISearchField, operatorType, PickerComponent, listProcessingType } from 'projects/fast-code-core/src/public_api';
 import { ShareComponent } from '../share/share.component';
@@ -18,10 +16,10 @@ import { ConfirmDialogComponent } from "projects/fast-code-core/src/lib/common/c
 import { Observable, ReplaySubject } from 'rxjs';
 import { UserService } from 'src/app/admin/user-management/user/index';
 import { takeUntil } from 'rxjs/operators';
-import { ChartComponent } from '../../pages/chart/chart.component';
+import { TranslateService } from '@ngx-translate/core';
 
 export enum AccessOptions {
-  Login  = 'Login',
+  Login = 'Login',
   noLogin = 'noLogin',
   Password = 'Password'
 }
@@ -65,8 +63,6 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-
-
   manageScreenResizing() {
     this.global.isMediumDeviceOrLess$.subscribe(value => {
       this.isMediumDeviceOrLess = value;
@@ -90,7 +86,6 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
   searchText: string = "";
 
   constructor(
-    public service: MainService,
     public _snackBar: MatSnackBar,
     public dialog: MatDialog,
     public router: Router,
@@ -102,6 +97,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
     public pickerDialogService: PickerDialogService,
     public errorService: ErrorService,
     public userService: UserService,
+    public translate: TranslateService,
 
   ) {
     super(router, route, dialog, global, changeDetectorRefs, pickerDialogService, reportService, errorService)
@@ -135,18 +131,10 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
    */
   getSortValue(): string {
     let sortVal = '';
-    // if (this.sort.active && this.sort.direction) {
-    //   sortVal = this.sort.active + "," + this.sort.direction;
-    // }
     return sortVal;
   }
 
   applyFilters() {
-    // let searchField: ISearchField = {
-    //   fieldName: "title",
-    //   operator: operatorType.Contains,
-    //   searchValue: searchValue ? searchValue : ""
-    // }
     this.isLoadingResults = true;
     this.initializePageInfo();
     let sortVal = this.getSortValue();
@@ -160,9 +148,9 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
   }
 
   /**
- * Loads more item data when list is
- * scrolled to the bottom (virtual scrolling).
- */
+   * Loads more item data when list is
+   * scrolled to the bottom (virtual scrolling).
+   */
   onTableScroll() {
     if (!this.isLoadingResults && this.hasMoreRecords && this.lastProcessedOffset < this.items.length) {
       this.isLoadingResults = true;
@@ -173,13 +161,11 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
   }
 
   viewReport(report: IReport) {
-    console.log(report);
     this.selectedReport = report;
     this.showList = false;
   }
 
   editReport(id) {
-    console.log(id);
     this.router.navigate([`reporting/reports/${id}`]);
   }
 
@@ -209,7 +195,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
     this.confirmDialogRef.afterClosed().subscribe(action => {
       if (action) {
         this.reportService.refresh(id).subscribe(res => {
-          this.showMessage("Report refreshed");
+          this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.REFRESHED'));
         });
       }
     });
@@ -242,7 +228,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
       if (action) {
         this.reportService.delete(report.id).subscribe(res => {
           this.items = this.items.filter(v => v.id !== report.id);
-          this.showMessage("Deleted report!");
+          this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.DELETED'));
         });
       }
     });
@@ -254,7 +240,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
     });
   }
 
-  refreshChart(){
+  refreshChart() {
     this.selectedReport.query = _.clone(this.selectedReport.query);
   }
 
@@ -278,10 +264,10 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
               }
             ]
           };
-          this.service
+          this.dashboardService
             .addExistingReportToNewDashboard(dashboardDetails)
             .subscribe(res => {
-              this.showMessage("Added report to " + res.title);
+              this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.ADDED-TO')} ${res.title}`);
             });
         } else {
           const dashboardDetails = {
@@ -294,10 +280,10 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
               }
             ]
           };
-          this.service
+          this.dashboardService
             .addExistingReportToExistingDashboard(dashboardDetails)
             .subscribe(res => {
-              this.showMessage("Added report to " + res.title);
+              this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.ADDED-TO')} ${res.title}`);
             });
         }
       }
@@ -318,60 +304,32 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
     });
     this.dialogRef.afterClosed().subscribe(data => {
       if (data) {
-        console.log(data);
         this.reportService.share(report.id, data).subscribe((data) => {
-          console.log(data);
+          this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.SHARED'));
         })
       }
     });
   }
 
   shareExternally(report: IReport) {
-    // this.externalShareView = true;
-
     this.permalinkDialogRef = this.dialog.open(PermalinkComponent, {
-            // disableClose: true,
-            width: '50%',
-            height: '80%',
-            data: {
-              resource: 'report',
-              resourceId: report.id
-            }
-          });
+      disableClose: true,
+      width: '50%',
+      height: '80%',
+      data: {
+        resource: 'report',
+        resourceId: report.id
+      },
+      panelClass: "fc-modal-dialog",
+    });
     this.permalinkDialogRef.afterClosed().subscribe(action => {
       if (action.confirm) {
-        // this.accessPassword = action.password;
-        console.log('options set');
+        // option set;
       } else {
-        console.log('no option set');
+        // option not set
       }
     });
   }
-
-
-  // closeExternalShare(value) {
-  //   this.externalShareView = value;
-  // }
-
-  // selectAccessOption(opt) {
-  //     this.passwordDialogRef = this.dialog.open(ReportPasswordComponent, {
-  //       disableClose: true,
-  //       data: {
-  //         type: 'setPassword'
-  //       }
-  //     });
-  //     this.passwordDialogRef.afterClosed().subscribe(action => {
-  //       if (action.confirm) {
-  //         this.accessPassword = action.password;
-  //         console.log('password set', this.accessPassword  );
-  //       } else {
-  //         this.accessPassword = '';
-  //         console.log('no password set');
-  //       }
-  //     });
-  //   }
-  // }
-
 
   manageSharing(report: IReport) {
     this.dialogRef = this.dialog.open(ShareComponent, {
@@ -387,9 +345,8 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
     });
     this.dialogRef.afterClosed().subscribe(data => {
       if (data) {
-        console.log(data);
         this.reportService.unshare(report.id, data).subscribe((data) => {
-          console.log(data);
+          this.showMessage(this.translate.instant('REPORTING.MESSAGES.REPORT.SHARING-UPDATED'))
         });
       }
     });
@@ -398,7 +355,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
   changeOwner(report: IReport) {
     this.reportUnderAction = report;
     this.userDialogRef = this.pickerDialogService.open({
-      Title: "Select new owner of report",
+      Title: this.translate.instant('REPORTING.LABELS.REPORT.SELECT-NEW-OWNER'),
       IsSingleSelection: true,
       DisplayField: "userName"
     });
@@ -406,7 +363,7 @@ export class MyreportsComponent extends BaseListComponent<IReport> implements On
       if (result) {
         this.reportService.changeOwner(report.id, result.id).subscribe(res => {
           if (res) {
-            this.showMessage(`Report ownership transferred to ${result.userName}`);
+            this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.REPORT.OWNERSHIP-TRANSFERRED')} ${result.userName}`);
           }
         });
       }

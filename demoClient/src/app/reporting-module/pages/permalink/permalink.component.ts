@@ -1,12 +1,10 @@
-import { Component, OnInit, Output, Inject, EventEmitter, Input, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, Inject } from "@angular/core";
 import { ReportPasswordComponent } from '../myreports/report-password/report-password.component';
-import { Globals, BaseListComponent, PickerDialogService, ErrorService, ISearchField, operatorType, PickerComponent, listProcessingType } from 'projects/fast-code-core/src/public_api';
+import { Globals, ErrorService } from 'projects/fast-code-core/src/public_api';
 import { IPermalink } from '../permalink/ipermalink';
 import { PermalinkService } from '../permalink/permalink.service';
-import { ChartComponent } from '../../pages/chart/chart.component';
-import { MatInputModule, MAT_DIALOG_DATA, MatSnackBar, MatDialog, MatDialogRef, getMatAutocompleteMissingPanelError } from "@angular/material";
-import { IReport } from '../reports/Ireport';
-import { ClipboardModule } from 'ngx-clipboard';
+import { MAT_DIALOG_DATA, MatSnackBar, MatDialog, MatDialogRef } from "@angular/material";
+import { TranslateService } from '@ngx-translate/core';
 
 export enum AccessOptions {
   Login = 'Login',
@@ -22,9 +20,6 @@ export enum AccessOptions {
 
 export class PermalinkComponent implements OnInit {
 
-  // @Output() externalShareView: EventEmitter<any> = new EventEmitter();
-  // selectedReport: IReport;
-  // externalShareView: boolean = true;
   accessOption: string;
   accessOptionIcon: string;
   refreshrate: any = 120;
@@ -46,6 +41,7 @@ export class PermalinkComponent implements OnInit {
     public permalindialogRef: MatDialogRef<PermalinkComponent>,
     public snackBar: MatSnackBar,
     public errorService: ErrorService,
+    public translate: TranslateService,
 
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.title = "External Share Options";
@@ -86,7 +82,6 @@ export class PermalinkComponent implements OnInit {
     this.permalinkservice.create(this.permalink).subscribe(permalink => {
       this.permalink = permalink;
       this.selectAccessOption(this.permalink.authentication);
-      console.log(permalink);
     });
 
   }
@@ -100,19 +95,19 @@ export class PermalinkComponent implements OnInit {
       this.accessOptionIcon = 'group';
       this.accessOption = opt;
       this.permalink.authentication = opt;
-      this.accessOptionTitle = "Access with Login"
+      this.accessOptionTitle = this.translate.instant('REPORTING.LABELS.PERMALINK.ACCESS-LOGIN');
     }
     if (AccessOptions.noLogin == opt) {
       this.accessOptionIcon = 'link_off';
       this.accessOption = opt;
       this.permalink.authentication = opt;
-      this.accessOptionTitle = 'Access without Login';
+      this.accessOptionTitle = this.translate.instant('REPORTING.LABELS.PERMALINK.ACCESS-WITHOUT-LOGIN');
     }
     if (AccessOptions.Password == opt) {
       this.accessOptionIcon = 'vpn_key';
       this.accessOption = opt;
       this.permalink.authentication = opt;
-      this.accessOptionTitle = 'Access with password';
+      this.accessOptionTitle = this.translate.instant('REPORTING.LABELS.PERMALINK.ACCESS-PASSWORD');
       if (!this.permalink.password) {
         this.passwordDialogRef = this.dialog.open(ReportPasswordComponent, {
           disableClose: true,
@@ -126,10 +121,10 @@ export class PermalinkComponent implements OnInit {
       this.passwordDialogRef.afterClosed().subscribe(action => {
         if (action.confirm) {
           this.accessPassword = action.password;
-          console.log('password set', this.accessPassword);
+          //password set
         } else {
           this.accessPassword = '';
-          console.log('no password set');
+          //no password set
         }
       });
     }
@@ -141,13 +136,14 @@ export class PermalinkComponent implements OnInit {
     this.permalink.password = this.accessPassword;
     this.permalink.rendering = 'interactive';
     this.permalink.resourceId = this.data.resourceId;
-    console.log(this.permalink);
     this.permalinkservice.update(this.permalink, this.permalink.id).subscribe(permalink => {
       this.permalink = permalink;
-      console.log(permalink);
       this.permalindialogRef.close({ confirm: true });
     });
+  }
 
+  cancel() {
+    this.dialogRef.close({ confirm: false });
   }
 
 }

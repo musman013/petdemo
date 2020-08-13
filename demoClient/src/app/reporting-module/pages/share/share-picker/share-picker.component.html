@@ -12,7 +12,7 @@
 
     <form class="search-form">
         <mat-form-field class="form-field">
-            <input matInput placeholder="Search" (input)="onPickerSearch($event.target.value)">
+            <input matInput placeholder="{{'REPORTING.LABELS.SEARCH' | translate}}" (input)="onPickerSearch($event.target.value)">
         </mat-form-field>
     </form>
     <mat-list>
@@ -20,13 +20,13 @@
             <h4 mat-line>{{item[displayField]}}</h4>
             <mat-select [panelClass]="'access-select'" (selectionChange)="onSelectionChange($event, item)" [(ngModel)]="selectedItems[item.id]">
                 <mat-select-trigger>
-                    <span *ngIf="!selectedItems[item.id]"><mat-icon>block</mat-icon>&nbsp;None</span>
-                    <span *ngIf="selectedItems[item.id] == 'Edit'"><mat-icon >edit</mat-icon>&nbsp;Can edit</span>
-                    <span *ngIf="selectedItems[item.id] == 'Read'"><mat-icon >visibility</mat-icon>&nbsp;Can view</span>
+                    <span *ngIf="!selectedItems[item.id]"><mat-icon>block</mat-icon>&nbsp;{{'REPORTING.LABELS.REPORT.SHARE-OPTIONS.NONE' | translate}}</span>
+                    <span *ngIf="selectedItems[item.id] == 'Edit'"><mat-icon >edit</mat-icon>&nbsp;{{'REPORTING.LABELS.REPORT.SHARE-OPTIONS.EDIT' | translate}}</span>
+                    <span *ngIf="selectedItems[item.id] == 'Read'"><mat-icon >visibility</mat-icon>&nbsp;{{'REPORTING.LABELS.REPORT.SHARE-OPTIONS.VIEW' | translate}}</span>
                 </mat-select-trigger>
-                <mat-option value=""><mat-icon>block</mat-icon>None</mat-option>
-                <mat-option value="Edit"><mat-icon>edit</mat-icon>Can edit</mat-option>
-                <mat-option value="Read"><mat-icon>visibility</mat-icon>Can view</mat-option>
+                <mat-option value=""><mat-icon>block</mat-icon>{{'REPORTING.LABELS.REPORT.SHARE-OPTIONS.NONE' | translate}}</mat-option>
+                <mat-option value="Edit"><mat-icon>edit</mat-icon>{{'REPORTING.LABELS.REPORT.SHARE-OPTIONS.EDIT' | translate}}</mat-option>
+                <mat-option value="Read"><mat-icon>visibility</mat-icon>{{'REPORTING.LABELS.REPORT.SHARE-OPTIONS.VIEW' | translate}}</mat-option>
             </mat-select>
             <mat-divider></mat-divider>
         </mat-list-item>

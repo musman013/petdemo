@@ -17,6 +17,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { ReportPasswordComponent } from '../../myreports/report-password/report-password.component';
 import { PermalinkComponent } from '../../permalink/permalink.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: "app-dashboard",
@@ -40,7 +41,8 @@ export class EditDashboardComponent implements OnInit {
     private router: Router,
     private dashboardService: DashboardService,
     public pickerDialogService: PickerDialogService,
-    public userService: UserService
+    public userService: UserService,
+    public translate: TranslateService,
   ) { }
 
   ngOnInit() {
@@ -48,7 +50,6 @@ export class EditDashboardComponent implements OnInit {
       const id = params.get("id");
       this.dashboardService.getById(id).subscribe(res => {
         this.dashboard = res;
-        console.log(this.dashboard);
       });
     });
   }
@@ -68,6 +69,7 @@ export class EditDashboardComponent implements OnInit {
             this.dashboard.reportDetails = this.dashboard.reportDetails.filter(
               v => v.id !== report_id
             );
+            this.showMessage(this.translate.instant('REPORTING.MESSAGES.DASHBOARD.REPORT-REMOVED'));
           });
       }
     });
@@ -77,20 +79,20 @@ export class EditDashboardComponent implements OnInit {
     // this.externalShareView = true;
 
     this.permalinkDialogRef = this.dialog.open(PermalinkComponent, {
-            // disableClose: true,
-            width: '50%',
-            height: '80%',
-            data: {
-              resource: 'dashboard',
-              resourceId: dashboard.id
-            }
-          });
+      // disableClose: true,
+      width: '50%',
+      height: '80%',
+      data: {
+        resource: 'dashboard',
+        resourceId: dashboard.id
+      },
+      panelClass: "fc-modal-dialog",
+    });
     this.permalinkDialogRef.afterClosed().subscribe(action => {
       if (action.confirm) {
-
-        console.log('options set' );
+        //options set
       } else {
-        console.log('no options set');
+        //options not set
       }
     });
   }
@@ -113,12 +115,11 @@ export class EditDashboardComponent implements OnInit {
     this.dashboardService
       .update(this.dashboard, this.dashboard.id)
       .subscribe(res => {
-        this.showMessage("Dashboard updated!");
+        this.showMessage(this.translate.instant('REPORTING.MESSAGES.DASHBOARD.UPDATED'));
       });
   }
 
   editReport(report: IReport) {
-    console.log(report);
     this.router.navigate([`reporting/reports/${report.id}`]);
   }
 
@@ -131,7 +132,6 @@ export class EditDashboardComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
       this.dashboard.title = result.dashboardTitle;
       this.dashboard.description = result.dashboarddescription;
       if (result.type != "close") {
@@ -211,7 +211,7 @@ export class EditDashboardComponent implements OnInit {
 
   changeOwner() {
     this.userDialogRef = this.pickerDialogService.open({
-      Title: "Select new owner of dashboard",
+      Title: this.translate.instant('REPORTING.LABELS.DASHBOARD.SELECT-NEW-OWNER'),
       IsSingleSelection: true,
       DisplayField: "userName"
     });
@@ -219,7 +219,7 @@ export class EditDashboardComponent implements OnInit {
       if (result) {
         this.dashboardService.changeOwner(this.dashboard.id, result.id).subscribe(res => {
           if (res) {
-            this.showMessage(`Dashboard ownership transferred to ${result.userName}`);
+            this.showMessage(`${this.translate.instant('REPORTING.MESSAGES.DASHBOARD.OWNERSHIP-TRANSFERRED')} ${result.userName}`);
           }
         });
       }
@@ -236,9 +236,9 @@ export class EditDashboardComponent implements OnInit {
     this.onPickerSearch("");
   }
 
-  refreshChart(report_id){
+  refreshChart(report_id) {
     this.dashboard.reportDetails[this.dashboard.reportDetails.findIndex(x => x.id == report_id)] =
-     _.clone(this.dashboard.reportDetails[this.dashboard.reportDetails.findIndex(x => x.id == report_id)])
+      _.clone(this.dashboard.reportDetails[this.dashboard.reportDetails.findIndex(x => x.id == report_id)])
   }
 
   showMessage(msg): void {
@@ -275,9 +275,8 @@ export class EditDashboardComponent implements OnInit {
     });
     this.dialogRef.afterClosed().subscribe(data => {
       if (data) {
-        console.log(data);
         this.dashboardService.share(this.dashboard.id, data).subscribe(data => {
-          console.log(data);
+          this.translate.instant('REPORTING.MESSAGES.DASHBOARD.SHARED');
         });
       }
     });
@@ -297,9 +296,8 @@ export class EditDashboardComponent implements OnInit {
     });
     this.dialogRef.afterClosed().subscribe(data => {
       if (data) {
-        console.log(data);
         this.dashboardService.unshare(this.dashboard.id, data).subscribe((data) => {
-          console.log(data);
+          this.translate.instant('REPORTING.MESSAGES.DASHBOARD.SHARING-UPDATED')
         });
       }
     });

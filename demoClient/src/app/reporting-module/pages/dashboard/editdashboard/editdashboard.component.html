@@ -16,17 +16,17 @@
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="previewDashboard(dashboard.id)">
             <mat-icon class="menu-icon">visibility</mat-icon>
-            Preview
+            {{'REPORTING.LABELS.PREVIEW' | translate}}
           </button>
 
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe || dashboard.editable" (click)="editDashboard()">
             <mat-icon class="menu-icon">save</mat-icon>
-            Save
+            {{'GENERAL.ACTIONS.SAVE' | translate}}
           </button>
           <button mat-menu-item *ngIf="dashboard.sharedWithMe && !dashboard.isResetted"
             (click)="resetDashboard(dashboard.id)">
             <mat-icon class="menu-icon">refresh</mat-icon>
-            Reset
+            {{'REPORTING.LABELS.RESET' | translate}}
           </button>
           <button mat-menu-item *ngIf="
           !dashboard.isRefreshed &&
@@ -34,16 +34,16 @@
           dashboard.ownerSharingStatus &&
           dashboard.recipientSharingStatus" (click)="refreshDashboard(dashboard.id)">
             <mat-icon class="menu-icon">sync</mat-icon>
-            Refresh
+            {{'REPORTING.LABELS.REFRESH' | translate}}
           </button>
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe && !dashboard.isPublished"
             (click)="publishDashboard(dashboard.id)">
             <mat-icon class="menu-icon">publish</mat-icon>
-            Publish
+            {{'REPORTING.LABELS.PUBLISH' | translate}}
           </button>
-          <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" [matMenuTriggerFor]="sharemenu" (click)="share()">
+          <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" [matMenuTriggerFor]="sharemenu">
             <mat-icon class="menu-icon">group_add</mat-icon>
-            Share
+            {{'REPORTING.LABELS.SHARE' | translate}}
           </button>
           <!-- <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" (click)="manageSharing()">
             <mat-icon class="menu-icon">group</mat-icon>
@@ -51,31 +51,27 @@
           </button> -->
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe" (click)="deleteDashboard(dashboard)">
             <mat-icon class="menu-icon">delete</mat-icon>
-            Delete
+            {{'GENERAL.ACTIONS.DELETE' | translate}}
           </button>
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe" (click)="changeOwner()">
             <mat-icon class="menu-icon">repeat</mat-icon>
-            Transfer ownership
+            {{'REPORTING.LABELS.TRANSFER-OWNERSHIP' | translate}}
           </button>
         </mat-menu>
         <mat-menu #sharemenu="matMenu">
           <button mat-menu-item (click)="share()">
             <mat-icon class="menu-icon">group</mat-icon>
-            Share with app users
+            {{'REPORTING.LABELS.SHARE-WITH-APP-USERS' | translate}}
           </button>
           <button mat-menu-item (click)="shareExternally(dashboard)">
             <mat-icon class="menu-icon">link</mat-icon>
-            Share externally
+            {{'REPORTING.LABELS.SHARE-EXTERNALLY' | translate}}
           </button>
           <button mat-menu-item *ngIf="!dashboard.sharedWithMe && dashboard.isShareable" (click)="manageSharing()">
             <mat-icon class="menu-icon">settings</mat-icon>
-            Manage sharing
+            {{'REPORTING.LABELS.MANAGE-SHARING' | translate}}
           </button>
         </mat-menu>
-        <!-- <button color="primary" (click)="share()" mat-stroked-button>
-          <mat-icon>people</mat-icon>&nbsp;Share</button>
-        <button color="primary" [routerLink]="['/dashboard/preview/',dashboard.id]" class="mat-stroked-button mat-button-base mat-primary">Preview</button>
-        <button color="primary" (click)="updateDashboard()" class="mat-stroked-button mat-button-base mat-primary">Save</button> -->
       </div>
     </div>
     <div fxLayout="row" class="charts-container" cdkDropList (cdkDropListDropped)="drop($event)">
@@ -91,36 +87,26 @@
 
               <mat-menu #actions="matMenu">
                 <button mat-menu-item [matMenuTriggerFor]="size">
-                  <mat-icon>photo_size_select_large</mat-icon>Size
+                  <mat-icon>photo_size_select_large</mat-icon>{{'REPORTING.LABELS.SIZE' | translate}}
                 </button>
                 <button mat-menu-item *ngIf="!report.sharedWithMe || report.editable" (click)="editReport(report)">
-                  <mat-icon>edit</mat-icon>Edit
+                  <mat-icon>edit</mat-icon>{{'GENERAL.ACTIONS.EDIT' | translate}}
                 </button>
                 <button mat-menu-item (click)="deleteReport(dashboard.id,report.id)">
-                  <mat-icon>delete</mat-icon>Delete
+                  <mat-icon>delete</mat-icon>{{'GENERAL.ACTIONS.DELETE' | translate}}
                 </button>
                 <button mat-menu-item (click)="refreshChart(report.id)">
-                  <mat-icon>refresh</mat-icon>Refresh
+                  <mat-icon>refresh</mat-icon>{{'REPORTING.LABELS.REFRESH' | translate}}
                 </button>
               </mat-menu>
 
               <mat-menu #size="matMenu">
-                <button mat-menu-item (click)="setSize('smallchart',i)">Small</button>
-                <button mat-menu-item (click)="setSize('mediumchart',i)">Medium</button>
-                <button mat-menu-item (click)="setSize('largechart',i)">Large</button>
-                <button mat-menu-item (click)="setSize('fullchart',i)">Full</button>
+                <button mat-menu-item (click)="setSize('smallchart',i)">{{'REPORTING.LABELS.REPORT.WIDTH-OPTIONS.SMALL' | translate}}</button>
+                <button mat-menu-item (click)="setSize('mediumchart',i)">{{'REPORTING.LABELS.REPORT.WIDTH-OPTIONS.MEDIUM' | translate}}</button>
+                <button mat-menu-item (click)="setSize('largechart',i)">{{'REPORTING.LABELS.REPORT.WIDTH-OPTIONS.LARGE' | translate}}</button>
+                <button mat-menu-item (click)="setSize('fullchart',i)">{{'REPORTING.LABELS.REPORT.WIDTH-OPTIONS.FULL' | translate}}</button>
               </mat-menu>
-              <!-- <button mat-stroked-button color="primary">Size</button>
-            <ul class="dropdown-list">
-              <li (click)="setSize('smallchart',i)">Small</li>
-              <li (click)="setSize('mediumchart',i)">Medium</li>
-              <li (click)="setSize('largechart',i)">Large</li>
-              <li (click)="setSize('fullchart',i)">Full</li>
-            </ul> -->
             </div>
-            <!-- <button mat-stroked-button color="primary">
-            <mat-icon (click)="deleteReport(report.id)">delete</mat-icon>
-          </button> -->
           </div>
           <app-chart [chartType]="report.reportType" [query]="report.query" [ctype]="report.ctype"
             [title]="report.title">

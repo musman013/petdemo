@@ -11,7 +11,6 @@ export class ManageDashboardsComponent implements OnInit, OnDestroy {
   constructor(private dashboardService: DashboardService) { }
 
   ngOnInit() {
-    console.log("in manage dashboard");
     this.dashboardService.getAll([],0,1000).subscribe(res => {
       this.allDashboardsData = res;
     })

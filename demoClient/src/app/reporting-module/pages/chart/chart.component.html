@@ -4,7 +4,7 @@
     <div class="card-text">
       <div *ngIf="ready === false" class="d-flex justify-content-center text-dark">
         <div class="spinner-border" role="status">
-          <span class="sr-only">Loading...</span>
+          <span class="sr-only">{{'REPORTING.MESSAGES.LOADING' | translate}}</span>
         </div>
       </div>
       <canvas *ngIf="ready && showChart && error===''" baseChart height="300" style="max-height: 300px !important;" [datasets]="chartData" [labels]="chartLabels" [options]="chartOptions"
