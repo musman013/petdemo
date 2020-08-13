@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { QueryParam, Measures, Dimensions, MetaContent } from '../../models/reports.model';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { QueryParam, Measures, Dimensions, MetaContent } from 'src/app/reporting-module/models/reports.model';
 import * as _ from 'lodash';
-import { Dashboard } from '../../models/dashboard.model';
+import { Dashboard } from 'src/app/reporting-module/models/dashboard.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog, MatSnackBar } from '@angular/material';
-import { AddReportsToDashboardComponent } from '../../modalDialogs/addReportsToDashboard/addReportsToDashboard.component';
-import { AddExReportsToDashboardComponent } from "../../modalDialogs/addExReportsToDashboard/addExReportsToDashboard.component";
-import { MainService } from '../../services/main.service';
-import { SaveReportsComponent } from '../../modalDialogs/saveReports/saveReports.component';
-import { ReportService } from './report.service';
-import { DashboardService } from '../dashboard/dashboard.service';
-import { IReport } from './ireport';
-import { IDashboard } from '../dashboard/Idashboard';
+import { AddReportsToDashboardComponent } from 'src/app/reporting-module/modalDialogs/addReportsToDashboard/addReportsToDashboard.component';
+import { AddExReportsToDashboardComponent } from "src/app/reporting-module/modalDialogs/addExReportsToDashboard/addExReportsToDashboard.component";
+import { MainService } from 'src/app/reporting-module/services/main.service';
+import { SaveReportsComponent } from 'src/app/reporting-module/modalDialogs/saveReports/saveReports.component';
+import { ReportService } from '../report.service';
+import { DashboardService } from 'src/app/reporting-module/pages/dashboard/dashboard.service';
+import { IReport } from '../ireport';
+import { IDashboard } from 'src/app/reporting-module/pages/dashboard/Idashboard';
 import { CubejsClient } from '@cubejs-client/ngx';
 import * as CodeMirror from 'codemirror';
 import { WindowRef } from './WindowRef';
@@ -20,11 +20,11 @@ import { Globals } from 'projects/fast-code-core/src/public_api';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss']
+  selector: 'app-generate-reports',
+  templateUrl: './generate-reports.component.html',
+  styleUrls: ['./generate-reports.component.scss']
 })
-export class ReportsComponent implements OnInit, OnDestroy {
+export class GenerateReportComponent implements OnInit, OnDestroy {
   dashboard: Dashboard = {
     title: '',
     description: '',

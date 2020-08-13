@@ -1,4 +1,4 @@
-import { IReport } from '../reports/ireport'
+import { IReport } from 'src/app/reporting-module/pages/myreports/ireport';
 export interface IDashboard {
     id?: number,
     userId?: number,

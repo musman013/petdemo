@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReportService } from '../../reports/report.service';
-import { IReport } from '../../reports/ireport';
+import { ReportService } from 'src/app/reporting-module/pages/myreports/report.service';
+import { IReport } from 'src/app/reporting-module/pages/myreports/ireport';
 import { ErrorService, listProcessingType } from 'projects/fast-code-core/src/public_api';
 import { take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -50,7 +50,7 @@ export class SharedReportsComponent implements OnInit {
   }
 
   reportDetails(report: IReport) {
-    this.router.navigate([`reporting/myreports/edit/${report.id}`]);
+    this.router.navigate([`reporting/myreports/${report.id}`]);
   }
 
   deleteReport(report: IReport) {

@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { CubejsClientModule } from '@cubejs-client/ngx';
 import { PermalinkComponent } from './pages/permalink/permalink.component';
-import { ReportsComponent } from './pages/reports/reports.component';
+import { GenerateReportComponent } from './pages/myreports/generate-report/generate-reports.component';
 import { SchemaComponent } from './pages/schema/schema.component';
 import { EditDashboardComponent } from './pages/dashboard/editdashboard/editdashboard.component';
 import { AddReportsToDashboardComponent } from './modalDialogs/addReportsToDashboard/addReportsToDashboard.component';
@@ -28,7 +28,7 @@ import { MatSlideToggleModule, MatMenuModule, MatProgressSpinnerModule } from '@
 import { DashboardMainComponent } from './pages/dashboard/dashboard-main/dashboard-main.component';
 import { MyreportsMainComponent } from './pages/myreports/myreports-main/myreports-main.component';
 import { SharedReportsComponent } from './pages/myreports/shared-reports/shared-reports.component';
-import { MyreportsDetailComponent } from './pages/myreports/myreports-detail/myreports-detail.component';
+import { ReportDetailsComponent } from './pages/myreports/report-details/report-details.component';
 import { FastCodeCoreModule } from 'projects/fast-code-core/src/public_api';
 import { environment } from 'src/environments/environment';
 import { UpdateDashboardComponent } from './modalDialogs/update-dashboard/update-dashboard.component';
@@ -44,7 +44,7 @@ const cubejsOptions = {
 
 @NgModule({
   declarations: [
-    ReportsComponent,
+    GenerateReportComponent,
     PermalinkComponent,
     SchemaComponent,
     DropdownDirective,
@@ -63,7 +63,7 @@ const cubejsOptions = {
     DashboardMainComponent,
     MyreportsMainComponent,
     SharedReportsComponent,
-    MyreportsDetailComponent,
+    ReportDetailsComponent,
     UpdateDashboardComponent
   ],
   imports: [

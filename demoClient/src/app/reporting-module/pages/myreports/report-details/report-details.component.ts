@@ -1,17 +1,17 @@
 import { Component, OnInit } from "@angular/core";
 import { MatSnackBar, MatDialog, MatDialogRef } from "@angular/material";
 import { Router, ActivatedRoute } from "@angular/router";
-import { IReport } from '../../reports/Ireport';
-import { ReportService } from '../../reports/report.service';
+import { IReport } from 'src/app/reporting-module/pages/myreports/Ireport';
+import { ReportService } from 'src/app/reporting-module/pages/myreports/report.service';
 import { ConfirmDialogComponent } from 'projects/fast-code-core/src/public_api';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: "app-myreports-detail",
-  templateUrl: "./myreports-detail.component.html",
-  styleUrls: ["./myreports-detail.component.scss"]
+  selector: "app-report-details",
+  templateUrl: "./report-details.component.html",
+  styleUrls: ["./report-details.component.scss"]
 })
-export class MyreportsDetailComponent implements OnInit {
+export class ReportDetailsComponent implements OnInit {
   report_id;
   report: IReport;
   allDashboardsList = [];

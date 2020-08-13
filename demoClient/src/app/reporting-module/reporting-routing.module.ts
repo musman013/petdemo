@@ -1,13 +1,13 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { SchemaComponent } from "./pages/schema/schema.component";
-import { ReportsComponent } from "./pages/reports/reports.component";
+import { GenerateReportComponent } from "./pages/myreports/generate-report/generate-reports.component";
 import { EditDashboardComponent } from "./pages/dashboard/editdashboard/editdashboard.component";
 import { ManageDashboardsComponent } from "./pages/dashboard/manage-dashboards/manage-dashboards.component";
 import { PreviewComponent } from "./pages/dashboard/preview/preview.component";
 import { DashboardComponent } from "./pages/dashboard/dashboard.component";
 import { MyreportsMainComponent } from "./pages/myreports/myreports-main/myreports-main.component";
-import { MyreportsDetailComponent } from "./pages/myreports/myreports-detail/myreports-detail.component";
+import { ReportDetailsComponent } from "./pages/myreports/report-details/report-details.component";
 import { AuthGuard } from "src/app/core/auth-guard";
 import { DashboardMainComponent } from "./pages/dashboard/dashboard-main/dashboard-main.component";
 import { ShareComponent } from './pages/share/share.component';
@@ -19,12 +19,12 @@ const routes: Routes = [
     children: [
       { path: "schema", component: SchemaComponent },
       //{ path: 'dashboards', component: DashboardMainComponent },
-      { path: "reports/:id", component: ReportsComponent },
+      { path: "reports/:id", component: GenerateReportComponent },
       {
         path: "myreports",
         component: MyreportsMainComponent
       },
-      { path: "myreports/edit/:id", component: MyreportsDetailComponent },
+      { path: "myreports/:id", component: ReportDetailsComponent },
       {
         path: "dashboard",
         component: DashboardComponent,

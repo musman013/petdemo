@@ -7,16 +7,15 @@ import { ShareComponent } from "../../share/share.component";
 import { DashboardService } from "../dashboard.service";
 import { sharingType } from "../../share/ishare-config";
 import { IDashboard } from "../Idashboard";
-import { UpdateDashboardComponent } from "../../../modalDialogs/update-dashboard/update-dashboard.component";
-import { Dashboard } from "src/app/reporting-module/models/dashboard.model";
+import { UpdateDashboardComponent } from "src/app/reporting-module/modalDialogs/update-dashboard/update-dashboard.component";
 import { ConfirmDialogComponent } from "projects/fast-code-core/src/lib/common/components/confirm-dialog/confirm-dialog.component";
-import { IReport } from '../../reports/ireport';
+import { IReport } from 'src/app/reporting-module/pages/myreports/ireport';
 import { PickerComponent, PickerDialogService, ISearchField, operatorType } from 'projects/fast-code-core/src/public_api';
 import { UserService } from 'src/app/admin/user-management/user/index';
 import { Observable, ReplaySubject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
-import { ReportPasswordComponent } from '../../myreports/report-password/report-password.component';
-import { PermalinkComponent } from '../../permalink/permalink.component';
+import { ReportPasswordComponent } from 'src/app/reporting-module/pages/myreports/report-password/report-password.component';
+import { PermalinkComponent } from 'src/app/reporting-module/pages/permalink/permalink.component';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
